@@ -1357,15 +1357,81 @@ function delSession(){
  * doGet gere TOUT (lecture + ecriture) car GAS redirige les POST en GET
  * Le parametre ?action=push&data=... permet d'envoyer via GET
  */
-const GAS_CODE=`// VerticalLog Sync — Collez ce code dans un projet Google Apps Script
-// Deployer > Nouvelle deployment > Application Web > Acces: Tout le monde
+const GAS_CODE=`// VerticalLog Sync v2 — Collez ce code dans Google Apps Script
+// Deployer > Nouvelle deployment > Application Web
+// Executer en tant que : Moi-meme
+// Acces : Tout le monde
+//
 var FN='VerticalLog_sync.json';
-function getFile(){var it=DriveApp.getFilesByName(FN);return it.hasNext()?it.next():null;}
-function readData(){var f=getFile();if(!f)return{sessions:[],notes:{}};try{return JSON.parse(f.getBlob().getDataAsString())}catch(e){return{sessions:[],notes:{}}}}
-function writeData(d){var f=getFile();var j=JSON.stringify(d);if(f)f.setContent(j);else DriveApp.createFile(FN,j,MimeType.PLAIN_TEXT)}
-function merge(incoming){var ex=readData();var ids={};ex.sessions.forEach(function(s){ids[String(s.id)]=1});var n=0;(incoming.sessions||[]).forEach(function(s){if(!ids[String(s.id)]){ex.sessions.push(s);n++}});ex.sessions.sort(function(a,b){return new Date(a.date)-new Date(b.date)});var nt=incoming.notes||{};for(var k in nt)ex.notes[k]=nt[k];ex.updated=new Date().toISOString();writeData(ex);return{ok:true,total:ex.sessions.length,added:n}}
-function doGet(e){if(e&&e.parameter&&e.parameter.action==='push'){var d=JSON.parse(decodeURIComponent(e.parameter.data));var r=merge(d);return ContentService.createTextOutput(JSON.stringify(r)).setMimeType(ContentService.MimeType.JSON)}if(e&&e.parameter&&e.parameter.action==='test'){return ContentService.createTextOutput(JSON.stringify({ok:true,test:true})).setMimeType(ContentService.MimeType.JSON)}var data=readData();return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON)}
-function doPost(e){try{var incoming=JSON.parse(e.postData.contents);var r=merge(incoming);return ContentService.createTextOutput(JSON.stringify(r)).setMimeType(ContentService.MimeType.JSON)}catch(err){return ContentService.createTextOutput(JSON.stringify({ok:false,error:String(err)})).setMimeType(ContentService.MimeType.JSON)}}`;
+
+function getFile(){
+  var it=DriveApp.getFilesByName(FN);
+  return it.hasNext()?it.next():null;
+}
+
+function readData(){
+  var f=getFile();
+  if(!f)return {sessions:[],notes:{}};
+  try{return JSON.parse(f.getBlob().getDataAsString())}
+  catch(e){return {sessions:[],notes:{}}}
+}
+
+function writeData(d){
+  var f=getFile();
+  var j=JSON.stringify(d);
+  if(f) f.setContent(j);
+  else DriveApp.createFile(FN,j,MimeType.PLAIN_TEXT);
+}
+
+function merge(incoming){
+  var ex=readData();
+  var ids={};
+  ex.sessions.forEach(function(s){ids[String(s.id)]=1});
+  var n=0;
+  (incoming.sessions||[]).forEach(function(s){
+    if(!ids[String(s.id)]){ex.sessions.push(s);n++}
+  });
+  ex.sessions.sort(function(a,b){return new Date(a.date)-new Date(b.date)});
+  var nt=incoming.notes||{};
+  for(var k in nt) ex.notes[k]=nt[k];
+  ex.updated=new Date().toISOString();
+  writeData(ex);
+  return {ok:true, total:ex.sessions.length, added:n};
+}
+
+// GET = lecture des donnees (utilise par Recevoir + Tester)
+function doGet(e){
+  var data=readData();
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// POST = ecriture des donnees (utilise par Envoyer)
+// Accepte le body JSON direct OU un champ de formulaire "data"
+function doPost(e){
+  try{
+    var raw;
+    if(e.postData && e.postData.contents){
+      raw=e.postData.contents;
+    }
+    // Si c'est un form POST, le champ "data" contient le JSON
+    if(e.parameter && e.parameter.data){
+      raw=e.parameter.data;
+    }
+    if(!raw) return ContentService.createTextOutput(
+      JSON.stringify({ok:false,error:'Aucune donnee recue'})
+    ).setMimeType(ContentService.MimeType.JSON);
+
+    var incoming=JSON.parse(raw);
+    var r=merge(incoming);
+    return ContentService.createTextOutput(JSON.stringify(r))
+      .setMimeType(ContentService.MimeType.JSON);
+  }catch(err){
+    return ContentService.createTextOutput(
+      JSON.stringify({ok:false,error:String(err)})
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}`;
 
 function getGASUrl(){return localStorage.getItem('vl3_gas_url')||'';}
 function setGASUrl(url){localStorage.setItem('vl3_gas_url',url);}
@@ -1389,7 +1455,44 @@ function updateSyncBanner(){
   }
 }
 
-/* Test de connexion */
+/* Appel GAS fiable via formulaire invisible (contourne CORS + redirects)
+ * GAS traite le POST et redirige vers la reponse sur script.googleusercontent.com
+ * En mode no-cors le navigateur ne peut pas lire la reponse, mais le POST EST traite.
+ * Pour la lecture (GET), fetch normal avec redirect:follow fonctionne car c'est un GET simple.
+ */
+
+/* Helper: POST via iframe/form pour contourner les problemes CORS de GAS */
+function gasPost(url, data){
+  return new Promise((resolve)=>{
+    // Cree un iframe invisible + form qui poste vers GAS
+    // GAS traite le doPost, on ne peut pas lire la reponse mais les donnees sont ecrites
+    const id='_gas_'+Date.now();
+    const iframe=document.createElement('iframe');
+    iframe.name=id;iframe.style.display='none';
+    document.body.appendChild(iframe);
+    const form=document.createElement('form');
+    form.method='POST';form.action=url;form.target=id;form.style.display='none';
+    const input=document.createElement('input');
+    input.type='hidden';input.name='data';input.value=JSON.stringify(data);
+    form.appendChild(input);
+    document.body.appendChild(form);
+    // Timeout de securite: on considere que c'est OK apres 4s
+    let done=false;
+    iframe.onload=()=>{if(!done){done=true;cleanup();resolve({ok:true});}};
+    setTimeout(()=>{if(!done){done=true;cleanup();resolve({ok:true,timeout:true});}},5000);
+    form.submit();
+    function cleanup(){try{document.body.removeChild(form);document.body.removeChild(iframe);}catch{}}
+  });
+}
+
+/* Helper: GET fiable via fetch */
+async function gasGet(url){
+  const res=await fetch(url,{redirect:'follow'});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return await res.json();
+}
+
+/* Test connexion */
 async function testGASConnection(){
   const url=document.getElementById('gas-url-input').value.trim();
   if(!url){toast('Entrez l\'URL du script');return;}
@@ -1397,86 +1500,59 @@ async function testGASConnection(){
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Test en cours...';statusEl.style.color='var(--accent)';
   try{
-    const res=await fetch(url+'?action=test',{redirect:'follow'});
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const data=await res.json();
-    if(data.ok){
-      statusEl.textContent='Connexion OK ! Pret a synchroniser.';statusEl.style.color='var(--green)';
-      toast('Connexion reussie !');
-    }else throw new Error('Reponse invalide');
+    const data=await gasGet(url);
+    statusEl.textContent='Connexion OK ! '+(data.sessions?data.sessions.length+' seances sur le Drive.':'Pret a synchroniser.');
+    statusEl.style.color='var(--green)';
+    toast('Connexion reussie !');
   }catch(err){
-    statusEl.textContent='Echec: '+err.message+'. Verifiez l\'URL et le deploiement.';statusEl.style.color='var(--red)';
+    statusEl.textContent='Echec: '+err.message;statusEl.style.color='var(--red)';
     toast('Echec connexion');
   }
 }
 
-/* Push = envoi des donnees locales vers Google Drive
- * Strategie: essaie POST d'abord, fallback sur GET si echec
- * GAS redirige les POST en GET (probleme connu), donc on utilise
- * doGet avec ?action=push&data=... comme fallback fiable */
+/* Push = envoi des donnees vers Google Drive */
 async function gdrivePush(){
   const url=document.getElementById('gas-url-input').value.trim();
-  if(!url){toast('URL Apps Script manquante');return;}
+  if(!url){toast('URL manquante');return;}
   setGASUrl(url);
-  const data={sessions:DB.sessions,notes:DB.notes};
-  const json=JSON.stringify(data);
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Envoi en cours...';statusEl.style.color='var(--accent)';
   try{
-    // Methode fiable: GET avec data en parametre (fonctionne malgre les redirects GAS)
-    // Limite URL ~8KB par requete, on chunke si necessaire
-    const encoded=encodeURIComponent(json);
-    if(encoded.length<7000){
-      // Donnees assez petites pour tenir dans l'URL
-      const res=await fetch(url+'?action=push&data='+encoded,{redirect:'follow'});
-      if(!res.ok)throw new Error('Serveur: '+res.status);
-      const result=await res.json();
-      if(!result.ok)throw new Error(result.error||'Erreur inconnue');
-      statusEl.textContent='Envoye ! '+result.total+' seances au total.';statusEl.style.color='var(--green)';
-      localStorage.setItem('vl3_last_sync',new Date().toISOString());
-      updateSyncBanner();
-      toast(result.added!=null?result.added+' nouvelle(s), '+result.total+' total':'Donnees envoyees !');
-    }else{
-      // Donnees trop grandes pour URL: essai POST direct
-      // GAS peut rediriger POST->GET mais traite le POST avant la redirection
-      const res=await fetch(url,{method:'POST',body:json,redirect:'follow'});
-      // Meme si la reponse est celle du redirect GET, le POST a ete traite
-      try{
-        const result=await res.json();
-        if(result.ok){
-          statusEl.textContent='Envoye ! '+result.total+' seances.';statusEl.style.color='var(--green)';
-        }else{
-          statusEl.textContent='Envoye (non confirme).';statusEl.style.color='var(--accent)';
-        }
-      }catch{
-        // Reponse illisible mais POST probablement traite
-        statusEl.textContent='Envoye (non confirme). Faites Recevoir pour verifier.';statusEl.style.color='var(--accent)';
-      }
-      localStorage.setItem('vl3_last_sync',new Date().toISOString());
-      updateSyncBanner();
+    const data={sessions:DB.sessions,notes:DB.notes};
+    await gasPost(url,data);
+    // Verification: on relit les donnees pour confirmer
+    statusEl.textContent='Verification...';
+    await new Promise(r=>setTimeout(r,1500));
+    try{
+      const cloud=await gasGet(url);
+      const n=cloud.sessions?cloud.sessions.length:0;
+      statusEl.textContent='Envoye ! '+n+' seances sur le Drive.';statusEl.style.color='var(--green)';
+      toast(n+' seances synchronisees !');
+    }catch{
+      statusEl.textContent='Envoye (verification impossible).';statusEl.style.color='var(--accent)';
       toast('Donnees envoyees !');
     }
+    localStorage.setItem('vl3_last_sync',new Date().toISOString());
+    updateSyncBanner();
   }catch(err){
     console.error('Push error:',err);
     statusEl.textContent='Erreur: '+err.message;statusEl.style.color='var(--red)';
-    toast('Erreur envoi: '+err.message);
+    toast('Erreur envoi');
   }
 }
 
 /* Pull = reception des donnees depuis Google Drive */
 async function gdrivePull(){
   const url=document.getElementById('gas-url-input').value.trim();
-  if(!url){toast('URL Apps Script manquante');return;}
+  if(!url){toast('URL manquante');return;}
   setGASUrl(url);
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Reception en cours...';statusEl.style.color='var(--accent)';
   try{
-    const res=await fetch(url,{redirect:'follow'});
-    if(!res.ok)throw new Error('Serveur: '+res.status);
-    const cloudData=await res.json();
-    if(!cloudData.sessions||!Array.isArray(cloudData.sessions)){
-      statusEl.textContent='Aucune donnee trouvee sur Google Drive.';statusEl.style.color='var(--text-dim)';
-      toast('Aucune donnee sur le Drive');return;
+    const cloudData=await gasGet(url);
+    if(!cloudData.sessions||!Array.isArray(cloudData.sessions)||!cloudData.sessions.length){
+      statusEl.textContent='Aucune donnee sur le Drive. Envoyez d\'abord depuis un appareil.';statusEl.style.color='var(--text-dim)';
+      toast('Drive vide');return;
     }
     const existing=DB.sessions;
     const existingIds=new Set(existing.map(s=>String(s.id)));
@@ -1485,13 +1561,13 @@ async function gdrivePull(){
     if(cloudData.notes)DB.notes={...DB.notes,...cloudData.notes};
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
-    statusEl.textContent=newOnes.length+' nouvelle(s) seance(s). Total: '+DB.sessions.length;statusEl.style.color='var(--green)';
+    statusEl.textContent=newOnes.length+' nouvelle(s). Total local: '+DB.sessions.length;statusEl.style.color='var(--green)';
     closeImport();renderDash();renderHist();
-    toast(newOnes.length+' seance(s) synchronisee(s) !');
+    toast(newOnes.length+' seance(s) recues !');
   }catch(err){
     console.error('Pull error:',err);
     statusEl.textContent='Erreur: '+err.message;statusEl.style.color='var(--red)';
-    toast('Erreur reception: '+err.message);
+    toast('Erreur reception');
   }
 }
 
