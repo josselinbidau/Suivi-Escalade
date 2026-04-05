@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1117">
+<title>Vertical Log — Suivi Escalade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --surface2: #1c2333;
+  --border:   #30363d;
+  --teal:     #2dd4a0;
+  --teal-dim: #1a6b5a;
+  --blue:     #58a6ff;
+  --orange:   #f97316;
+  --gold:     #e5a820;
+  --red:      #f85149;
+  --purple:   #a78bfa;
+  --text:     #e6edf3;
+  --text-dim: #8b949e;
+  --text-sub: #484f58;
+  --radius:   14px;
+  --radius-sm:8px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html { font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ─────────────────────────────────────────────────── */
+.font-display { font-family: 'Syne', sans-serif; }
+.font-mono    { font-family: 'DM Mono', monospace; }
+
+/* ── Layout ─────────────────────────────────────────────────────── */
+.app { max-width: 480px; margin: 0 auto; padding-bottom: calc(80px + var(--safe-bottom)); }
+
+/* ── Nav Bar ─────────────────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 480px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem; font-weight: 800;
+  color: var(--teal); letter-spacing: -0.02em;
+}
+.nav-logo span { color: var(--text-dim); font-weight: 700; }
+.nav-phase {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem; color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 20px;
+}
+
+/* ── Bottom Tab Bar ──────────────────────────────────────────────── */
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(13,17,23,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+}
+.tab-bar-inner {
+  max-width: 480px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+}
+.tab-btn {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 10px 0 12px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-sub); transition: color .2s;
+  -webkit-tap-highlight-color: transparent;
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.02em;
+}
+.tab-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tab-btn.active { color: var(--teal); }
+.tab-btn.active svg { stroke: var(--teal); }
+
+/* ── Page Sections ───────────────────────────────────────────────── */
+.page { display: none; padding: 76px 16px 16px; }
+.page.active { display: block; }
+
+/* ── Section titles ──────────────────────────────────────────────── */
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem; font-weight: 800;
+  letter-spacing: -0.03em; margin-bottom: 4px;
+}
+.section-sub { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 20px; }
+
+/* ── Cards ────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.card-title { font-size: 0.82rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ── Stat Grid ────────────────────────────────────────────────────── */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.stat-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+}
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem; font-weight: 800;
+  letter-spacing: -0.04em; line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label { font-size: 0.72rem; color: var(--text-dim); font-weight: 500; }
+.teal  { color: var(--teal); }
+.blue  { color: var(--blue); }
+.orange{ color: var(--orange); }
+.gold  { color: var(--gold); }
+.red   { color: var(--red); }
+.purple{ color: var(--purple); }
+
+/* ── Forms ────────────────────────────────────────────────────────── */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block; font-size: 0.78rem; font-weight: 600;
+  color: var(--text-dim); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.form-input, .form-select {
+  width: 100%; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem;
+  padding: 12px 14px; outline: none; appearance: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus { border-color: var(--teal); }
+.form-input::placeholder { color: var(--text-sub); }
+
+/* ── Segmented control ─────────────────────────────────────────────── */
+.seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg-btn {
+  flex: 1; min-width: 70px;
+  padding: 10px 8px; border-radius: var(--radius-sm);
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; text-align: center; transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.seg-btn.active-A { background: rgba(88,166,255,.15); border-color: var(--blue); color: var(--blue); }
+.seg-btn.active-B { background: rgba(45,212,160,.15); border-color: var(--teal); color: var(--teal); }
+.seg-btn.active-C { background: rgba(249,115,22,.15);  border-color: var(--orange); color: var(--orange); }
+.seg-btn.active-Cardio { background: rgba(165,139,250,.15); border-color: var(--purple); color: var(--purple); }
+.seg-btn.active-Repos  { background: rgba(139,148,158,.15); border-color: var(--text-dim); color: var(--text-dim); }
+
+/* ── Slider (RPE / Forme) ──────────────────────────────────────────── */
+.slider-wrap { position: relative; }
+.slider-track {
+  display: flex; justify-content: space-between;
+  padding: 0 2px; margin-top: 6px;
+}
+.slider-track span { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text-sub); }
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: var(--surface2); outline: none;
+  border: 1px solid var(--border);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px;
+  border-radius: 50%; background: var(--teal);
+  cursor: pointer; border: 3px solid var(--bg);
+  box-shadow: 0 0 0 2px var(--teal);
+}
+.slider-value {
+  text-align: center; font-family: 'Syne', sans-serif;
+  font-size: 2rem; font-weight: 800; margin-bottom: 4px;
+}
+
+/* ── Exercise RPE rows ──────────────────────────────────────────────── */
+.ex-rpe-list { display: flex; flex-direction: column; gap: 8px; }
+.ex-rpe-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 12px;
+}
+.ex-rpe-name { flex: 1; font-size: 0.85rem; font-weight: 500; }
+.ex-rpe-num {
+  font-family: 'DM Mono', monospace; font-size: 0.85rem;
+  color: var(--teal); font-weight: 500; min-width: 28px; text-align: right;
+}
+.ex-rpe-row input[type="range"] { width: 90px; flex-shrink: 0; }
+
+/* ── Buttons ──────────────────────────────────────────────────────── */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 15px; border-radius: var(--radius);
+  font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; border: none; transition: all .2s; letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary { background: var(--teal); color: var(--bg); }
+.btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-sm { padding: 10px 16px; font-size: 0.85rem; border-radius: var(--radius-sm); width: auto; }
+.btn-danger { background: rgba(248,81,73,.15); border: 1px solid var(--red); color: var(--red); }
+
+/* ── Foster gauge ────────────────────────────────────────────────── */
+.foster-bar {
+  height: 8px; border-radius: 4px;
+  background: var(--surface2); overflow: hidden; margin: 8px 0;
+}
+.foster-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--teal), var(--orange), var(--red));
+  transition: width .5s ease;
+}
+.foster-labels {
+  display: flex; justify-content: space-between;
+  font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--text-sub);
+}
+
+/* ── Session list ────────────────────────────────────────────────── */
+.session-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.session-item:last-child { border-bottom: none; }
+.session-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.session-info { flex: 1; }
+.session-type { font-size: 0.9rem; font-weight: 600; }
+.session-meta { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; font-family: 'DM Mono', monospace; }
+.session-rpe {
+  font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+  padding: 4px 10px; border-radius: 6px;
+}
+
+/* ── Chart ───────────────────────────────────────────────────────── */
+.chart-wrap { position: relative; height: 140px; margin: 8px 0; }
+canvas { width: 100% !important; border-radius: var(--radius-sm); }
+
+/* ── Phase badge ──────────────────────────────────────────────────── */
+.phase-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600; font-family: 'DM Mono', monospace;
+}
+.phase-1 { background: rgba(45,212,160,.15); color: var(--teal); border: 1px solid var(--teal-dim); }
+
+/* ── Progress ring ─────────────────────────────────────────────────── */
+.ring-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.ring-label { position: absolute; text-align: center; }
+.ring-val { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; }
+.ring-sub { font-size: 0.65rem; color: var(--text-dim); }
+
+/* ── Toast ────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: calc(90px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--teal); color: var(--bg);
+  padding: 12px 24px; border-radius: 30px;
+  font-weight: 700; font-size: 0.9rem;
+  opacity: 0; transition: all .3s; pointer-events: none; z-index: 200;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Exercise selector ───────────────────────────────────────────── */
+.ex-picker {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;
+}
+.ex-chip {
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface2);
+  font-size: 0.78rem; font-weight: 500; cursor: pointer;
+  transition: all .2s; text-align: center; color: var(--text-dim);
+  -webkit-tap-highlight-color: transparent;
+}
+.ex-chip.selected { border-color: var(--teal); color: var(--teal); background: rgba(45,212,160,.1); }
+
+/* ── Toggle ──────────────────────────────────────────────────────── */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; }
+.toggle { position: relative; width: 48px; height: 26px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; border-radius: 13px;
+  background: var(--surface2); border: 1px solid var(--border);
+  cursor: pointer; transition: .3s;
+}
+.toggle-slider::after {
+  content: ''; position: absolute; width: 18px; height: 18px;
+  border-radius: 50%; background: var(--text-dim);
+  top: 3px; left: 3px; transition: .3s;
+}
+.toggle input:checked + .toggle-slider { background: var(--teal-dim); border-color: var(--teal); }
+.toggle input:checked + .toggle-slider::after { transform: translateX(22px); background: var(--teal); }
+
+/* ── Animations ──────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page.active { animation: fadeUp .3s ease; }
+
+/* ── Divider ─────────────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* ── Empty state ──────────────────────────────────────────────────── */
+.empty {
+  text-align: center; padding: 40px 20px; color: var(--text-dim);
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-text { font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Vertical<span>Log</span></div>
+    <div class="nav-phase" id="nav-phase">Phase 1 · S1</div>
+  </div>
+</nav>
+
+<!-- PAGES -->
+
+<!-- ① DASHBOARD -->
+<section class="page active" id="page-home">
+  <div class="app">
+    <div class="section-title font-display">Dashboard</div>
+    <div class="section-sub" id="dash-date">Chargement…</div>
+
+    <!-- Quick stats -->
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-value teal" id="stat-week-count">0</div>
+        <div class="stat-label">Séances cette semaine</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value gold" id="stat-foster-week">0</div>
+        <div class="stat-label">Charge Foster sem.</div>
+      </div>
+    </div>
+    <div class="stat-grid stat-grid-3">
+      <div class="stat">
+        <div class="stat-value blue" id="stat-last-forme">—</div>
+        <div class="stat-label">Forme dernière séance</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value orange" id="stat-last-rpe">—</div>
+        <div class="stat-label">RPE moyen</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value purple" id="stat-total-sessions">0</div>
+        <div class="stat-label">Total séances</div>
+      </div>
+    </div>
+
+    <!-- Foster load chart -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Charge d'entraînement — Foster</div>
+        <div class="phase-badge phase-1">Phase 1</div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="fosterChart"></canvas>
+      </div>
+      <div class="foster-labels">
+        <span>Récup.</span><span>Optimal</span><span>Surcharge</span>
+      </div>
+    </div>
+
+    <!-- Forme chart -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Forme avant séance</div>
+      </div>
+      <div class="chart-wrap" style="height:100px">
+        <canvas id="formeChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Last sessions -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Dernières séances</div>
+      </div>
+      <div id="recent-sessions">
+        <div class="empty">
+          <div class="empty-icon">🧗</div>
+          <div class="empty-text">Aucune séance enregistrée.<br>Commence par saisir ta première séance !</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ② SAISIE SÉANCE -->
+<section class="page" id="page-log">
+  <div class="app">
+    <div class="section-title font-display">Nouvelle séance</div>
+    <div class="section-sub">Saisie rapide post-effort</div>
+
+    <!-- Type -->
+    <div class="card">
+      <div class="form-group" style="margin:0">
+        <div class="form-label">Type de séance</div>
+        <div class="seg" id="type-seg">
+          <button class="seg-btn" data-type="A" onclick="selectType('A')">🔵 A</button>
+          <button class="seg-btn" data-type="B" onclick="selectType('B')">🟢 B</button>
+          <button class="seg-btn" data-type="C" onclick="selectType('C')">🟠 Grimpe</button>
+          <button class="seg-btn" data-type="Cardio" onclick="selectType('Cardio')">💜 Cardio</button>
+          <button class="seg-btn" data-type="Repos" onclick="selectType('Repos')">😴 Repos</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meta -->
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-input" type="date" id="log-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phase / Semaine</label>
+        <select class="form-select" id="log-phase"></select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Durée (minutes)</label>
+        <input class="form-input font-mono" type="number" id="log-duration" placeholder="75" min="1" max="300">
+      </div>
+    </div>
+
+    <!-- Forme -->
+    <div class="card">
+      <div class="form-label" style="margin-bottom:10px">Forme avant séance</div>
+      <div class="slider-value teal" id="forme-val">3</div>
+      <input type="range" id="forme-slider" min="1" max="5" step="1" value="3"
+             oninput="updateSlider('forme',this.value)">
+      <div class="slider-track">
+        <span>😴 Épuisé</span><span>😐 Moyen</span><span>🔥 En forme</span>
+      </div>
+    </div>
+
+    <!-- RPE exercices (shown for A & B) -->
+    <div class="card" id="rpe-section" style="display:none">
+      <div class="card-header" style="margin-bottom:8px">
+        <div class="card-title">RPE par exercice</div>
+        <div style="font-size:.75rem;color:var(--text-dim)">1=facile · 10=maximal</div>
+      </div>
+      <div class="ex-rpe-list" id="ex-rpe-list"></div>
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="form-label" style="margin:0">RPE moyen (auto)</div>
+        <div class="font-display" style="font-size:1.4rem;font-weight:800;color:var(--orange)" id="rpe-avg-display">—</div>
+      </div>
+    </div>
+
+    <!-- RPE global (shown for C / Cardio) -->
+    <div class="card" id="rpe-global-section" style="display:none">
+      <div class="form-label" style="margin-bottom:10px">RPE global (effort perçu)</div>
+      <div class="slider-value orange" id="rpe-val">6</div>
+      <input type="range" id="rpe-slider" min="1" max="10" step="0.5" value="6"
+             oninput="updateSlider('rpe',this.value)">
+      <div class="slider-track">
+        <span>1 Facile</span><span>5 Modéré</span><span>10 Max</span>
+      </div>
+    </div>
+
+    <!-- Grimpe specific -->
+    <div class="card" id="grimpe-section" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nb voies / blocs réalisés</label>
+        <input class="form-input font-mono" type="number" id="log-volume" placeholder="12" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Difficulté max tentée</label>
+        <input class="form-input" type="text" id="log-diff-try" placeholder="7A">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Difficulté max réussie</label>
+        <input class="form-input" type="text" id="log-diff-done" placeholder="6C+">
+      </div>
+    </div>
+
+    <!-- Foster preview -->
+    <div class="card" id="foster-preview" style="display:none">
+      <div class="card-header">
+        <div class="card-title">Charge Foster estimée</div>
+        <div class="font-display" style="font-size:1.6rem;font-weight:800;color:var(--gold)" id="foster-preview-val">—</div>
+      </div>
+      <div class="foster-bar"><div class="foster-fill" id="foster-fill" style="width:0%"></div></div>
+      <div class="foster-labels"><span>0</span><span>300</span><span>600+</span></div>
+    </div>
+
+    <!-- Notes -->
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Points positifs</label>
+        <input class="form-input" type="text" id="log-pos" placeholder="Ex: bonne accroche, pied précis…">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Points à corriger</label>
+        <input class="form-input" type="text" id="log-neg" placeholder="Ex: fatigue avant-bras rapide…">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveSession()">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5"><path d="M5 13l4 4L19 7"/></svg>
+      Enregistrer la séance
+    </button>
+    <div style="height:12px"></div>
+  </div>
+</section>
+
+<!-- ③ EXERCICES -->
+<section class="page" id="page-exercises">
+  <div class="app">
+    <div class="section-title font-display">Exercices</div>
+    <div class="section-sub">Évolution des charges par exercice</div>
+
+    <!-- Exercise picker -->
+    <div class="card">
+      <div class="form-label" style="margin-bottom:10px">Choisir un exercice</div>
+      <div class="ex-picker" id="ex-picker"></div>
+    </div>
+
+    <!-- Evolution data -->
+    <div class="card" id="ex-detail-card" style="display:none">
+      <div class="card-header">
+        <div class="card-title" id="ex-detail-name">—</div>
+        <div class="font-mono" style="font-size:.75rem;color:var(--text-dim)" id="ex-detail-session">—</div>
+      </div>
+
+      <!-- Mini stats -->
+      <div class="stat-grid" style="margin-bottom:12px">
+        <div class="stat">
+          <div class="stat-value teal" id="ex-stat-last">—</div>
+          <div class="stat-label">Dernière charge (kg)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value gold" id="ex-stat-prog">—</div>
+          <div class="stat-label">Progression</div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="chart-wrap">
+        <canvas id="exChart"></canvas>
+      </div>
+
+      <!-- History table -->
+      <div style="margin-top:12px">
+        <div class="form-label" style="margin-bottom:8px">Historique</div>
+        <div id="ex-history"></div>
+      </div>
+    </div>
+
+    <div class="card" id="ex-empty-card">
+      <div class="empty">
+        <div class="empty-icon">💪</div>
+        <div class="empty-text">Sélectionne un exercice<br>pour voir son évolution</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ④ ANALYSE -->
+<section class="page" id="page-analyse">
+  <div class="app">
+    <div class="section-title font-display">Analyse</div>
+    <div class="section-sub">Résumé par semaine · Recommandations</div>
+
+    <!-- Weekly summary -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Résumé par semaine</div>
+      </div>
+      <div id="weekly-summary"></div>
+    </div>
+
+    <!-- Coach notes -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Notes coach</div>
+      </div>
+      <div id="coach-notes-list"></div>
+      <div class="divider"></div>
+      <div class="form-group">
+        <label class="form-label">Semaine</label>
+        <select class="form-select" id="coach-phase-sel" style="margin-bottom:8px"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note</label>
+        <input class="form-input" type="text" id="coach-note-input" placeholder="Observations, ajustements…">
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="saveCoachNote()" style="margin-top:4px">
+        Enregistrer la note
+      </button>
+    </div>
+
+    <!-- Périodisation -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Périodisation 2026</div>
+      </div>
+      <div id="period-bars"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="goTo('home',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Accueil
+    </button>
+    <button class="tab-btn" onclick="goTo('log',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Séance
+    </button>
+    <button class="tab-btn" onclick="goTo('exercises',this)">
+      <svg viewBox="0 0 24 24"><path d="M6.5 6.5h11M6.5 12h11M6.5 17.5h11"/><rect x="2" y="4" width="3" height="16" rx="1"/><rect x="19" y="4" width="3" height="16" rx="1"/></svg>
+      Exercices
+    </button>
+    <button class="tab-btn" onclick="goTo('analyse',this)">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analyse
+    </button>
+  </div>
+</nav>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════
+
+const EXERCISES_A = [
+  "Dead Hang Half Crimp","Dead Hang Sloper","Pull-up","Negative Pull-up",
+  "Low Row","Archer Rows","Prone Y","External Rotations",
+  "Press Up","Hollow Body Hold","Hanging Knee Raises","Side Plank"
+];
+const EXERCISES_B = [
+  "Single Leg RDL","Hamstring Walks","Glute Bridge","Bulgarian Split Squat",
+  "Deep Squat","High Step","Copenhagen Plank","Isometric Hang Sloper","Shoulder Shrugs"
+];
+const ALL_EXERCISES = [
+  ...EXERCISES_A.map(n=>({name:n,sess:"A"})),
+  ...EXERCISES_B.map(n=>({name:n,sess:"B"})),
+];
+
+const SEMAINES = [];
+for(const [p,weeks] of [[1,4],[2,8],[3,10],[4,8]]){
+  let s=1;
+  for(let w=1;w<=weeks;w++){
+    SEMAINES.push(w%4===0 ? `P${p}-Deload` : `P${p}-S${s++}`);
+  }
+}
+
+const PHASE_LABELS = {
+  1:{ label:"Adaptation anatomique", color:"#2dd4a0", weeks:4 },
+  2:{ label:"Force maximale doigts",  color:"#58a6ff", weeks:8 },
+  3:{ label:"Endurance de force",     color:"#f97316", weeks:10 },
+  4:{ label:"Affûtage + Peaking",     color:"#e5a820", weeks:8 },
+};
+
+// ── Storage ────────────────────────────────────────────────────────
+const DB = {
+  get sessions(){ return JSON.parse(localStorage.getItem('vl_sessions')||'[]'); },
+  set sessions(v){ localStorage.setItem('vl_sessions',JSON.stringify(v)); },
+  get coachNotes(){ return JSON.parse(localStorage.getItem('vl_coach')||'{}'); },
+  set coachNotes(v){ localStorage.setItem('vl_coach',JSON.stringify(v)); },
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
+function goTo(page, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(page==='home') renderDashboard();
+  if(page==='exercises') renderExercisePicker();
+  if(page==='analyse') renderAnalyse();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT FORMS
+// ═══════════════════════════════════════════════════════════════════
+function initForms(){
+  // Date default = today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('log-date').value = today;
+
+  // Phase selector
+  const phaseEl = document.getElementById('log-phase');
+  SEMAINES.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; phaseEl.appendChild(o); });
+
+  // Coach phase selector
+  const coachEl = document.getElementById('coach-phase-sel');
+  SEMAINES.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; coachEl.appendChild(o); });
+
+  // Nav phase
+  updateNavPhase();
+}
+
+function updateNavPhase(){
+  const sessions = DB.sessions;
+  if(sessions.length){
+    const last = sessions[sessions.length-1];
+    document.getElementById('nav-phase').textContent = last.phase || 'P1-S1';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SLIDERS
+// ═══════════════════════════════════════════════════════════════════
+function updateSlider(type, val){
+  if(type==='forme'){
+    const colors = ['','#f85149','#f97316','#e5a820','#58a6ff','#2dd4a0'];
+    const el = document.getElementById('forme-val');
+    el.textContent = val;
+    el.style.color = colors[val]||'var(--teal)';
+  } else {
+    const v = parseFloat(val);
+    const el = document.getElementById('rpe-val');
+    el.textContent = v.toFixed(1);
+    const r = v/10;
+    el.style.color = `hsl(${(1-r)*120},80%,55%)`;
+  }
+  updateFosterPreview();
+}
+
+function updateFosterPreview(){
+  const dur = parseFloat(document.getElementById('log-duration').value)||0;
+  const type = window.selectedType || '';
+  let rpe = 0;
+  if(['A','B'].includes(type)){
+    rpe = computeAvgRPE();
+  } else {
+    rpe = parseFloat(document.getElementById('rpe-slider').value)||0;
+  }
+  const foster = Math.round(dur * rpe);
+  document.getElementById('foster-preview-val').textContent = foster || '—';
+  const pct = Math.min((foster/600)*100,100);
+  document.getElementById('foster-fill').style.width = pct+'%';
+  const fp = document.getElementById('foster-preview');
+  fp.style.display = (dur>0 && rpe>0) ? 'block' : 'none';
+}
+
+document.addEventListener('input', e=>{
+  if(e.target.id==='log-duration') updateFosterPreview();
+  if(e.target.classList.contains('ex-rpe-input')) updateAvgRPE();
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// SESSION TYPE SELECTION
+// ═══════════════════════════════════════════════════════════════════
+window.selectedType = 'A';
+
+function selectType(type){
+  window.selectedType = type;
+  document.querySelectorAll('.seg-btn').forEach(b=>{
+    b.className = 'seg-btn';
+    if(b.dataset.type===type) b.classList.add('active-'+type);
+  });
+
+  const rpeSection    = document.getElementById('rpe-section');
+  const rpeGlobal     = document.getElementById('rpe-global-section');
+  const grimpeSection = document.getElementById('grimpe-section');
+
+  rpeSection.style.display    = ['A','B'].includes(type) ? 'block' : 'none';
+  rpeGlobal.style.display     = ['C','Cardio'].includes(type) ? 'block' : 'none';
+  grimpeSection.style.display = type==='C' ? 'block' : 'none';
+
+  if(['A','B'].includes(type)) buildRPEList(type);
+}
+
+function buildRPEList(type){
+  const list = type==='A' ? EXERCISES_A : EXERCISES_B;
+  const container = document.getElementById('ex-rpe-list');
+  container.innerHTML = list.map(name=>`
+    <div class="ex-rpe-row">
+      <div class="ex-rpe-name">${name}</div>
+      <input type="range" class="ex-rpe-input" min="0" max="10" step="0.5" value="0"
+             data-ex="${name}" style="width:100px"
+             oninput="updateAvgRPE(); this.nextElementSibling.textContent=parseFloat(this.value).toFixed(1)">
+      <div class="ex-rpe-num">0.0</div>
+    </div>
+  `).join('');
+}
+
+function computeAvgRPE(){
+  const inputs = document.querySelectorAll('.ex-rpe-input');
+  const active = [...inputs].filter(i=>parseFloat(i.value)>0);
+  if(!active.length) return 0;
+  const avg = active.reduce((s,i)=>s+parseFloat(i.value),0)/active.length;
+  return Math.round(avg*10)/10;
+}
+
+function updateAvgRPE(){
+  const avg = computeAvgRPE();
+  const el = document.getElementById('rpe-avg-display');
+  el.textContent = avg>0 ? avg.toFixed(1) : '—';
+  const r = avg/10;
+  el.style.color = avg>0 ? `hsl(${(1-r)*120},80%,55%)` : 'var(--orange)';
+  updateFosterPreview();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SAVE SESSION
+// ═══════════════════════════════════════════════════════════════════
+function saveSession(){
+  const type     = window.selectedType;
+  const date     = document.getElementById('log-date').value;
+  const phase    = document.getElementById('log-phase').value;
+  const duration = parseFloat(document.getElementById('log-duration').value)||0;
+  const forme    = parseInt(document.getElementById('forme-slider').value);
+
+  if(!date){ showToast('⚠️ Choisis une date'); return; }
+  if(!duration){ showToast('⚠️ Indique la durée'); return; }
+
+  let rpe = 0;
+  let rpeByEx = {};
+
+  if(['A','B'].includes(type)){
+    document.querySelectorAll('.ex-rpe-input').forEach(i=>{
+      const v = parseFloat(i.value);
+      if(v>0) rpeByEx[i.dataset.ex] = v;
+    });
+    rpe = computeAvgRPE();
+  } else {
+    rpe = parseFloat(document.getElementById('rpe-slider').value)||0;
+  }
+
+  const foster = Math.round(duration * rpe);
+
+  const session = {
+    id: Date.now(),
+    date, type, phase, duration, forme, rpe, rpeByEx, foster,
+    pos: document.getElementById('log-pos').value,
+    neg: document.getElementById('log-neg').value,
+    volume: type==='C' ? document.getElementById('log-volume').value : null,
+    diffTry:  type==='C' ? document.getElementById('log-diff-try').value : null,
+    diffDone: type==='C' ? document.getElementById('log-diff-done').value : null,
+  };
+
+  const sessions = DB.sessions;
+  sessions.push(session);
+  DB.sessions = sessions;
+
+  // Reset form
+  document.getElementById('log-pos').value = '';
+  document.getElementById('log-neg').value = '';
+  document.getElementById('log-duration').value = '';
+  document.querySelectorAll('.ex-rpe-input').forEach(i=>{ i.value=0; i.nextElementSibling.textContent='0.0'; });
+  document.getElementById('rpe-avg-display').textContent = '—';
+  document.getElementById('forme-slider').value = 3;
+  updateSlider('forme',3);
+  document.getElementById('foster-preview').style.display='none';
+
+  updateNavPhase();
+  showToast('✅ Séance enregistrée !');
+  setTimeout(()=>goTo('home',document.querySelector('.tab-btn')),800);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════
+function renderDashboard(){
+  const sessions = DB.sessions;
+  const now = new Date();
+  document.getElementById('dash-date').textContent =
+    now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Week sessions (Mon-Sun)
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay() + (now.getDay()===0?-6:1));
+  weekStart.setHours(0,0,0,0);
+  const thisWeek = sessions.filter(s=>new Date(s.date)>=weekStart);
+
+  document.getElementById('stat-week-count').textContent = thisWeek.length;
+  document.getElementById('stat-foster-week').textContent =
+    thisWeek.reduce((s,x)=>s+(x.foster||0),0);
+  document.getElementById('stat-total-sessions').textContent = sessions.length;
+
+  const last = sessions.at(-1);
+  document.getElementById('stat-last-forme').textContent = last ? '⭐'.repeat(last.forme) : '—';
+  document.getElementById('stat-last-rpe').textContent   = last ? (last.rpe?.toFixed(1)||'—') : '—';
+
+  renderRecentSessions(sessions.slice(-5).reverse());
+  renderFosterChart(sessions.slice(-12));
+  renderFormeChart(sessions.slice(-10));
+}
+
+function renderRecentSessions(sessions){
+  const el = document.getElementById('recent-sessions');
+  if(!sessions.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">🧗</div><div class="empty-text">Aucune séance enregistrée.</div></div>';
+    return;
+  }
+  const typeColors = {A:'#58a6ff',B:'#2dd4a0',C:'#f97316',Cardio:'#a78bfa',Repos:'#8b949e'};
+  const typeLabels = {A:'Séance A — Fingerboard + HP',B:'Séance B — Jambes',
+                      C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
+  el.innerHTML = sessions.map(s=>`
+    <div class="session-item">
+      <div class="session-dot" style="background:${typeColors[s.type]||'#8b949e'}"></div>
+      <div class="session-info">
+        <div class="session-type">${typeLabels[s.type]||s.type}</div>
+        <div class="session-meta">${formatDate(s.date)} · ${s.duration}min · ${s.phase}
+          ${s.foster ? ' · Foster: '+s.foster : ''}</div>
+      </div>
+      <div class="session-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:hsl(${(1-(s.rpe||0)/10)*120},80%,55%)">
+        ${s.rpe ? s.rpe.toFixed(1) : '—'}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CHARTS (vanilla canvas — no dependencies)
+// ═══════════════════════════════════════════════════════════════════
+function drawLineChart(canvasId, labels, data, color, fillColor, yMin, yMax){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio||1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width  = rect.width  * dpr;
+  canvas.height = canvas.parentElement.offsetHeight * dpr;
+  canvas.style.width  = rect.width+'px';
+  canvas.style.height = canvas.parentElement.offsetHeight+'px';
+  ctx.scale(dpr,dpr);
+
+  const W=rect.width, H=canvas.parentElement.offsetHeight;
+  const pad={t:10,r:10,b:30,l:36};
+  const cw=W-pad.l-pad.r, ch=H-pad.t-pad.b;
+
+  ctx.clearRect(0,0,W,H);
+  if(!data.length) return;
+
+  const mn = yMin!==undefined ? yMin : Math.min(...data.filter(v=>v!=null))*0.9;
+  const mx = yMax!==undefined ? yMax : Math.max(...data.filter(v=>v!=null))*1.1||10;
+  const range = mx-mn||1;
+
+  const xStep = data.length>1 ? cw/(data.length-1) : cw;
+
+  // Grid
+  ctx.strokeStyle='#30363d'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+cw,y); ctx.stroke();
+    ctx.fillStyle='#484f58'; ctx.font='10px DM Mono,monospace';
+    ctx.textAlign='right';
+    ctx.fillText(Math.round(mn+range*i/4),pad.l-4,y+4);
+  }
+
+  // Fill
+  const pts = data.map((v,i)=>({
+    x:pad.l+(data.length>1?i*xStep:cw/2),
+    y:v!=null ? pad.t+ch*(1-(v-mn)/range) : null
+  }));
+  const validPts = pts.filter(p=>p.y!=null);
+  if(validPts.length>1){
+    ctx.beginPath();
+    ctx.moveTo(validPts[0].x,H-pad.b);
+    validPts.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(validPts.at(-1).x,H-pad.b);
+    ctx.closePath();
+    ctx.fillStyle=fillColor;
+    ctx.fill();
+  }
+
+  // Line
+  if(validPts.length>1){
+    ctx.beginPath();
+    ctx.strokeStyle=color; ctx.lineWidth=2.5;
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    validPts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+    ctx.stroke();
+  }
+
+  // Dots
+  validPts.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,4,0,Math.PI*2);
+    ctx.fillStyle=color; ctx.fill();
+    ctx.strokeStyle='#0d1117'; ctx.lineWidth=2;
+    ctx.stroke();
+  });
+
+  // X labels
+  ctx.fillStyle='#484f58'; ctx.font='9px DM Mono,monospace'; ctx.textAlign='center';
+  pts.forEach((p,i)=>{
+    if(labels[i]) ctx.fillText(labels[i].slice(5)||labels[i],p.x,H-pad.b+14);
+  });
+}
+
+function renderFosterChart(sessions){
+  const labels = sessions.map(s=>s.date);
+  const data   = sessions.map(s=>s.foster||0);
+  drawLineChart('fosterChart',labels,data,'#e5a820','rgba(229,168,32,.12)',0,600);
+}
+
+function renderFormeChart(sessions){
+  const labels = sessions.map(s=>s.date);
+  const data   = sessions.map(s=>s.forme);
+  drawLineChart('formeChart',labels,data,'#58a6ff','rgba(88,166,255,.1)',1,5);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EXERCISES PAGE
+// ═══════════════════════════════════════════════════════════════════
+let selectedEx = null;
+let exChartInstance = null;
+
+function renderExercisePicker(){
+  const container = document.getElementById('ex-picker');
+  container.innerHTML = ALL_EXERCISES.map(ex=>`
+    <div class="ex-chip ${selectedEx===ex.name?'selected':''}"
+         onclick="selectExercise('${ex.name}','${ex.sess}')"
+         style="border-left:3px solid ${ex.sess==='A'?'#58a6ff':'#2dd4a0'}">
+      ${ex.name}
+    </div>
+  `).join('');
+}
+
+function selectExercise(name, sess){
+  selectedEx = name;
+  renderExercisePicker();
+
+  const sessions = DB.sessions.filter(s=>s.type===sess);
+  const history  = sessions.map(s=>({
+    date: s.date, phase: s.phase,
+    rpe: s.rpeByEx?.[name] || null,
+    charge: null // future: from separate exercise log
+  })).filter(s=>s.rpe!=null);
+
+  // Use RPE as proxy for intensity (later: integrate charge log)
+  const vals   = history.map(h=>h.rpe);
+  const labels = history.map(h=>h.date);
+
+  document.getElementById('ex-detail-card').style.display = 'block';
+  document.getElementById('ex-empty-card').style.display  = 'none';
+  document.getElementById('ex-detail-name').textContent   = name;
+  document.getElementById('ex-detail-session').textContent= `Séance ${sess}`;
+
+  const last = vals.at(-1);
+  const first = vals.find(v=>v!=null);
+  document.getElementById('ex-stat-last').textContent = last!=null ? last.toFixed(1)+' RPE' : '—';
+  if(first!=null && last!=null && first!==last){
+    const diff = last-first;
+    document.getElementById('ex-stat-prog').textContent =
+      (diff>=0?'+':'')+diff.toFixed(1)+' RPE';
+    document.getElementById('ex-stat-prog').style.color =
+      diff>=0 ? 'var(--red)' : 'var(--teal)'; // lower RPE = easier = progress
+  } else {
+    document.getElementById('ex-stat-prog').textContent = '—';
+    document.getElementById('ex-stat-prog').style.color = 'var(--gold)';
+  }
+
+  drawLineChart('exChart',labels,vals,'#2dd4a0','rgba(45,212,160,.1)',0,10);
+
+  const histEl = document.getElementById('ex-history');
+  if(!history.length){
+    histEl.innerHTML='<div class="empty"><div class="empty-text">Aucune donnée encore. Saisis un RPE pour cet exercice.</div></div>';
+    return;
+  }
+  histEl.innerHTML = history.slice(-8).reverse().map(h=>`
+    <div class="session-item" style="padding:10px 0">
+      <div class="session-info">
+        <div class="session-type" style="font-size:.85rem">${formatDate(h.date)}</div>
+        <div class="session-meta">${h.phase}</div>
+      </div>
+      <div class="session-rpe" style="font-size:.9rem;background:rgba(${rpeRGB(h.rpe)},.15);color:hsl(${(1-h.rpe/10)*120},80%,55%)">
+        RPE ${h.rpe.toFixed(1)}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ANALYSE PAGE
+// ═══════════════════════════════════════════════════════════════════
+function renderAnalyse(){
+  const sessions = DB.sessions;
+
+  // Weekly summary
+  const weeklyEl = document.getElementById('weekly-summary');
+  const byPhase = {};
+  sessions.forEach(s=>{
+    if(!byPhase[s.phase]) byPhase[s.phase]={sessions:[],totalFoster:0,formes:[],rpes:[]};
+    byPhase[s.phase].sessions.push(s);
+    byPhase[s.phase].totalFoster += s.foster||0;
+    if(s.forme) byPhase[s.phase].formes.push(s.forme);
+    if(s.rpe)   byPhase[s.phase].rpes.push(s.rpe);
+  });
+
+  if(!Object.keys(byPhase).length){
+    weeklyEl.innerHTML='<div class="empty"><div class="empty-text">Aucune donnée. Commence à enregistrer tes séances.</div></div>';
+  } else {
+    weeklyEl.innerHTML = Object.entries(byPhase).map(([phase,data])=>{
+      const avgForme = data.formes.length ? (data.formes.reduce((a,b)=>a+b,0)/data.formes.length).toFixed(1) : '—';
+      const avgRPE   = data.rpes.length   ? (data.rpes.reduce((a,b)=>a+b,0)/data.rpes.length).toFixed(1) : '—';
+      const overload = parseFloat(avgRPE)>8 || parseFloat(avgForme)<2.5;
+      const signal   = overload ? '⚠️ Vigilance' : '✅ OK';
+      const signalColor = overload ? 'var(--red)' : 'var(--teal)';
+      const action = overload
+        ? '→ Réduire le volume, ajouter un jour de repos'
+        : parseFloat(avgForme)>=4 ? '→ Progresser : +5% charge ou +1 série' : '→ Maintenir le plan';
+
+      return `
+        <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="font-family:'DM Mono',monospace;font-size:.85rem;font-weight:500">${phase}</div>
+            <div style="font-size:.8rem;font-weight:600;color:${signalColor}">${signal}</div>
+          </div>
+          <div class="stat-grid stat-grid-3" style="gap:6px;margin-bottom:6px">
+            <div class="stat" style="padding:8px">
+              <div class="stat-value teal" style="font-size:1.1rem">${data.sessions.length}</div>
+              <div class="stat-label">Séances</div>
+            </div>
+            <div class="stat" style="padding:8px">
+              <div class="stat-value blue" style="font-size:1.1rem">${avgForme}</div>
+              <div class="stat-label">Forme /5</div>
+            </div>
+            <div class="stat" style="padding:8px">
+              <div class="stat-value orange" style="font-size:1.1rem">${avgRPE}</div>
+              <div class="stat-label">RPE moy.</div>
+            </div>
+          </div>
+          <div style="font-size:.8rem;color:var(--text-dim);font-style:italic">${action}</div>
+          <div style="font-size:.78rem;color:var(--text-sub);margin-top:2px;font-family:'DM Mono',monospace">
+            Foster cumulé: ${data.totalFoster}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Coach notes
+  renderCoachNotes();
+
+  // Periodisation bars
+  renderPeriodBars();
+}
+
+function renderCoachNotes(){
+  const notes = DB.coachNotes;
+  const el = document.getElementById('coach-notes-list');
+  const entries = Object.entries(notes);
+  if(!entries.length){
+    el.innerHTML='<div style="font-size:.82rem;color:var(--text-dim);padding:8px 0">Aucune note.</div>';
+    return;
+  }
+  el.innerHTML = entries.map(([phase,note])=>`
+    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--teal);margin-bottom:3px">${phase}</div>
+      <div style="font-size:.85rem">${note}</div>
+    </div>
+  `).join('');
+}
+
+function saveCoachNote(){
+  const phase = document.getElementById('coach-phase-sel').value;
+  const note  = document.getElementById('coach-note-input').value.trim();
+  if(!note){ showToast('⚠️ Saisir une note'); return; }
+  const notes = DB.coachNotes;
+  notes[phase] = note;
+  DB.coachNotes = notes;
+  document.getElementById('coach-note-input').value='';
+  renderCoachNotes();
+  showToast('✅ Note enregistrée');
+}
+
+function renderPeriodBars(){
+  const el = document.getElementById('period-bars');
+  el.innerHTML = Object.entries(PHASE_LABELS).map(([p,info])=>`
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:.82rem;font-weight:600;color:${info.color}">Phase ${p} — ${info.label}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--text-dim)">${info.weeks} sem.</div>
+      </div>
+      <div style="height:6px;border-radius:3px;background:var(--surface2)">
+        <div style="height:100%;border-radius:3px;background:${info.color};width:${info.weeks/30*100}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════
+function formatDate(d){
+  return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+}
+function rpeRGB(rpe){
+  if(!rpe) return '139,148,158';
+  if(rpe<4)  return '45,212,160';
+  if(rpe<7)  return '229,168,32';
+  return '248,81,73';
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════
+initForms();
+selectType('A');
+renderDashboard();
+</script>
+</body>
+</html>
