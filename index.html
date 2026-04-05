@@ -477,13 +477,13 @@ canvas { width: 100% !important; border-radius: var(--radius-sm); }
       </div>
     </div>
 
-    <!-- RPE exercices (shown for A & B) -->
+    <!-- Exercices : Charge + Reps + RPE (shown for A & B) -->
     <div class="card" id="rpe-section" style="display:none">
-      <div class="card-header" style="margin-bottom:8px">
-        <div class="card-title">RPE par exercice</div>
-        <div style="font-size:.75rem;color:var(--text-dim)">1=facile · 10=maximal</div>
+      <div class="card-header" style="margin-bottom:4px">
+        <div class="card-title">Exercices — Charges & RPE</div>
+        <div style="font-size:.72rem;color:var(--text-dim)">Toucher pour ouvrir</div>
       </div>
-      <div class="ex-rpe-list" id="ex-rpe-list"></div>
+      <div id="ex-rpe-list"></div>
       <div class="divider"></div>
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div class="form-label" style="margin:0">RPE moyen (auto)</div>
@@ -495,7 +495,7 @@ canvas { width: 100% !important; border-radius: var(--radius-sm); }
     <div class="card" id="rpe-global-section" style="display:none">
       <div class="form-label" style="margin-bottom:10px">RPE global (effort perçu)</div>
       <div class="slider-value orange" id="rpe-val">6</div>
-      <input type="range" id="rpe-slider" min="1" max="10" step="0.5" value="6"
+      <input type="range" id="rpe-slider" min="1" max="10" step="1" value="6"
              oninput="updateSlider('rpe',this.value)">
       <div class="slider-track">
         <span>1 Facile</span><span>5 Modéré</span><span>10 Max</span>
@@ -647,6 +647,22 @@ canvas { width: 100% !important; border-radius: var(--radius-sm); }
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal-sheet">
+    <div class="modal-title">Supprimer cette séance ?</div>
+    <div class="modal-sub" id="modal-session-info">—</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TAB BAR -->
 <nav class="tab-bar">
   <div class="tab-bar-inner">
@@ -764,7 +780,7 @@ function updateSlider(type, val){
   } else {
     const v = parseFloat(val);
     const el = document.getElementById('rpe-val');
-    el.textContent = v.toFixed(1);
+    el.textContent = Number.isInteger(v) ? v : v.toFixed(1);
     const r = v/10;
     el.style.color = `hsl(${(1-r)*120},80%,55%)`;
   }
@@ -816,18 +832,106 @@ function selectType(type){
   if(['A','B'].includes(type)) buildRPEList(type);
 }
 
+// Exercice definitions with nb series & unit
+const EX_META_A = [
+  {name:"Dead Hang Half Crimp", series:3, unit:"sec"},
+  {name:"Dead Hang Sloper",     series:3, unit:"sec"},
+  {name:"Pull-up",              series:4, unit:"reps"},
+  {name:"Negative Pull-up",     series:4, unit:"sec"},
+  {name:"Low Row",              series:4, unit:"reps"},
+  {name:"Archer Rows",          series:4, unit:"reps", bilateral:true},
+  {name:"Prone Y",              series:3, unit:"reps"},
+  {name:"External Rotations",   series:3, unit:"reps", bilateral:true},
+  {name:"Press Up",             series:3, unit:"reps"},
+  {name:"Hollow Body Hold",     series:3, unit:"sec"},
+  {name:"Hanging Knee Raises",  series:3, unit:"reps"},
+  {name:"Side Plank",           series:3, unit:"sec", bilateral:true},
+];
+const EX_META_B = [
+  {name:"Single Leg RDL",        series:3, unit:"reps", bilateral:true},
+  {name:"Hamstring Walks",       series:3, unit:"reps"},
+  {name:"Glute Bridge",          series:3, unit:"reps"},
+  {name:"Bulgarian Split Squat", series:3, unit:"reps", bilateral:true},
+  {name:"Deep Squat",            series:3, unit:"reps"},
+  {name:"High Step",             series:3, unit:"reps", bilateral:true},
+  {name:"Copenhagen Plank",      series:3, unit:"sec",  bilateral:true},
+  {name:"Isometric Hang Sloper", series:3, unit:"sec"},
+  {name:"Shoulder Shrugs",       series:3, unit:"reps"},
+];
+
 function buildRPEList(type){
-  const list = type==='A' ? EXERCISES_A : EXERCISES_B;
+  const list = type==='A' ? EX_META_A : EX_META_B;
   const container = document.getElementById('ex-rpe-list');
-  container.innerHTML = list.map(name=>`
-    <div class="ex-rpe-row">
-      <div class="ex-rpe-name">${name}</div>
-      <input type="range" class="ex-rpe-input" min="0" max="10" step="0.5" value="0"
-             data-ex="${name}" style="width:100px"
-             oninput="updateAvgRPE(); this.nextElementSibling.textContent=parseFloat(this.value).toFixed(1)">
-      <div class="ex-rpe-num">0.0</div>
-    </div>
-  `).join('');
+  container.innerHTML = list.map((ex,idx)=>{
+    const unitLabel = ex.unit==='sec' ? 'sec' : 'reps';
+    const repsLabel = ex.bilateral ? `${unitLabel} G / D` : unitLabel;
+    const setsHTML = Array.from({length:ex.series},(_,si)=>`
+      <div class="set-row ${ex.bilateral ? 'cols-3' : 'cols-2'}">
+        <div class="set-input-wrap">
+          <div class="set-input-label">Charge (kg)</div>
+          <input class="set-input ex-charge-input" type="number"
+                 step="0.5" min="0" placeholder="—"
+                 data-ex="${ex.name}" data-set="${si}" data-field="charge"
+                 inputmode="decimal">
+        </div>
+        ${ex.bilateral ? `
+        <div class="set-input-wrap">
+          <div class="set-input-label">${unitLabel} G</div>
+          <input class="set-input ex-reps-input" type="number"
+                 step="${ex.unit==='sec'?'1':'1'}" min="0" placeholder="—"
+                 data-ex="${ex.name}" data-set="${si}" data-field="repsG"
+                 inputmode="numeric">
+        </div>
+        <div class="set-input-wrap">
+          <div class="set-input-label">${unitLabel} D</div>
+          <input class="set-input ex-reps-input" type="number"
+                 step="1" min="0" placeholder="—"
+                 data-ex="${ex.name}" data-set="${si}" data-field="repsD"
+                 inputmode="numeric">
+        </div>
+        ` : `
+        <div class="set-input-wrap">
+          <div class="set-input-label">${repsLabel}</div>
+          <input class="set-input ex-reps-input" type="number"
+                 step="1" min="0" placeholder="—"
+                 data-ex="${ex.name}" data-set="${si}" data-field="reps"
+                 inputmode="numeric">
+        </div>
+        `}
+      </div>
+    `).join('');
+
+    return `
+      <div>
+        <div class="ex-section-header" onclick="toggleEx(this)">
+          <div class="ex-section-header-name">${ex.name}</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="ex-rpe-num" id="rpe-num-${idx}" style="color:var(--text-sub)">RPE —</div>
+            <div class="ex-section-chevron">▼</div>
+          </div>
+        </div>
+        <div class="ex-section-body">
+          ${setsHTML}
+          <div style="margin-top:8px">
+            <div class="set-input-label" style="margin-bottom:6px">RPE (effort perçu sur cette exercice)</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <input type="range" class="ex-rpe-input" min="0" max="10" step="1" value="0"
+                     data-ex="${ex.name}" data-idx="${idx}" style="flex:1"
+                     oninput="updateAvgRPE(); document.getElementById('rpe-num-${idx}').textContent='RPE '+this.value; document.getElementById('rpe-val-${idx}').textContent=this.value">
+              <div class="ex-rpe-num" id="rpe-val-${idx}" style="min-width:24px;text-align:right">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleEx(header){
+  const body = header.nextElementSibling;
+  const chev = header.querySelector('.ex-section-chevron');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
 }
 
 function computeAvgRPE(){
@@ -863,12 +967,26 @@ function saveSession(){
   let rpe = 0;
   let rpeByEx = {};
 
+  let exData = {};
   if(['A','B'].includes(type)){
     document.querySelectorAll('.ex-rpe-input').forEach(i=>{
       const v = parseFloat(i.value);
       if(v>0) rpeByEx[i.dataset.ex] = v;
     });
     rpe = computeAvgRPE();
+    // Collect charges & reps per exercise per set
+    const allChargeInputs = document.querySelectorAll('.ex-charge-input, .ex-reps-input');
+    allChargeInputs.forEach(inp=>{
+      const exName = inp.dataset.ex;
+      const setIdx = inp.dataset.set;
+      const field  = inp.dataset.field;
+      const val    = parseFloat(inp.value);
+      if(!isNaN(val) && val!==0){
+        if(!exData[exName]) exData[exName] = {};
+        if(!exData[exName][setIdx]) exData[exName][setIdx] = {};
+        exData[exName][setIdx][field] = val;
+      }
+    });
   } else {
     rpe = parseFloat(document.getElementById('rpe-slider').value)||0;
   }
@@ -877,7 +995,7 @@ function saveSession(){
 
   const session = {
     id: Date.now(),
-    date, type, phase, duration, forme, rpe, rpeByEx, foster,
+    date, type, phase, duration, forme, rpe, rpeByEx, exData, foster,
     pos: document.getElementById('log-pos').value,
     neg: document.getElementById('log-neg').value,
     volume: type==='C' ? document.getElementById('log-volume').value : null,
@@ -893,7 +1011,14 @@ function saveSession(){
   document.getElementById('log-pos').value = '';
   document.getElementById('log-neg').value = '';
   document.getElementById('log-duration').value = '';
-  document.querySelectorAll('.ex-rpe-input').forEach(i=>{ i.value=0; i.nextElementSibling.textContent='0.0'; });
+  document.querySelectorAll('.ex-rpe-input').forEach(i=>{
+    i.value=0;
+    const idx = i.dataset.idx;
+    if(idx){ document.getElementById('rpe-num-'+idx).textContent='RPE —'; document.getElementById('rpe-val-'+idx).textContent='0'; }
+  });
+  document.querySelectorAll('.ex-charge-input, .ex-reps-input').forEach(i=>{ i.value=''; });
+  document.querySelectorAll('.ex-section-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('.ex-section-chevron').forEach(c=>c.classList.remove('open'));
   document.getElementById('rpe-avg-display').textContent = '—';
   document.getElementById('forme-slider').value = 3;
   updateSlider('forme',3);
@@ -943,15 +1068,20 @@ function renderRecentSessions(sessions){
   const typeLabels = {A:'Séance A — Fingerboard + HP',B:'Séance B — Jambes',
                       C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
   el.innerHTML = sessions.map(s=>`
-    <div class="session-item">
+    <div class="session-item" id="si-${s.id}">
       <div class="session-dot" style="background:${typeColors[s.type]||'#8b949e'}"></div>
       <div class="session-info">
         <div class="session-type">${typeLabels[s.type]||s.type}</div>
         <div class="session-meta">${formatDate(s.date)} · ${s.duration}min · ${s.phase}
-          ${s.foster ? ' · Foster: '+s.foster : ''}</div>
+          ${s.foster ? ' · Foster '+s.foster : ''}</div>
       </div>
-      <div class="session-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:hsl(${(1-(s.rpe||0)/10)*120},80%,55%)">
-        ${s.rpe ? s.rpe.toFixed(1) : '—'}
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <div class="session-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:hsl(${(1-(s.rpe||0)/10)*120},80%,55%)">
+          ${s.rpe ? s.rpe.toFixed(1) : '—'}
+        </div>
+        <button class="delete-btn" onclick="openDeleteModal('${s.id}')" aria-label="Supprimer">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        </button>
       </div>
     </div>
   `).join('');
@@ -1076,45 +1206,66 @@ function selectExercise(name, sess){
     charge: null // future: from separate exercise log
   })).filter(s=>s.rpe!=null);
 
-  // Use RPE as proxy for intensity (later: integrate charge log)
-  const vals   = history.map(h=>h.rpe);
-  const labels = history.map(h=>h.date);
+  // Build history using exData charges (set 0 charge) + RPE
+  const enrichedHistory = sessions
+    .filter(s=>s.type===sess)
+    .map(s=>{
+      const exEntry = s.exData?.[name];
+      const charge  = exEntry?.['0']?.charge ?? null;
+      const repsRaw = exEntry?.['0'];
+      const reps    = repsRaw ? (repsRaw.reps ?? repsRaw.repsG ?? null) : null;
+      return { date:s.date, phase:s.phase, charge, reps, rpe:s.rpeByEx?.[name]??null };
+    })
+    .filter(h=>h.charge!=null || h.rpe!=null);
+
+  const chargeVals = enrichedHistory.map(h=>h.charge);
+  const labels     = enrichedHistory.map(h=>h.date);
+  const hasCharges = chargeVals.some(v=>v!=null);
 
   document.getElementById('ex-detail-card').style.display = 'block';
   document.getElementById('ex-empty-card').style.display  = 'none';
   document.getElementById('ex-detail-name').textContent   = name;
   document.getElementById('ex-detail-session').textContent= `Séance ${sess}`;
 
-  const last = vals.at(-1);
-  const first = vals.find(v=>v!=null);
-  document.getElementById('ex-stat-last').textContent = last!=null ? last.toFixed(1)+' RPE' : '—';
-  if(first!=null && last!=null && first!==last){
-    const diff = last-first;
-    document.getElementById('ex-stat-prog').textContent =
-      (diff>=0?'+':'')+diff.toFixed(1)+' RPE';
-    document.getElementById('ex-stat-prog').style.color =
-      diff>=0 ? 'var(--red)' : 'var(--teal)'; // lower RPE = easier = progress
+  const lastCharge = chargeVals.filter(v=>v!=null).at(-1);
+  const firstCharge= chargeVals.find(v=>v!=null);
+  if(hasCharges){
+    document.getElementById('ex-stat-last').textContent = lastCharge!=null ? lastCharge+' kg' : '—';
+    document.querySelector('#ex-detail-card .stat-label').textContent='Dernière charge S1 (kg)';
+    if(firstCharge!=null && lastCharge!=null && firstCharge!==lastCharge){
+      const diff = lastCharge-firstCharge;
+      document.getElementById('ex-stat-prog').textContent=(diff>=0?'+':'')+diff+' kg';
+      document.getElementById('ex-stat-prog').style.color=diff>0?'var(--teal)':'var(--red)';
+    } else {
+      document.getElementById('ex-stat-prog').textContent='—';
+      document.getElementById('ex-stat-prog').style.color='var(--gold)';
+    }
+    drawLineChart('exChart',labels,chargeVals,'#2dd4a0','rgba(45,212,160,.1)');
   } else {
+    // Fallback to RPE if no charges yet
+    const rpeVals = enrichedHistory.map(h=>h.rpe);
+    document.getElementById('ex-stat-last').textContent = rpeVals.at(-1)!=null ? rpeVals.at(-1)+' RPE' : '—';
     document.getElementById('ex-stat-prog').textContent = '—';
-    document.getElementById('ex-stat-prog').style.color = 'var(--gold)';
+    drawLineChart('exChart',labels,rpeVals,'#2dd4a0','rgba(45,212,160,.1)',0,10);
   }
-
-  drawLineChart('exChart',labels,vals,'#2dd4a0','rgba(45,212,160,.1)',0,10);
 
   const histEl = document.getElementById('ex-history');
-  if(!history.length){
-    histEl.innerHTML='<div class="empty"><div class="empty-text">Aucune donnée encore. Saisis un RPE pour cet exercice.</div></div>';
+  if(!enrichedHistory.length){
+    histEl.innerHTML='<div class="empty"><div class="empty-text">Aucune donnée. Ouvre un exercice dans la saisie séance.</div></div>';
     return;
   }
-  histEl.innerHTML = history.slice(-8).reverse().map(h=>`
+  histEl.innerHTML = enrichedHistory.slice(-8).reverse().map(h=>`
     <div class="session-item" style="padding:10px 0">
       <div class="session-info">
-        <div class="session-type" style="font-size:.85rem">${formatDate(h.date)}</div>
-        <div class="session-meta">${h.phase}</div>
+        <div class="session-type" style="font-size:.85rem">${formatDate(h.date)} · ${h.phase}</div>
+        <div class="session-meta">
+          ${h.charge!=null ? 'S1: '+h.charge+' kg' : ''}
+          ${h.reps!=null   ? ' · '+h.reps+' reps/sec' : ''}
+          ${h.rpe!=null    ? ' · RPE '+h.rpe : ''}
+        </div>
       </div>
-      <div class="session-rpe" style="font-size:.9rem;background:rgba(${rpeRGB(h.rpe)},.15);color:hsl(${(1-h.rpe/10)*120},80%,55%)">
-        RPE ${h.rpe.toFixed(1)}
-      </div>
+      ${h.charge!=null ? `<div class="session-rpe" style="background:rgba(45,212,160,.15);color:var(--teal)">${h.charge} kg</div>` :
+        h.rpe!=null ? `<div class="session-rpe" style="font-size:.9rem;background:rgba(${rpeRGB(h.rpe)},.15);color:hsl(${(1-h.rpe/10)*120},80%,55%)">RPE ${h.rpe}</div>` : ''}
     </div>
   `).join('');
 }
@@ -1252,6 +1403,37 @@ function showToast(msg){
 initForms();
 selectType('A');
 renderDashboard();
+
+// DELETE SESSION
+let pendingDeleteId = null;
+const typeLabelsGlobal = {A:'Séance A',B:'Séance B',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
+
+function openDeleteModal(id){
+  pendingDeleteId = id;
+  const s = DB.sessions.find(x=>String(x.id)===String(id));
+  if(!s) return;
+  document.getElementById('modal-session-info').textContent =
+    (typeLabelsGlobal[s.type]||s.type)+' · '+formatDate(s.date)+' · '+s.duration+' min · '+s.phase;
+  document.getElementById('delete-modal').classList.add('show');
+}
+
+function closeDeleteModal(){
+  pendingDeleteId = null;
+  document.getElementById('delete-modal').classList.remove('show');
+}
+
+function confirmDelete(){
+  if(!pendingDeleteId) return;
+  DB.sessions = DB.sessions.filter(s=>String(s.id)!==String(pendingDeleteId));
+  closeDeleteModal();
+  renderDashboard();
+  showToast('Séance supprimée');
+}
+
+// Close delete modal on overlay click
+document.getElementById('delete-modal').addEventListener('click',function(e){
+  if(e.target===this) closeDeleteModal();
+});
 </script>
 </body>
 </html>
