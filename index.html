@@ -157,7 +157,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 .btn-icon:active{color:var(--teal);}
 /* Foster bar */
 .fbar{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;margin:6px 0;}
-.ffill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--accent),var(--red));transition:width .35s ease;}
+.ffill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--orange),var(--red));transition:width .35s ease;}
 /* Ex picker — AXE1: min-height 48px on chips */
 .ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .ex-chip{padding:10px 8px;min-height:48px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);font-size:.74rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:left;color:var(--text-dim);-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:5px;}
@@ -196,7 +196,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 .toast{position:fixed;bottom:calc(var(--tab-h)+var(--safe-b)+12px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:30px;font-weight:600;font-size:.83rem;opacity:0;transition:all .22s;pointer-events:none;z-index:1000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 /* AXE4: PR toast special */
-.toast.pr{border-color:var(--accent);background:linear-gradient(135deg,var(--surface),rgba(240,165,0,.2));animation:prPulse .6s ease;}
+.toast.pr{border-color:var(--gold);background:linear-gradient(135deg,var(--surface),rgba(229,168,32,.15));animation:prPulse .6s ease;}
 @keyframes prPulse{0%{transform:translateX(-50%) scale(.8);opacity:0;}50%{transform:translateX(-50%) scale(1.05);}100%{transform:translateX(-50%) scale(1);opacity:1;}}
 .divider{height:1px;background:var(--border);margin:11px 0;}
 .empty{text-align:center;padding:30px 16px;color:var(--text-dim);}
@@ -610,7 +610,7 @@ const TC={A:'#64b5f6',B:'#66bb6a',C:'#f0a500',Cardio:'#b39ddb',Repos:'#7e7e90'};
 const TL={A:'Seance A -- Fingerboard + HP',B:'Seance B -- Jambes',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
 function sessLabel(s){if(s.type==='C'&&s.climbSub)return'Grimpe '+s.climbSub;return TL[s.type]||s.type;}
 const TS={A:'Seance A',B:'Seance B',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
-const FC=['','#ef5350','#f0a500','#e0c040','#64b5f6','#66bb6a'];
+const FC=['','#f85149','#f97316','#e5a820','#58a6ff','#f0a500'];
 
 const EMA=[
   {name:'Dead Hang Half Crimp',series:3,unit:'sec',rest:180},
@@ -708,7 +708,7 @@ function updateNavPhase(){
 function onForme(v){const el=document.getElementById('forme-val');el.textContent=v;el.style.color=FC[v]||'var(--teal)';calcFoster();}
 function onRPE(v){const el=document.getElementById('rpe-val');el.textContent=v;el.style.color=rpeColor(+v);calcFoster();}
 function rpeColor(v){return`hsl(${Math.round((1-Math.min(v,10)/10)*120)},80%,55%)`;}
-function rpeRGB(v){return(!v||v<4)?'102,187,106':v<7?'240,165,0':'239,83,80';}
+function rpeRGB(v){return(!v||v<4)?'45,212,160':v<7?'229,168,32':'248,81,73';}
 
 /* Type */
 let cType='A';
@@ -1151,7 +1151,7 @@ function drawHeatmap(ss){
   const labelW=18;
 
   // Draw day labels
-  ctx.fillStyle='#5a5a6e';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='left';
+  ctx.fillStyle='#484f58';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='left';
   for(let d=0;d<7;d++){
     if(d%2===0)ctx.fillText(dayLabels[d],0,16+d*(cellSize+gap)+cellSize/2+3);
   }
@@ -1167,10 +1167,10 @@ function drawHeatmap(ss){
 
       const type=dateMap[ds];
       if(type){
-        ctx.fillStyle=TC[type]||'#5a5a6e';
+        ctx.fillStyle=TC[type]||'#484f58';
         ctx.globalAlpha=0.85;
       }else{
-        ctx.fillStyle='#1a1a24';
+        ctx.fillStyle='#161b22';
         ctx.globalAlpha=1;
       }
       ctx.beginPath();
@@ -1205,7 +1205,7 @@ function renderRecent(ss){
   }
   el.innerHTML=ss.map(s=>`
     <div class="si-item" onclick="openSheet('${s.id}')">
-      <div class="si-dot" style="background:${TC[s.type]||'#7e7e90'}"></div>
+      <div class="si-dot" style="background:${TC[s.type]||'#8b949e'}"></div>
       <div class="si-info">
         <div class="si-type">${sessLabel(s)}</div>
         <div class="si-meta">${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}</div>
@@ -1234,7 +1234,7 @@ function renderHist(){
   }
   el.innerHTML=ss.map(s=>`
     <div class="si-item" onclick="openSheet('${s.id}')">
-      <div class="si-dot" style="background:${TC[s.type]||'#7e7e90'}"></div>
+      <div class="si-dot" style="background:${TC[s.type]||'#8b949e'}"></div>
       <div class="si-info">
         <div class="si-type">${TS[s.type]||s.type}</div>
         <div class="si-meta">${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}</div>
@@ -1380,14 +1380,22 @@ async function gdrivePush(){
   setGASUrl(url);
   const data={sessions:DB.sessions,notes:DB.notes};
   try{
-    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data),mode:'no-cors'});
-    // no-cors means we can't read the response, but the data is sent
+    // Utilise un proxy CORS public pour contourner les restrictions de GitHub Pages
+    const proxyUrl='https://corsproxy.io/?'+encodeURIComponent(url);
+    const res=await fetch(proxyUrl,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(data)
+    });
+    if(!res.ok)throw new Error('Erreur serveur: '+res.status);
+    const result=await res.json();
+    if(!result.ok)throw new Error('Reponse inattendue du script');
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
-    toast('Donnees envoyees vers Google Drive !');
+    toast('Donnees envoyees ('+result.total+' seances) !');
   }catch(err){
     console.error('GDrive push error:',err);
-    toast('Erreur: '+err.message);
+    toast('Erreur envoi: '+err.message);
   }
 }
 
@@ -1396,7 +1404,8 @@ async function gdrivePull(){
   if(!url||!url.startsWith('https://script.google.com')){toast('URL Apps Script invalide');return;}
   setGASUrl(url);
   try{
-    const res=await fetch(url);
+    const proxyUrl='https://corsproxy.io/?'+encodeURIComponent(url);
+    const res=await fetch(proxyUrl);
     if(!res.ok)throw new Error('Erreur serveur: '+res.status);
     const cloudData=await res.json();
     if(!cloudData.sessions||!cloudData.sessions.length){toast('Aucune donnee sur Google Drive');return;}
@@ -1411,7 +1420,7 @@ async function gdrivePull(){
     toast(newOnes.length+' seance(s) synchronisee(s) !');
   }catch(err){
     console.error('GDrive pull error:',err);
-    toast('Erreur: '+err.message);
+    toast('Erreur reception: '+err.message);
   }
 }
 
@@ -1458,8 +1467,8 @@ let selEx=null;
 function renderExPicker(){
   document.getElementById('ex-picker').innerHTML=ALL_EX.map(ex=>`
     <div class="ex-chip ${selEx===ex.name?'sel':''}" onclick="selExercise('${ex.name}','${ex.sess}')"
-         style="border-left:3px solid ${ex.sess==='A'?'var(--blue)':'var(--green)'}">
-      <div class="ex-chip-dot" style="background:${ex.sess==='A'?'var(--blue)':'var(--green)'}"></div>
+         style="border-left:3px solid ${ex.sess==='A'?'var(--blue)':'var(--teal)'}">
+      <div class="ex-chip-dot" style="background:${ex.sess==='A'?'var(--blue)':'var(--teal)'}"></div>
       ${ex.name}
     </div>`).join('');
   // AXE2: Render bloc heatmap
@@ -1540,11 +1549,11 @@ function renderBlocHeatmap(){
       let color='var(--surface2)';
       let label='';
       if(doneNum>=gNum){
-        color='#66bb6a';label='\u2713';  // green = validated this grade or above
+        color='#3fb950';label='\u2713';  // green = validated this grade or above
       }else if(tryNum>=gNum&&doneNum<gNum){
-        color='#f0a500';label='\u00B7';  // orange = attempted but not validated
+        color='#f97316';label='\u00B7';  // orange = attempted but not validated
       }else if(doneNum===gNum-1){
-        color='#ef5350';label='';  // red = just below max
+        color='#f85149';label='';  // red = just below max
       }
       html+=`<div class="bh-cell" style="background:${color}">${label}</div>`;
     });
@@ -1656,7 +1665,7 @@ function drawRadar(ss){
       i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
     }
     ctx.closePath();
-    ctx.strokeStyle='#33333f';ctx.lineWidth=1;ctx.stroke();
+    ctx.strokeStyle='#30363d';ctx.lineWidth=1;ctx.stroke();
   }
 
   // Draw axes
@@ -1665,7 +1674,7 @@ function drawRadar(ss){
     ctx.beginPath();
     ctx.moveTo(cx,cy);
     ctx.lineTo(cx+r*Math.cos(angle),cy+r*Math.sin(angle));
-    ctx.strokeStyle='#33333f';ctx.lineWidth=1;ctx.stroke();
+    ctx.strokeStyle='#30363d';ctx.lineWidth=1;ctx.stroke();
   }
 
   // Draw data polygon
@@ -1689,11 +1698,11 @@ function drawRadar(ss){
     const y=cy+rr*Math.sin(angle);
     ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
     ctx.fillStyle='#f0a500';ctx.fill();
-    ctx.strokeStyle='#0f0f14';ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle='#0d1117';ctx.lineWidth=2;ctx.stroke();
   });
 
   // Labels
-  ctx.fillStyle='#7e7e90';ctx.font="10px 'Inter',sans-serif";ctx.textAlign='center';
+  ctx.fillStyle='#8b949e';ctx.font="10px 'Inter',sans-serif";ctx.textAlign='center';
   labels.forEach((lbl,i)=>{
     const angle=Math.PI*2*i/n-Math.PI/2;
     const x=cx+(r+18)*Math.cos(angle);
@@ -1707,7 +1716,7 @@ function drawRadar(ss){
 
 /* AXE3: Dynamic periodization bars */
 function renderPeriodBars(ss){
-  const phases=[[1,'Adaptation anatomique','#f0a500',4],[2,'Force maximale doigts','#64b5f6',8],[3,'Endurance de force','#f0a500',10],[4,'Affutage + Peaking','#e0c040',8]];
+  const phases=[[1,'Adaptation anatomique','#f0a500',4],[2,'Force maximale doigts','#58a6ff',8],[3,'Endurance de force','#f97316',10],[4,'Affutage + Peaking','#e5a820',8]];
   document.getElementById('period-bars').innerHTML=phases.map(([n,l,c,totalWeeks])=>{
     // Count sessions in this phase
     const phaseSessions=ss.filter(s=>s.phase&&s.phase.startsWith('P'+n));
@@ -1756,17 +1765,17 @@ function drawChart(id,labels,data,lc,ac,yMinFixed,yMaxFixed){
   const range=mx-mn||1;
   for(let i=0;i<=4;i++){
     const y=pad.t+CH*(1-i/4);
-    ctx.strokeStyle='#33333f';ctx.lineWidth=1;
+    ctx.strokeStyle='#30363d';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+CW,y);ctx.stroke();
-    ctx.fillStyle='#5a5a6e';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';
+    ctx.fillStyle='#484f58';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';
     const v=mn+range*i/4;ctx.fillText(v>=100?Math.round(v):v.toFixed(v<10?1:0),pad.l-4,y+4);
   }
   const pts=data.map((v,i)=>({x:pad.l+(data.length>1?i*CW/(data.length-1):CW/2),y:v!=null?pad.t+CH*(1-(v-mn)/range):null}));
   const vp=pts.filter(p=>p.y!=null);if(!vp.length)return;
   if(vp.length>1){ctx.beginPath();ctx.moveTo(vp[0].x,H-pad.b);vp.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(vp.at(-1).x,H-pad.b);ctx.closePath();ctx.fillStyle=ac;ctx.fill();}
   if(vp.length>1){ctx.beginPath();ctx.strokeStyle=lc;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';vp.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();}
-  vp.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle=lc;ctx.fill();ctx.strokeStyle='#0f0f14';ctx.lineWidth=2;ctx.stroke();});
-  ctx.fillStyle='#5a5a6e';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+  vp.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle=lc;ctx.fill();ctx.strokeStyle='#0d1117';ctx.lineWidth=2;ctx.stroke();});
+  ctx.fillStyle='#484f58';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
   pts.forEach((p,i)=>{if(labels[i])ctx.fillText(labels[i].slice(-5),p.x,H-pad.b+13);});
 }
 
