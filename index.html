@@ -27,7 +27,7 @@
 }
 html{font-size:16px;-webkit-text-size-adjust:100%;}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased;}
-.app{max-width:480px;margin:0 auto;padding:calc(var(--nav-h)+14px) 14px calc(var(--tab-h)+var(--safe-b)+24px);}
+.app{max-width:480px;margin:0 auto;padding:calc(var(--nav-h)+14px) 14px calc(var(--tab-h)+var(--safe-b)+80px);}
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:rgba(13,17,23,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .nav-inner{max-width:480px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 18px;}
@@ -265,9 +265,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
   <!-- Sync banner -->
   <div class="sync-banner" id="sync-banner">
     <div class="sync-dot" id="sync-dot"></div>
-    <div class="sync-text" id="sync-text">Donnees locales uniquement. Utilisez le bouton pour exporter/importer sur un autre appareil.</div>
-    <button class="btn-icon" onclick="showImport()" style="flex-shrink:0" title="Importer">
-      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <div class="sync-text" id="sync-text">Pas encore synchronise.</div>
+    <button class="btn-icon" onclick="showSyncSheet()" style="flex-shrink:0" title="Synchroniser">
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115.4-6.4L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15.4 6.4L3 16"/></svg>
     </button>
   </div>
   <div class="sg">
@@ -392,7 +392,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
     <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5"><path d="M5 13l4 4L19 7"/></svg>
     Enregistrer la seance
   </button>
-  <div style="height:8px"></div>
+  <div style="height:60px"></div>
 </div></section>
 
 <!-- EXERCICES -->
@@ -505,23 +505,46 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
   </div>
 </div>
 
-<!-- IMPORT SHEET -->
+<!-- SYNC SHEET -->
 <div class="sheet-ov" id="import-sheet">
   <div class="sheet">
     <div style="padding:14px 16px 0"><div class="sh-handle"></div>
-      <div class="sh-title">Synchronisation manuelle</div>
-      <div class="sh-sub">Copiez les donnees sur un appareil, collez-les sur l'autre.</div>
+      <div class="sh-title">Synchronisation Cloud</div>
+      <div class="sh-sub">Synchronisez vos donnees entre vos appareils automatiquement.</div>
     </div>
     <div class="sh-body" style="margin-top:8px">
-      <div class="fl" style="margin-bottom:6px">Donnees exportees (copier)</div>
-      <textarea id="export-area" readonly style="width:100%;height:100px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-dim);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;"></textarea>
-      <button class="btn btn-outline btn-sm" style="margin:6px 0 14px" onclick="copyExport()">Copier</button>
-      <div class="fl" style="margin-bottom:6px">Coller les donnees a importer</div>
-      <textarea id="import-area" style="width:100%;height:100px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;" placeholder="Coller ici le JSON exporte depuis l'autre appareil..."></textarea>
+      <!-- Cloud sync section -->
+      <div class="fl" style="margin-bottom:6px">Identifiant de synchronisation</div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input class="fi" type="text" id="sync-id-input" placeholder="Entrez un ID ou generez-en un" style="flex:1;font-family:'DM Mono',monospace;font-size:.8rem">
+        <button class="btn btn-outline btn-sm" onclick="generateSyncId()" style="white-space:nowrap;flex-shrink:0">Generer</button>
+      </div>
+      <div style="font-size:.68rem;color:var(--text-sub);margin-bottom:14px" id="sync-status-text">Entrez le meme ID sur tous vos appareils pour les synchroniser.</div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="btn btn-primary" onclick="cloudPush()" style="flex:1">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 19V6m0 0l-5 5m5-5l5 5"/><path d="M5 21h14"/></svg>
+          Envoyer
+        </button>
+        <button class="btn btn-outline" onclick="cloudPull()" style="flex:1">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 5v13m0 0l5-5m-5 5l-5-5"/><path d="M5 3h14"/></svg>
+          Recevoir
+        </button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="fl" style="margin:10px 0 6px">Export / Import manuel (JSON)</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="copyExport()">Copier JSON</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="showManualImport()">Coller JSON</button>
+      </div>
+      <div id="manual-import-sec" style="display:none">
+        <textarea id="import-area" style="width:100%;height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;" placeholder="Coller ici le JSON..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:6px" onclick="doImport()">Importer</button>
+      </div>
     </div>
     <div class="sh-actions">
       <button class="btn btn-outline" onclick="closeImport()">Fermer</button>
-      <button class="btn btn-primary" onclick="doImport()">Importer</button>
     </div>
   </div>
 </div>
@@ -653,6 +676,7 @@ function init(){
   document.getElementById('import-sheet').addEventListener('click',e=>{if(e.target.id==='import-sheet')closeImport();});
   selType('A');
   updateNavPhase();
+  updateSyncBanner();
   renderDash();
 }
 function updateNavPhase(){
@@ -672,8 +696,8 @@ function selType(t){
   cType=t;
   document.querySelectorAll('.seg-btn').forEach(b=>{b.className='seg-btn';if(b.dataset.type===t)b.classList.add('act-'+t);});
   document.getElementById('rpe-sec').style.display=['A','B'].includes(t)?'block':'none';
-  // AXE1: RPE global always visible, but hidden for A/B (they have per-exercise RPE)
-  document.getElementById('rpe-glob').style.display=['A','B'].includes(t)?'none':'block';
+  // RPE global visible for C/Cardio, hidden for A/B (per-exercise RPE) and Repos
+  document.getElementById('rpe-glob').style.display=['C','Cardio'].includes(t)?'block':'none';
   document.getElementById('grimpe-sec').style.display=t==='C'?'block':'none';
   // AXE2: Show injury section for non-Repos sessions
   document.getElementById('injury-sec').style.display=t!=='Repos'?'block':'none';
@@ -1291,27 +1315,137 @@ function delSession(){
   closeSheet();renderDash();renderHist();toast('Seance supprimee');
 }
 
-/* Export / Import */
-function exportData(){
-  document.getElementById('export-area').value=JSON.stringify({sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()},null,0);
+/* Cloud Sync via jsonblob.com */
+const SYNC_API='https://jsonblob.com/api/jsonBlob';
+
+function getSyncId(){return localStorage.getItem('vl3_sync_id')||'';}
+function setSyncId(id){localStorage.setItem('vl3_sync_id',id);}
+
+function generateSyncId(){
+  const chars='abcdefghijklmnopqrstuvwxyz0123456789';
+  let id='vl-';
+  for(let i=0;i<8;i++)id+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('sync-id-input').value=id;
+  toast('ID genere ! Utilisez-le sur vos autres appareils.');
+}
+
+function updateSyncBanner(){
+  const id=getSyncId();
+  const dot=document.getElementById('sync-dot');
+  const text=document.getElementById('sync-text');
+  const lastSync=localStorage.getItem('vl3_last_sync');
+  if(id){
+    dot.className='sync-dot ok';
+    text.textContent=lastSync?'Sync: '+id.slice(0,12)+'... — '+new Date(lastSync).toLocaleString('fr-FR'):'Sync: '+id.slice(0,12)+'... — jamais synchronise';
+  }else{
+    dot.className='sync-dot';
+    text.textContent='Pas encore synchronise. Configurez la sync cloud.';
+  }
+}
+
+async function cloudPush(){
+  const inputId=document.getElementById('sync-id-input').value.trim();
+  if(!inputId){toast('Entrez ou generez un ID');return;}
+  setSyncId(inputId);
+  const data={sessions:DB.sessions,notes:DB.notes,updated:new Date().toISOString()};
+  try{
+    // Try to read existing blob first
+    let blobId=localStorage.getItem('vl3_blob_id');
+    if(blobId){
+      // Update existing blob
+      const res=await fetch(SYNC_API+'/'+blobId,{
+        method:'PUT',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({syncId:inputId,data})
+      });
+      if(!res.ok)blobId=null; // Blob expired, create new one
+    }
+    if(!blobId){
+      // Create new blob
+      const res=await fetch(SYNC_API,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({syncId:inputId,data})
+      });
+      if(!res.ok)throw new Error('Erreur serveur: '+res.status);
+      const loc=res.headers.get('Location')||res.headers.get('location');
+      if(loc){
+        blobId=loc.split('/').pop();
+      }else{
+        // Try to get ID from response URL
+        const txt=await res.text();
+        try{const j=JSON.parse(txt);blobId=j.id||null;}catch{}
+      }
+      if(!blobId)throw new Error('Impossible de recuperer l\'ID du blob');
+      localStorage.setItem('vl3_blob_id',blobId);
+    }
+    localStorage.setItem('vl3_last_sync',new Date().toISOString());
+    updateSyncBanner();
+    toast('Donnees envoyees !');
+  }catch(err){
+    console.error('Cloud push error:',err);
+    toast('Erreur sync: '+err.message);
+  }
+}
+
+async function cloudPull(){
+  const inputId=document.getElementById('sync-id-input').value.trim();
+  if(!inputId){toast('Entrez l\'ID de synchronisation');return;}
+  setSyncId(inputId);
+  try{
+    // If we have a blob ID, try directly
+    let blobId=localStorage.getItem('vl3_blob_id');
+    let cloudData=null;
+    if(blobId){
+      const res=await fetch(SYNC_API+'/'+blobId,{headers:{'Accept':'application/json'}});
+      if(res.ok){
+        const json=await res.json();
+        if(json.syncId===inputId)cloudData=json.data;
+      }
+    }
+    if(!cloudData){
+      toast('Aucune donnee trouvee pour cet ID. Envoyez d\'abord depuis l\'autre appareil.');
+      return;
+    }
+    // Merge sessions
+    const existing=DB.sessions;
+    const existingIds=new Set(existing.map(s=>String(s.id)));
+    const newOnes=(cloudData.sessions||[]).filter(s=>!existingIds.has(String(s.id)));
+    // Also update existing sessions if cloud version is newer
+    const merged=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
+    DB.sessions=merged;
+    if(cloudData.notes)DB.notes={...DB.notes,...cloudData.notes};
+    localStorage.setItem('vl3_last_sync',new Date().toISOString());
+    updateSyncBanner();
+    closeImport();renderDash();renderHist();
+    toast(newOnes.length+' seance(s) synchronisee(s)');
+  }catch(err){
+    console.error('Cloud pull error:',err);
+    toast('Erreur sync: '+err.message);
+  }
+}
+
+/* Sync sheet */
+function showSyncSheet(){
+  document.getElementById('sync-id-input').value=getSyncId();
+  document.getElementById('manual-import-sec').style.display='none';
   document.getElementById('import-sheet').classList.add('show');
   document.body.style.overflow='hidden';
 }
-function showImport(){
-  document.getElementById('export-area').value=JSON.stringify({sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()},null,0);
-  document.getElementById('import-sheet').classList.add('show');
-  document.body.style.overflow='hidden';
-}
+function exportData(){showSyncSheet();}
+function showImport(){showSyncSheet();}
 function closeImport(){
   document.getElementById('import-sheet').classList.remove('show');
   document.body.style.overflow='';
-  document.getElementById('import-area').value='';
+}
+function showManualImport(){
+  const sec=document.getElementById('manual-import-sec');
+  sec.style.display=sec.style.display==='none'?'block':'none';
 }
 function copyExport(){
-  const ta=document.getElementById('export-area');
-  ta.select();ta.setSelectionRange(0,99999);
-  try{navigator.clipboard.writeText(ta.value).then(()=>toast('Copie !'));}
-  catch{document.execCommand('copy');toast('Copie !');}
+  const json=JSON.stringify({sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()},null,0);
+  try{navigator.clipboard.writeText(json).then(()=>toast('JSON copie !'));}
+  catch{toast('Erreur de copie');}
 }
 function doImport(){
   const raw=document.getElementById('import-area').value.trim();
@@ -1325,7 +1459,7 @@ function doImport(){
     DB.sessions=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(data.notes)DB.notes={...DB.notes,...data.notes};
     closeImport();renderDash();renderHist();
-    toast(`${newOnes.length} seance(s) importee(s)`);
+    toast(newOnes.length+' seance(s) importee(s)');
   }catch{toast('JSON invalide');}
 }
 
