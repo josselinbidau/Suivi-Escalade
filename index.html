@@ -526,29 +526,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <div class="sheet-ov" id="import-sheet">
   <div class="sheet">
     <div style="padding:14px 16px 0"><div class="sh-handle"></div>
-      <div class="sh-title">Synchronisation Google Drive</div>
-      <div class="sh-sub">Synchronisez automatiquement entre mobile et PC via Google Apps Script.</div>
+      <div class="sh-title">Synchronisation</div>
+      <div class="sh-sub">Synchronisez entre mobile et PC. Zero compte requis.</div>
     </div>
     <div class="sh-body" style="margin-top:8px">
-      <!-- Google Apps Script URL -->
-      <div class="fl" style="margin-bottom:6px">URL Google Apps Script</div>
-      <input class="fi" type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:.75rem;margin-bottom:6px">
-      <div style="font-size:.65rem;color:var(--text-sub);margin-bottom:12px;line-height:1.5" id="gas-help">
-        1. Ouvrez <a href="https://script.google.com" target="_blank" style="color:var(--teal)">script.google.com</a> &gt; Nouveau projet<br>
-        2. Collez le code (bouton ci-dessous) &gt; Deployer &gt; Application Web &gt; Tout le monde<br>
-        3. Collez l'URL ici
+      <div class="fl" style="margin-bottom:6px">Code de synchronisation</div>
+      <div style="display:flex;gap:6px;margin-bottom:4px">
+        <input class="fi" type="text" id="sync-code-input" placeholder="Ex: abc123..." style="flex:1;font-family:'DM Mono',monospace;font-size:.85rem;letter-spacing:.05em">
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:14px">
-        <button class="btn btn-outline btn-sm" style="flex:1" onclick="copyGASCode()">Copier le code Apps Script</button>
-        <button class="btn btn-outline btn-sm" style="flex:1" onclick="testGASConnection()">Tester la connexion</button>
+      <div style="font-size:.65rem;color:var(--text-sub);margin-bottom:12px;line-height:1.5" id="sync-status-text">
+        Premier appareil : cliquez Envoyer pour generer un code.<br>
+        Autre appareil : entrez le meme code puis cliquez Recevoir.
       </div>
 
       <div style="display:flex;gap:8px;margin-bottom:14px">
-        <button class="btn btn-primary" onclick="gdrivePush()" style="flex:1">
+        <button class="btn btn-primary" onclick="cloudPush()" style="flex:1" id="btn-push">
           <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 19V6m0 0l-5 5m5-5l5 5"/><path d="M5 21h14"/></svg>
           Envoyer
         </button>
-        <button class="btn btn-outline" onclick="gdrivePull()" style="flex:1">
+        <button class="btn btn-outline" onclick="cloudPull()" style="flex:1" id="btn-pull">
           <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 5v13m0 0l5-5m-5 5l-5-5"/><path d="M5 3h14"/></svg>
           Recevoir
         </button>
@@ -1352,216 +1348,113 @@ function delSession(){
   closeSheet();renderDash();renderHist();toast('Seance supprimee');
 }
 
-/* Google Drive Sync via Google Apps Script
- * Utilise DriveApp (pas PropertiesService) = pas de limite de taille
- * doGet gere TOUT (lecture + ecriture) car GAS redirige les POST en GET
- * Le parametre ?action=push&data=... permet d'envoyer via GET
- */
-const GAS_CODE=`// VerticalLog Sync v2 — Collez ce code dans Google Apps Script
-// Deployer > Nouvelle deployment > Application Web
-// Executer en tant que : Moi-meme
-// Acces : Tout le monde
-//
-var FN='VerticalLog_sync.json';
+/* Sync via jsonblob.com — API REST avec CORS natif, zero compte */
+const BLOB_API='https://jsonblob.com/api/jsonBlob';
 
-function getFile(){
-  var it=DriveApp.getFilesByName(FN);
-  return it.hasNext()?it.next():null;
-}
-
-function readData(){
-  var f=getFile();
-  if(!f)return {sessions:[],notes:{}};
-  try{return JSON.parse(f.getBlob().getDataAsString())}
-  catch(e){return {sessions:[],notes:{}}}
-}
-
-function writeData(d){
-  var f=getFile();
-  var j=JSON.stringify(d);
-  if(f) f.setContent(j);
-  else DriveApp.createFile(FN,j,MimeType.PLAIN_TEXT);
-}
-
-function merge(incoming){
-  var ex=readData();
-  var ids={};
-  ex.sessions.forEach(function(s){ids[String(s.id)]=1});
-  var n=0;
-  (incoming.sessions||[]).forEach(function(s){
-    if(!ids[String(s.id)]){ex.sessions.push(s);n++}
-  });
-  ex.sessions.sort(function(a,b){return new Date(a.date)-new Date(b.date)});
-  var nt=incoming.notes||{};
-  for(var k in nt) ex.notes[k]=nt[k];
-  ex.updated=new Date().toISOString();
-  writeData(ex);
-  return {ok:true, total:ex.sessions.length, added:n};
-}
-
-// GET = lecture des donnees (utilise par Recevoir + Tester)
-function doGet(e){
-  var data=readData();
-  return ContentService.createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-// POST = ecriture des donnees (utilise par Envoyer)
-// Accepte le body JSON direct OU un champ de formulaire "data"
-function doPost(e){
-  try{
-    var raw;
-    if(e.postData && e.postData.contents){
-      raw=e.postData.contents;
-    }
-    // Si c'est un form POST, le champ "data" contient le JSON
-    if(e.parameter && e.parameter.data){
-      raw=e.parameter.data;
-    }
-    if(!raw) return ContentService.createTextOutput(
-      JSON.stringify({ok:false,error:'Aucune donnee recue'})
-    ).setMimeType(ContentService.MimeType.JSON);
-
-    var incoming=JSON.parse(raw);
-    var r=merge(incoming);
-    return ContentService.createTextOutput(JSON.stringify(r))
-      .setMimeType(ContentService.MimeType.JSON);
-  }catch(err){
-    return ContentService.createTextOutput(
-      JSON.stringify({ok:false,error:String(err)})
-    ).setMimeType(ContentService.MimeType.JSON);
-  }
-}`;
-
-function getGASUrl(){return localStorage.getItem('vl3_gas_url')||'';}
-function setGASUrl(url){localStorage.setItem('vl3_gas_url',url);}
-
-function copyGASCode(){
-  try{navigator.clipboard.writeText(GAS_CODE).then(()=>toast('Code Apps Script copie !'));}
-  catch{toast('Erreur de copie');}
-}
+function getSyncBlobId(){return localStorage.getItem('vl3_blob_id')||'';}
+function setSyncBlobId(id){localStorage.setItem('vl3_blob_id',id);}
 
 function updateSyncBanner(){
-  const url=getGASUrl();
+  const id=getSyncBlobId();
   const dot=document.getElementById('sync-dot');
   const text=document.getElementById('sync-text');
   const lastSync=localStorage.getItem('vl3_last_sync');
-  if(url){
+  if(id){
     dot.className='sync-dot ok';
-    text.textContent=lastSync?'Google Drive -- '+new Date(lastSync).toLocaleString('fr-FR'):'Google Drive -- jamais synchronise';
+    const code=id.slice(-8);
+    text.textContent=lastSync?'Sync: ...'+code+' -- '+new Date(lastSync).toLocaleString('fr-FR'):'Sync: ...'+code+' -- jamais synchronise';
   }else{
     dot.className='sync-dot';
-    text.textContent='Sync non configuree. Touchez pour configurer.';
+    text.textContent='Non synchronise. Touchez pour configurer.';
   }
 }
 
-/* Appel GAS fiable via formulaire invisible (contourne CORS + redirects)
- * GAS traite le POST et redirige vers la reponse sur script.googleusercontent.com
- * En mode no-cors le navigateur ne peut pas lire la reponse, mais le POST EST traite.
- * Pour la lecture (GET), fetch normal avec redirect:follow fonctionne car c'est un GET simple.
- */
-
-/* Helper: POST via iframe/form pour contourner les problemes CORS de GAS */
-function gasPost(url, data){
-  return new Promise((resolve)=>{
-    // Cree un iframe invisible + form qui poste vers GAS
-    // GAS traite le doPost, on ne peut pas lire la reponse mais les donnees sont ecrites
-    const id='_gas_'+Date.now();
-    const iframe=document.createElement('iframe');
-    iframe.name=id;iframe.style.display='none';
-    document.body.appendChild(iframe);
-    const form=document.createElement('form');
-    form.method='POST';form.action=url;form.target=id;form.style.display='none';
-    const input=document.createElement('input');
-    input.type='hidden';input.name='data';input.value=JSON.stringify(data);
-    form.appendChild(input);
-    document.body.appendChild(form);
-    // Timeout de securite: on considere que c'est OK apres 4s
-    let done=false;
-    iframe.onload=()=>{if(!done){done=true;cleanup();resolve({ok:true});}};
-    setTimeout(()=>{if(!done){done=true;cleanup();resolve({ok:true,timeout:true});}},5000);
-    form.submit();
-    function cleanup(){try{document.body.removeChild(form);document.body.removeChild(iframe);}catch{}}
-  });
-}
-
-/* Helper: GET fiable via fetch */
-async function gasGet(url){
-  const res=await fetch(url,{redirect:'follow'});
-  if(!res.ok)throw new Error('HTTP '+res.status);
-  return await res.json();
-}
-
-/* Test connexion */
-async function testGASConnection(){
-  const url=document.getElementById('gas-url-input').value.trim();
-  if(!url){toast('Entrez l\'URL du script');return;}
-  setGASUrl(url);
-  const statusEl=document.getElementById('sync-status-text');
-  statusEl.textContent='Test en cours...';statusEl.style.color='var(--accent)';
-  try{
-    const data=await gasGet(url);
-    statusEl.textContent='Connexion OK ! '+(data.sessions?data.sessions.length+' seances sur le Drive.':'Pret a synchroniser.');
-    statusEl.style.color='var(--green)';
-    toast('Connexion reussie !');
-  }catch(err){
-    statusEl.textContent='Echec: '+err.message;statusEl.style.color='var(--red)';
-    toast('Echec connexion');
-  }
-}
-
-/* Push = envoi des donnees vers Google Drive */
-async function gdrivePush(){
-  const url=document.getElementById('gas-url-input').value.trim();
-  if(!url){toast('URL manquante');return;}
-  setGASUrl(url);
+/* Push = envoyer les donnees locales vers le cloud */
+async function cloudPush(){
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Envoi en cours...';statusEl.style.color='var(--accent)';
+  const payload={sessions:DB.sessions,notes:DB.notes,updated:new Date().toISOString()};
   try{
-    const data={sessions:DB.sessions,notes:DB.notes};
-    await gasPost(url,data);
-    // Verification: on relit les donnees pour confirmer
-    statusEl.textContent='Verification...';
-    await new Promise(r=>setTimeout(r,1500));
-    try{
-      const cloud=await gasGet(url);
-      const n=cloud.sessions?cloud.sessions.length:0;
-      statusEl.textContent='Envoye ! '+n+' seances sur le Drive.';statusEl.style.color='var(--green)';
-      toast(n+' seances synchronisees !');
-    }catch{
-      statusEl.textContent='Envoye (verification impossible).';statusEl.style.color='var(--accent)';
-      toast('Donnees envoyees !');
+    let blobId=getSyncBlobId();
+    // Si un code est saisi manuellement, l'utiliser
+    const inputCode=document.getElementById('sync-code-input').value.trim();
+    if(inputCode&&inputCode!==blobId)blobId=inputCode;
+
+    if(blobId){
+      // Mettre a jour le blob existant
+      const res=await fetch(BLOB_API+'/'+blobId,{
+        method:'PUT',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(res.ok){
+        setSyncBlobId(blobId);
+        document.getElementById('sync-code-input').value=blobId;
+        localStorage.setItem('vl3_last_sync',new Date().toISOString());
+        updateSyncBanner();
+        statusEl.textContent='Envoye ! '+payload.sessions.length+' seances.';statusEl.style.color='var(--green)';
+        toast(payload.sessions.length+' seances envoyees !');
+        return;
+      }
+      // Blob expire ou invalide, on en cree un nouveau
+      console.warn('Blob PUT failed, creating new one');
+      blobId='';
     }
+
+    // Creer un nouveau blob
+    const res=await fetch(BLOB_API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    if(!res.ok)throw new Error('Serveur: '+res.status);
+    // L'ID est dans le header Location
+    const loc=res.headers.get('Location')||'';
+    const newId=loc.split('/').pop();
+    if(!newId)throw new Error('Impossible de recuperer l\'ID');
+    setSyncBlobId(newId);
+    document.getElementById('sync-code-input').value=newId;
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
+    statusEl.textContent='Envoye ! Code: '+newId.slice(-8)+'. Notez ce code pour l\'autre appareil.';statusEl.style.color='var(--green)';
+    toast('Envoye ! Copiez le code.');
   }catch(err){
     console.error('Push error:',err);
     statusEl.textContent='Erreur: '+err.message;statusEl.style.color='var(--red)';
-    toast('Erreur envoi');
+    toast('Erreur envoi: '+err.message);
   }
 }
 
-/* Pull = reception des donnees depuis Google Drive */
-async function gdrivePull(){
-  const url=document.getElementById('gas-url-input').value.trim();
-  if(!url){toast('URL manquante');return;}
-  setGASUrl(url);
+/* Pull = recevoir les donnees depuis le cloud */
+async function cloudPull(){
+  const inputCode=document.getElementById('sync-code-input').value.trim();
+  if(!inputCode){toast('Entrez le code de synchronisation');return;}
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Reception en cours...';statusEl.style.color='var(--accent)';
   try{
-    const cloudData=await gasGet(url);
-    if(!cloudData.sessions||!Array.isArray(cloudData.sessions)||!cloudData.sessions.length){
-      statusEl.textContent='Aucune donnee sur le Drive. Envoyez d\'abord depuis un appareil.';statusEl.style.color='var(--text-dim)';
-      toast('Drive vide');return;
+    const res=await fetch(BLOB_API+'/'+inputCode,{
+      headers:{'Accept':'application/json'}
+    });
+    if(res.status===404){
+      statusEl.textContent='Code introuvable. Verifiez le code saisi.';statusEl.style.color='var(--red)';
+      toast('Code introuvable');return;
     }
+    if(!res.ok)throw new Error('Serveur: '+res.status);
+    const cloudData=await res.json();
+    if(!cloudData.sessions||!Array.isArray(cloudData.sessions)){
+      statusEl.textContent='Donnees invalides sur le serveur.';statusEl.style.color='var(--red)';
+      toast('Donnees invalides');return;
+    }
+    // Merge
     const existing=DB.sessions;
     const existingIds=new Set(existing.map(s=>String(s.id)));
     const newOnes=cloudData.sessions.filter(s=>!existingIds.has(String(s.id)));
     DB.sessions=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(cloudData.notes)DB.notes={...DB.notes,...cloudData.notes};
+    setSyncBlobId(inputCode);
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
-    statusEl.textContent=newOnes.length+' nouvelle(s). Total local: '+DB.sessions.length;statusEl.style.color='var(--green)';
+    statusEl.textContent=newOnes.length+' nouvelle(s) seance(s). Total: '+DB.sessions.length;statusEl.style.color='var(--green)';
     closeImport();renderDash();renderHist();
     toast(newOnes.length+' seance(s) recues !');
   }catch(err){
@@ -1573,7 +1466,7 @@ async function gdrivePull(){
 
 /* Sync sheet */
 function showSyncSheet(){
-  document.getElementById('gas-url-input').value=getGASUrl();
+  document.getElementById('sync-code-input').value=getSyncBlobId();
   document.getElementById('manual-import-sec').style.display='none';
   document.getElementById('import-sheet').classList.add('show');
   document.body.style.overflow='hidden';
