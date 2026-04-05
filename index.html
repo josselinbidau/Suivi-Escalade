@@ -198,25 +198,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 .empty{text-align:center;padding:30px 16px;color:var(--text-dim);}
 .empty-icon{margin-bottom:9px;}
 .empty-text{font-size:.84rem;line-height:1.5;}
-/* AXE1: Rest timer */
-.rest-timer-wrap{margin-top:10px;padding:13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-align:center;}
-.rest-timer-btns{display:flex;gap:5px;justify-content:center;margin-bottom:10px;}
-.rest-timer-btns button{min-height:48px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;flex:1;}
-.rest-timer-btns button.act{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
-.rest-countdown{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:var(--teal);margin:8px 0;transition:color .3s;}
-.rest-countdown.warn{color:var(--orange);}
-.rest-countdown.done{color:var(--red);animation:pulse .5s infinite;}
-.rest-start-btn{min-height:48px;width:100%;padding:12px;border-radius:var(--radius-sm);border:none;background:var(--teal);color:var(--bg);font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .18s;}
-.rest-start-btn:active{transform:scale(.98);opacity:.9;}
-.rest-start-btn.running{background:var(--red);color:#fff;}
 /* AXE1: Quick climb FAB */
 .fab-quick{position:fixed;bottom:calc(var(--tab-h) + var(--safe-b) + 16px);right:16px;z-index:150;width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(249,115,22,.4);display:flex;align-items:center;justify-content:center;transition:all .2s;-webkit-tap-highlight-color:transparent;}
 .fab-quick:active{transform:scale(.9);}
 .fab-quick svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-/* AXE2: Injury checklist */
-.injury-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
-.injury-chip{padding:8px 12px;min-height:40px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-size:.74rem;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:4px;}
-.injury-chip.sel{border-color:var(--red);color:var(--red);background:var(--red-bg);}
+/* Per-exercise rest timer button */
+.ex-rest-btn{display:flex;align-items:center;gap:6px;width:100%;padding:10px;min-height:44px;border-radius:var(--radius-xs);border:1px solid var(--border);background:var(--surface);color:var(--text-dim);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;margin-top:6px;}
+.ex-rest-btn:active{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
+.ex-rest-btn.running{border-color:var(--orange);color:var(--orange);background:var(--orange-bg);}
+.ex-rest-btn.done{border-color:var(--green);color:var(--green);background:rgba(63,185,80,.1);animation:pulse .5s 3;}
+.ex-rest-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
 /* AXE3: Calendar heatmap */
 .heatmap-wrap{padding:4px 0;}
 .heatmap-legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
@@ -237,10 +228,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 .bloc-heatmap .bh-label{color:var(--text-dim);display:flex;align-items:center;padding:2px 6px 2px 0;font-family:'DM Mono',monospace;white-space:nowrap;}
 .bloc-heatmap .bh-cell{width:100%;aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.7);}
 .bloc-heatmap .bh-header{font-size:.55rem;color:var(--text-sub);text-align:center;font-family:'DM Mono',monospace;padding:2px 0;}
-/* AXE2: injury alert */
-.injury-alert{padding:10px 13px;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--radius-sm);margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;}
-.injury-alert svg{flex-shrink:0;width:18px;height:18px;stroke:var(--red);fill:none;stroke-width:2;}
-.injury-alert-text{font-size:.78rem;color:var(--red);}
 </style>
 </head>
 <body>
@@ -335,17 +322,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
       <div style="font-size:.72rem;color:var(--text-dim)">Moy. : <span id="rpe-avg" style="color:var(--orange);font-weight:700">--</span></div>
     </div>
     <div id="ex-acc-list"></div>
-    <!-- AXE1: Rest timer -->
-    <div class="rest-timer-wrap" id="rest-timer">
-      <div class="fl" style="margin-bottom:8px;text-align:left">Timer repos inter-series</div>
-      <div class="rest-timer-btns">
-        <button onclick="setRestTime(60)" id="rest-60">60s</button>
-        <button onclick="setRestTime(90)" class="act" id="rest-90">90s</button>
-        <button onclick="setRestTime(120)" id="rest-120">120s</button>
-      </div>
-      <div class="rest-countdown" id="rest-display">1:30</div>
-      <button class="rest-start-btn" id="rest-start-btn" onclick="toggleRestTimer()">Demarrer repos</button>
-    </div>
   </div>
   <!-- AXE1: RPE global always visible for C/Cardio/Repos -->
   <div class="card" id="rpe-glob">
@@ -358,23 +334,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
     <div class="fg"><label class="fl">Voies / blocs realises</label><input class="fi" type="number" id="log-vol" placeholder="12" inputmode="numeric"></div>
     <div class="fg"><label class="fl">Diff. max tentee</label><input class="fi" type="text" id="log-dtry" placeholder="7A"></div>
     <div class="fg"><label class="fl">Diff. max reussie</label><input class="fi" type="text" id="log-ddone" placeholder="6C+"></div>
-  </div>
-  <!-- AXE2: Injury tracking -->
-  <div class="card" id="injury-sec" style="display:none">
-    <div class="fl" style="margin-bottom:8px">Zone douloureuse (optionnel)</div>
-    <div class="injury-grid" id="injury-grid">
-      <div class="injury-chip" data-zone="doigts" onclick="togInjury(this)">Doigts</div>
-      <div class="injury-chip" data-zone="epaules" onclick="togInjury(this)">Epaules</div>
-      <div class="injury-chip" data-zone="coudes" onclick="togInjury(this)">Coudes</div>
-      <div class="injury-chip" data-zone="dos" onclick="togInjury(this)">Dos</div>
-      <div class="injury-chip" data-zone="genoux" onclick="togInjury(this)">Genoux</div>
-    </div>
-    <div id="injury-intensity-sec" style="display:none">
-      <div class="fl" style="margin-bottom:4px">Intensite douleur</div>
-      <div class="slval red" id="injury-val" style="font-size:1.4rem">1</div>
-      <input type="range" id="injury-sl" min="1" max="5" step="1" value="1" oninput="document.getElementById('injury-val').textContent=this.value">
-      <div class="sltrack"><span>1 Legere</span><span>3 Moyenne</span><span>5 Severe</span></div>
-    </div>
   </div>
   <div class="card" id="foster-prev" style="display:none">
     <div class="card-hdr">
@@ -433,8 +392,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <!-- ANALYSE -->
 <section class="page" id="page-analyse"><div class="app">
   <div class="title">Analyse</div><div class="sub">Resume hebdomadaire -- Recommandations</div>
-  <!-- AXE2: Injury alerts -->
-  <div id="injury-alerts"></div>
   <div class="card"><div class="card-hdr"><div class="card-lbl">Resume par semaine</div></div><div id="weekly-sum"></div></div>
   <!-- AXE3: Radar chart -->
   <div class="card">
@@ -509,24 +466,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <div class="sheet-ov" id="import-sheet">
   <div class="sheet">
     <div style="padding:14px 16px 0"><div class="sh-handle"></div>
-      <div class="sh-title">Synchronisation Cloud</div>
-      <div class="sh-sub">Synchronisez vos donnees entre vos appareils automatiquement.</div>
+      <div class="sh-title">Synchronisation Google Drive</div>
+      <div class="sh-sub">Synchronisez automatiquement entre mobile et PC via Google Apps Script.</div>
     </div>
     <div class="sh-body" style="margin-top:8px">
-      <!-- Cloud sync section -->
-      <div class="fl" style="margin-bottom:6px">Identifiant de synchronisation</div>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <input class="fi" type="text" id="sync-id-input" placeholder="Entrez un ID ou generez-en un" style="flex:1;font-family:'DM Mono',monospace;font-size:.8rem">
-        <button class="btn btn-outline btn-sm" onclick="generateSyncId()" style="white-space:nowrap;flex-shrink:0">Generer</button>
+      <!-- Google Apps Script URL -->
+      <div class="fl" style="margin-bottom:6px">URL Google Apps Script</div>
+      <input class="fi" type="url" id="gas-url-input" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:.75rem;margin-bottom:6px">
+      <div style="font-size:.65rem;color:var(--text-sub);margin-bottom:12px;line-height:1.5" id="gas-help">
+        1. Ouvrez <a href="https://script.google.com" target="_blank" style="color:var(--teal)">script.google.com</a> &gt; Nouveau projet<br>
+        2. Collez le code (bouton ci-dessous) &gt; Deployer &gt; Application Web &gt; Tout le monde<br>
+        3. Collez l'URL ici
       </div>
-      <div style="font-size:.68rem;color:var(--text-sub);margin-bottom:14px" id="sync-status-text">Entrez le meme ID sur tous vos appareils pour les synchroniser.</div>
+      <button class="btn btn-outline btn-sm" style="margin-bottom:14px;width:100%" onclick="copyGASCode()">Copier le code Apps Script</button>
 
       <div style="display:flex;gap:8px;margin-bottom:14px">
-        <button class="btn btn-primary" onclick="cloudPush()" style="flex:1">
+        <button class="btn btn-primary" onclick="gdrivePush()" style="flex:1">
           <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 19V6m0 0l-5 5m5-5l5 5"/><path d="M5 21h14"/></svg>
           Envoyer
         </button>
-        <button class="btn btn-outline" onclick="cloudPull()" style="flex:1">
+        <button class="btn btn-outline" onclick="gdrivePull()" style="flex:1">
           <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 5v13m0 0l5-5m-5 5l-5-5"/><path d="M5 3h14"/></svg>
           Recevoir
         </button>
@@ -593,29 +552,29 @@ const TS={A:'Seance A',B:'Seance B',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
 const FC=['','#f85149','#f97316','#e5a820','#58a6ff','#2dd4a0'];
 
 const EMA=[
-  {name:'Dead Hang Half Crimp',series:3,unit:'sec'},
-  {name:'Dead Hang Sloper',series:3,unit:'sec'},
-  {name:'Pull-up',series:4,unit:'reps'},
-  {name:'Negative Pull-up',series:4,unit:'sec'},
-  {name:'Low Row',series:4,unit:'reps'},
-  {name:'Archer Rows',series:4,unit:'reps',bilateral:true},
-  {name:'Prone Y',series:3,unit:'reps'},
-  {name:'External Rotations',series:3,unit:'reps',bilateral:true},
-  {name:'Press Up',series:3,unit:'reps'},
-  {name:'Hollow Body Hold',series:3,unit:'sec'},
-  {name:'Hanging Knee Raises',series:3,unit:'reps'},
-  {name:'Side Plank',series:3,unit:'sec',bilateral:true},
+  {name:'Dead Hang Half Crimp',series:3,unit:'sec',rest:180},
+  {name:'Dead Hang Sloper',series:3,unit:'sec',rest:180},
+  {name:'Pull-up',series:4,unit:'reps',rest:150},
+  {name:'Negative Pull-up',series:4,unit:'sec',rest:120},
+  {name:'Low Row',series:4,unit:'reps',rest:90},
+  {name:'Archer Rows',series:4,unit:'reps',bilateral:true,rest:90},
+  {name:'Prone Y',series:3,unit:'reps',rest:60},
+  {name:'External Rotations',series:3,unit:'reps',bilateral:true,rest:60},
+  {name:'Press Up',series:3,unit:'reps',rest:60},
+  {name:'Hollow Body Hold',series:3,unit:'sec',rest:60},
+  {name:'Hanging Knee Raises',series:3,unit:'reps',rest:60},
+  {name:'Side Plank',series:3,unit:'sec',bilateral:true,rest:45},
 ];
 const EMB=[
-  {name:'Single Leg RDL',series:3,unit:'reps',bilateral:true},
-  {name:'Hamstring Walks',series:3,unit:'reps'},
-  {name:'Glute Bridge',series:3,unit:'reps'},
-  {name:'Bulgarian Split Squat',series:3,unit:'reps',bilateral:true},
-  {name:'Deep Squat',series:3,unit:'reps'},
-  {name:'High Step',series:3,unit:'reps',bilateral:true},
-  {name:'Copenhagen Plank',series:3,unit:'sec',bilateral:true},
-  {name:'Isometric Hang Sloper',series:3,unit:'sec'},
-  {name:'Shoulder Shrugs',series:3,unit:'reps'},
+  {name:'Single Leg RDL',series:3,unit:'reps',bilateral:true,rest:90},
+  {name:'Hamstring Walks',series:3,unit:'reps',rest:60},
+  {name:'Glute Bridge',series:3,unit:'reps',rest:60},
+  {name:'Bulgarian Split Squat',series:3,unit:'reps',bilateral:true,rest:90},
+  {name:'Deep Squat',series:3,unit:'reps',rest:60},
+  {name:'High Step',series:3,unit:'reps',bilateral:true,rest:60},
+  {name:'Copenhagen Plank',series:3,unit:'sec',bilateral:true,rest:60},
+  {name:'Isometric Hang Sloper',series:3,unit:'sec',rest:120},
+  {name:'Shoulder Shrugs',series:3,unit:'reps',rest:60},
 ];
 const ALL_EX=[...EMA.map(e=>({...e,sess:'A'})),...EMB.map(e=>({...e,sess:'B'}))];
 
@@ -699,8 +658,6 @@ function selType(t){
   // RPE global visible for C/Cardio, hidden for A/B (per-exercise RPE) and Repos
   document.getElementById('rpe-glob').style.display=['C','Cardio'].includes(t)?'block':'none';
   document.getElementById('grimpe-sec').style.display=t==='C'?'block':'none';
-  // AXE2: Show injury section for non-Repos sessions
-  document.getElementById('injury-sec').style.display=t!=='Repos'?'block':'none';
   if(['A','B'].includes(t))buildAccordion(t);
 }
 
@@ -714,12 +671,6 @@ function quickClimb(){
   },100);
 }
 
-/* AXE2: Injury toggle */
-function togInjury(chip){
-  chip.classList.toggle('sel');
-  const anySelected=document.querySelectorAll('.injury-chip.sel').length>0;
-  document.getElementById('injury-intensity-sec').style.display=anySelected?'block':'none';
-}
 
 /* Previous data */
 function prevExData(name,type){
@@ -788,6 +739,7 @@ function buildAccordion(type){
   container.innerHTML=list.map((ex,idx)=>{
     const prev=prevExData(ex.name,type);
     const seriesHTML=Array.from({length:ex.series},(_,si)=>serieCardHTML(ex,si,prev?.[si]??null)).join('');
+    const restLabel=ex.rest>=60?(ex.rest/60)+'min':ex.rest+'s';
     return`<div class="ex-acc" id="acc${idx}">
       <div class="ex-hdr" id="accH${idx}" onclick="togAcc(${idx})">
         <div class="ex-left"><div class="ex-dot"></div><div class="ex-name">${ex.name}</div></div>
@@ -796,6 +748,10 @@ function buildAccordion(type){
       <div class="ex-body" id="accB${idx}">
         <div id="series-container-${idx}">${seriesHTML}</div>
         <button class="add-serie-btn" onclick="addSerie(${idx},'${ex.name}',${ex.series},${ex.bilateral?'true':'false'})">+ Ajouter une serie</button>
+        <button class="ex-rest-btn" id="restBtn${idx}" onclick="startExRest(${idx},${ex.rest})">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="restLbl${idx}">Repos ${restLabel}</span>
+        </button>
         <div class="ex-rpe-row">
           <div class="ex-rpe-lbl">RPE seance</div>
           <input type="range" class="ex-rpe-inp" min="0" max="10" step="1" value="0" data-ex="${ex.name}" data-idx="${idx}" style="flex:1" oninput="onExRPE(${idx},+this.value)">
@@ -880,48 +836,42 @@ function calcFoster(){
 }
 document.addEventListener('input',e=>{if(e.target.id==='log-dur')calcFoster();});
 
-/* AXE1: Rest timer */
-let restDuration=90, restInterval=null, restRemaining=0;
-function setRestTime(sec){
-  restDuration=sec;
-  [60,90,120].forEach(s=>{
-    const btn=document.getElementById('rest-'+s);
-    btn.classList.toggle('act',s===sec);
-  });
-  if(!restInterval){
-    restRemaining=sec;
-    document.getElementById('rest-display').textContent=fmtTimer(sec);
-  }
-}
+/* Per-exercise rest timer */
+let activeRestIdx=null,activeRestInterval=null;
 function fmtTimer(sec){const m=Math.floor(sec/60),s=sec%60;return m+':'+(s<10?'0':'')+s;}
-function toggleRestTimer(){
-  const btn=document.getElementById('rest-start-btn');
-  const display=document.getElementById('rest-display');
-  if(restInterval){
-    clearInterval(restInterval);restInterval=null;
-    btn.textContent='Demarrer repos';btn.classList.remove('running');
-    restRemaining=restDuration;
-    display.textContent=fmtTimer(restDuration);
-    display.className='rest-countdown';
-    return;
+function startExRest(idx,duration){
+  // Stop any running timer
+  if(activeRestInterval){
+    clearInterval(activeRestInterval);
+    const oldBtn=document.getElementById('restBtn'+activeRestIdx);
+    const oldLbl=document.getElementById('restLbl'+activeRestIdx);
+    if(oldBtn){oldBtn.classList.remove('running','done');}
+    const oldEx=[...EMA,...EMB].find((_,i)=>i===activeRestIdx)||{rest:60};
+    if(oldLbl){const r=oldEx.rest||60;oldLbl.textContent='Repos '+(r>=60?(r/60)+'min':r+'s');}
+    if(activeRestIdx===idx){activeRestInterval=null;activeRestIdx=null;return;}
   }
-  restRemaining=restDuration;
-  btn.textContent='Arreter';btn.classList.add('running');
-  display.className='rest-countdown';
-  display.textContent=fmtTimer(restRemaining);
-  restInterval=setInterval(()=>{
-    restRemaining--;
-    if(restRemaining<=10&&restRemaining>0)display.className='rest-countdown warn';
-    if(restRemaining<=0){
-      clearInterval(restInterval);restInterval=null;
-      display.textContent='0:00';display.className='rest-countdown done';
-      btn.textContent='Demarrer repos';btn.classList.remove('running');
-      // Haptic vibration
+  activeRestIdx=idx;
+  const btn=document.getElementById('restBtn'+idx);
+  const lbl=document.getElementById('restLbl'+idx);
+  let remaining=duration;
+  btn.classList.add('running');btn.classList.remove('done');
+  lbl.textContent=fmtTimer(remaining);
+  activeRestInterval=setInterval(()=>{
+    remaining--;
+    if(remaining<=0){
+      clearInterval(activeRestInterval);activeRestInterval=null;
+      btn.classList.remove('running');btn.classList.add('done');
+      lbl.textContent='GO !';
       if(navigator.vibrate)navigator.vibrate([200,100,200,100,200]);
-      setTimeout(()=>{display.className='rest-countdown';display.textContent=fmtTimer(restDuration);},3000);
+      setTimeout(()=>{
+        btn.classList.remove('done');
+        const r=duration;lbl.textContent='Repos '+(r>=60?(r/60)+'min':r+'s');
+        activeRestIdx=null;
+      },3000);
       return;
     }
-    display.textContent=fmtTimer(restRemaining);
+    lbl.textContent=fmtTimer(remaining);
+    if(remaining<=5)btn.classList.add('done');
   },1000);
 }
 
@@ -971,20 +921,11 @@ function saveSession(){
     });
   }else{rpe=+document.getElementById('rpe-sl').value||0;}
   const foster=Math.round(dur*rpe);
-  // AXE2: Collect injury data
-  const injuries=[];
-  document.querySelectorAll('.injury-chip.sel').forEach(chip=>{
-    injuries.push(chip.dataset.zone);
-  });
-  const injuryIntensity=injuries.length?+document.getElementById('injury-sl').value:0;
-
   const s={id:Date.now(),date,type:cType,phase,duration:dur,forme,rpe,rpeByEx,exData,foster,
     pos:document.getElementById('log-pos').value.trim(),neg:document.getElementById('log-neg').value.trim(),
     volume:cType==='C'?document.getElementById('log-vol').value:null,
     diffTry:cType==='C'?document.getElementById('log-dtry').value:null,
     diffDone:cType==='C'?document.getElementById('log-ddone').value:null,
-    injuries:injuries.length?injuries:null,
-    injuryIntensity:injuryIntensity||null,
   };
   // AXE2: Check PR before saving
   const isPR=checkPR(s);
@@ -992,11 +933,6 @@ function saveSession(){
   ['log-pos','log-neg','log-dur'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('forme-sl').value=3;onForme(3);
   document.getElementById('foster-prev').style.display='none';
-  // Reset injury UI
-  document.querySelectorAll('.injury-chip').forEach(c=>c.classList.remove('sel'));
-  document.getElementById('injury-intensity-sec').style.display='none';
-  document.getElementById('injury-sl').value=1;
-  document.getElementById('injury-val').textContent='1';
   if(['A','B'].includes(cType))buildAccordion(cType);
   else{document.getElementById('rpe-sl').value=6;onRPE(6);}
   updateNavPhase();
@@ -1315,119 +1251,75 @@ function delSession(){
   closeSheet();renderDash();renderHist();toast('Seance supprimee');
 }
 
-/* Cloud Sync via jsonblob.com */
-const SYNC_API='https://jsonblob.com/api/jsonBlob';
+/* Google Drive Sync via Google Apps Script */
+const GAS_CODE=`function doGet(e){var s=PropertiesService.getScriptProperties();var d=s.getProperty('vl3_data')||'{}';return ContentService.createTextOutput(d).setMimeType(ContentService.MimeType.JSON);}function doPost(e){var s=PropertiesService.getScriptProperties();var incoming=JSON.parse(e.postData.contents);var existing=JSON.parse(s.getProperty('vl3_data')||'{"sessions":[],"notes":{}}');var ids=new Set(existing.sessions.map(function(x){return String(x.id)}));var newOnes=incoming.sessions.filter(function(x){return!ids.has(String(x.id))});existing.sessions=existing.sessions.concat(newOnes).sort(function(a,b){return new Date(a.date)-new Date(b.date)});Object.assign(existing.notes,incoming.notes||{});existing.updated=new Date().toISOString();s.setProperty('vl3_data',JSON.stringify(existing));return ContentService.createTextOutput(JSON.stringify({ok:true,total:existing.sessions.length})).setMimeType(ContentService.MimeType.JSON);}`;
 
-function getSyncId(){return localStorage.getItem('vl3_sync_id')||'';}
-function setSyncId(id){localStorage.setItem('vl3_sync_id',id);}
+function getGASUrl(){return localStorage.getItem('vl3_gas_url')||'';}
+function setGASUrl(url){localStorage.setItem('vl3_gas_url',url);}
 
-function generateSyncId(){
-  const chars='abcdefghijklmnopqrstuvwxyz0123456789';
-  let id='vl-';
-  for(let i=0;i<8;i++)id+=chars[Math.floor(Math.random()*chars.length)];
-  document.getElementById('sync-id-input').value=id;
-  toast('ID genere ! Utilisez-le sur vos autres appareils.');
+function copyGASCode(){
+  try{navigator.clipboard.writeText(GAS_CODE).then(()=>toast('Code Apps Script copie !'));}
+  catch{toast('Erreur de copie');}
 }
 
 function updateSyncBanner(){
-  const id=getSyncId();
+  const url=getGASUrl();
   const dot=document.getElementById('sync-dot');
   const text=document.getElementById('sync-text');
   const lastSync=localStorage.getItem('vl3_last_sync');
-  if(id){
+  if(url){
     dot.className='sync-dot ok';
-    text.textContent=lastSync?'Sync: '+id.slice(0,12)+'... — '+new Date(lastSync).toLocaleString('fr-FR'):'Sync: '+id.slice(0,12)+'... — jamais synchronise';
+    text.textContent=lastSync?'Google Drive -- '+new Date(lastSync).toLocaleString('fr-FR'):'Google Drive -- jamais synchronise';
   }else{
     dot.className='sync-dot';
-    text.textContent='Pas encore synchronise. Configurez la sync cloud.';
+    text.textContent='Sync non configuree. Touchez pour configurer.';
   }
 }
 
-async function cloudPush(){
-  const inputId=document.getElementById('sync-id-input').value.trim();
-  if(!inputId){toast('Entrez ou generez un ID');return;}
-  setSyncId(inputId);
-  const data={sessions:DB.sessions,notes:DB.notes,updated:new Date().toISOString()};
+async function gdrivePush(){
+  const url=document.getElementById('gas-url-input').value.trim();
+  if(!url||!url.startsWith('https://script.google.com')){toast('URL Apps Script invalide');return;}
+  setGASUrl(url);
+  const data={sessions:DB.sessions,notes:DB.notes};
   try{
-    // Try to read existing blob first
-    let blobId=localStorage.getItem('vl3_blob_id');
-    if(blobId){
-      // Update existing blob
-      const res=await fetch(SYNC_API+'/'+blobId,{
-        method:'PUT',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({syncId:inputId,data})
-      });
-      if(!res.ok)blobId=null; // Blob expired, create new one
-    }
-    if(!blobId){
-      // Create new blob
-      const res=await fetch(SYNC_API,{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({syncId:inputId,data})
-      });
-      if(!res.ok)throw new Error('Erreur serveur: '+res.status);
-      const loc=res.headers.get('Location')||res.headers.get('location');
-      if(loc){
-        blobId=loc.split('/').pop();
-      }else{
-        // Try to get ID from response URL
-        const txt=await res.text();
-        try{const j=JSON.parse(txt);blobId=j.id||null;}catch{}
-      }
-      if(!blobId)throw new Error('Impossible de recuperer l\'ID du blob');
-      localStorage.setItem('vl3_blob_id',blobId);
-    }
+    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data),mode:'no-cors'});
+    // no-cors means we can't read the response, but the data is sent
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
-    toast('Donnees envoyees !');
+    toast('Donnees envoyees vers Google Drive !');
   }catch(err){
-    console.error('Cloud push error:',err);
-    toast('Erreur sync: '+err.message);
+    console.error('GDrive push error:',err);
+    toast('Erreur: '+err.message);
   }
 }
 
-async function cloudPull(){
-  const inputId=document.getElementById('sync-id-input').value.trim();
-  if(!inputId){toast('Entrez l\'ID de synchronisation');return;}
-  setSyncId(inputId);
+async function gdrivePull(){
+  const url=document.getElementById('gas-url-input').value.trim();
+  if(!url||!url.startsWith('https://script.google.com')){toast('URL Apps Script invalide');return;}
+  setGASUrl(url);
   try{
-    // If we have a blob ID, try directly
-    let blobId=localStorage.getItem('vl3_blob_id');
-    let cloudData=null;
-    if(blobId){
-      const res=await fetch(SYNC_API+'/'+blobId,{headers:{'Accept':'application/json'}});
-      if(res.ok){
-        const json=await res.json();
-        if(json.syncId===inputId)cloudData=json.data;
-      }
-    }
-    if(!cloudData){
-      toast('Aucune donnee trouvee pour cet ID. Envoyez d\'abord depuis l\'autre appareil.');
-      return;
-    }
-    // Merge sessions
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('Erreur serveur: '+res.status);
+    const cloudData=await res.json();
+    if(!cloudData.sessions||!cloudData.sessions.length){toast('Aucune donnee sur Google Drive');return;}
     const existing=DB.sessions;
     const existingIds=new Set(existing.map(s=>String(s.id)));
-    const newOnes=(cloudData.sessions||[]).filter(s=>!existingIds.has(String(s.id)));
-    // Also update existing sessions if cloud version is newer
-    const merged=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
-    DB.sessions=merged;
+    const newOnes=cloudData.sessions.filter(s=>!existingIds.has(String(s.id)));
+    DB.sessions=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(cloudData.notes)DB.notes={...DB.notes,...cloudData.notes};
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
     closeImport();renderDash();renderHist();
-    toast(newOnes.length+' seance(s) synchronisee(s)');
+    toast(newOnes.length+' seance(s) synchronisee(s) !');
   }catch(err){
-    console.error('Cloud pull error:',err);
-    toast('Erreur sync: '+err.message);
+    console.error('GDrive pull error:',err);
+    toast('Erreur: '+err.message);
   }
 }
 
 /* Sync sheet */
 function showSyncSheet(){
-  document.getElementById('sync-id-input').value=getSyncId();
+  document.getElementById('gas-url-input').value=getGASUrl();
   document.getElementById('manual-import-sec').style.display='none';
   document.getElementById('import-sheet').classList.add('show');
   document.body.style.overflow='hidden';
@@ -1567,9 +1459,6 @@ function renderBlocHeatmap(){
 function renderAnalyse(){
   const ss=DB.sessions;
 
-  // AXE2: Injury alerts
-  renderInjuryAlerts(ss);
-
   const byP={};
   ss.forEach(s=>{
     if(!byP[s.phase])byP[s.phase]={c:0,f:0,formes:[],rpes:[],A:0,B:0,C:0};
@@ -1615,23 +1504,6 @@ function renderAnalyse(){
 }
 
 /* AXE2: Injury alerts */
-function renderInjuryAlerts(ss){
-  const el=document.getElementById('injury-alerts');
-  const twoWeeksAgo=new Date();twoWeeksAgo.setDate(twoWeeksAgo.getDate()-14);
-  const recent=ss.filter(s=>new Date(s.date+'T00:00:00')>=twoWeeksAgo&&s.injuries?.length);
-  const zoneCounts={};
-  recent.forEach(s=>{
-    s.injuries.forEach(z=>{zoneCounts[z]=(zoneCounts[z]||0)+1;});
-  });
-  const alerts=Object.entries(zoneCounts).filter(([,c])=>c>=3);
-  if(!alerts.length){el.innerHTML='';return;}
-  el.innerHTML=alerts.map(([zone,count])=>`
-    <div class="injury-alert">
-      <svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <div class="injury-alert-text"><strong>${zone}</strong> signalee ${count} fois sur les 14 derniers jours. Envisagez une evaluation ou du repos cible.</div>
-    </div>`).join('');
-}
-
 /* AXE3: Radar chart */
 function drawRadar(ss){
   const cv=document.getElementById('radarChart');if(!cv)return;
