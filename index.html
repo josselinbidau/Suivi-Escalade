@@ -26,7 +26,6 @@
   --nav-h:54px;--tab-h:58px;
 }
 html{font-size:16px;-webkit-text-size-adjust:100%;}
-/* FIX SCROLL: pas de overflow:hidden sur body */
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased;}
 .app{max-width:480px;margin:0 auto;padding:calc(var(--nav-h)+14px) 14px calc(var(--tab-h)+var(--safe-b)+24px);}
 /* NAV */
@@ -38,12 +37,21 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 /* TABS */
 .tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,17,23,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding-bottom:var(--safe-b);}
 .tab-bar-inner{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);}
-.tab-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 9px;background:none;border:none;cursor:pointer;color:var(--text-sub);transition:color .18s;-webkit-tap-highlight-color:transparent;font-size:.6rem;font-weight:600;letter-spacing:.02em;}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 9px;background:none;border:none;cursor:pointer;color:var(--text-sub);transition:color .18s;-webkit-tap-highlight-color:transparent;font-size:.6rem;font-weight:600;letter-spacing:.02em;min-height:48px;}
 .tab-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .tab-btn.active{color:var(--teal);}
 /* PAGES */
-.page{display:none;}
-.page.active{display:block;animation:fadeUp .22s ease;}
+.page{display:none;position:relative;}
+.page.active{display:block;}
+/* Slide transitions */
+.page.slide-in-right{animation:slideInRight .28s ease both;}
+.page.slide-in-left{animation:slideInLeft .28s ease both;}
+.page.slide-out-right{animation:slideOutRight .28s ease both;}
+.page.slide-out-left{animation:slideOutLeft .28s ease both;}
+@keyframes slideInRight{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideOutRight{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(40px);}}
+@keyframes slideOutLeft{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 /* TYPE */
 .title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:2px;}
@@ -65,9 +73,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .fi,.fs{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;padding:11px 12px;outline:none;-webkit-appearance:none;transition:border-color .18s;}
 .fi:focus,.fs:focus{border-color:var(--teal);}
 .fi::placeholder{color:var(--text-sub);}
-/* SEG */
+/* SEG — AXE1: min-height 48px */
 .seg{display:flex;gap:5px;flex-wrap:wrap;}
-.seg-btn{flex:1;min-width:58px;padding:9px 5px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:.76rem;font-weight:600;cursor:pointer;text-align:center;transition:all .18s;-webkit-tap-highlight-color:transparent;}
+.seg-btn{flex:1;min-width:58px;padding:12px 5px;min-height:48px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:.76rem;font-weight:600;cursor:pointer;text-align:center;transition:all .18s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;}
 .seg-btn.act-A{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
 .seg-btn.act-B{background:var(--teal-bg);border-color:var(--teal);color:var(--teal);}
 .seg-btn.act-C{background:var(--orange-bg);border-color:var(--orange);color:var(--orange);}
@@ -78,10 +86,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .sltrack{display:flex;justify-content:space-between;padding:0 2px;margin-top:4px;}
 .sltrack span{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--text-sub);}
 input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;background:var(--surface2);border:1px solid var(--border);outline:none;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--teal);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--teal);}
-/* ACCORDION */
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:var(--teal);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--teal);}
+/* ACCORDION — AXE1: min-height 48px on headers */
 .ex-acc{border-radius:var(--radius-sm);overflow:hidden;margin-bottom:5px;border:1px solid var(--border);}
-.ex-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 12px;background:var(--surface2);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;transition:background .15s;}
+.ex-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 12px;min-height:48px;background:var(--surface2);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;transition:background .15s;}
 .ex-hdr:active{background:var(--surface3);}
 .ex-hdr.open{background:var(--surface3);border-bottom:1px solid var(--border);}
 .ex-left{display:flex;align-items:center;gap:8px;}
@@ -92,13 +100,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 .rpe-badge{font-family:'DM Mono',monospace;font-size:.7rem;padding:2px 7px;border-radius:10px;border:1px solid var(--border);color:var(--text-sub);background:var(--surface3);transition:all .2s;white-space:nowrap;}
 .acc-chev{color:var(--text-sub);font-size:.68rem;transition:transform .2s;}
 .ex-hdr.open .acc-chev{transform:rotate(180deg);}
-.ex-body{display:none;padding:10px;}
-.ex-body.open{display:block;}
+/* AXE1: smooth accordion with max-height transition */
+.ex-body{max-height:0;overflow:hidden;transition:max-height .3s ease, padding .3s ease;padding:0 10px;}
+.ex-body.open{max-height:2000px;padding:10px;}
 /* Serie card */
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xs);padding:10px 10px 8px;margin-bottom:7px;position:relative;}
 .sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
 .sc-lbl{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sub);}
-.sc-del{background:none;border:none;color:var(--text-sub);cursor:pointer;padding:2px;font-size:.75rem;-webkit-tap-highlight-color:transparent;transition:color .15s;}
+.sc-del{background:none;border:none;color:var(--text-sub);cursor:pointer;padding:6px;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;font-size:.75rem;-webkit-tap-highlight-color:transparent;transition:color .15s;}
 .sc-del:active{color:var(--red);}
 .sc-row{display:flex;gap:6px;}
 .si-w{display:flex;flex-direction:column;gap:3px;}
@@ -112,15 +121,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 .si-f::placeholder{color:var(--text-sub);font-size:.83rem;}
 .si-prev{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--text-sub);text-align:center;margin-top:2px;}
 .si-prev.hp{color:var(--teal-dim);font-style:italic;}
-/* Add serie button */
-.add-serie-btn{width:100%;padding:9px;border-radius:var(--radius-xs);background:transparent;border:1px dashed var(--border-hi);color:var(--text-sub);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent;margin-bottom:8px;}
+/* Add serie button — AXE1: min-height 48px */
+.add-serie-btn{width:100%;padding:12px;min-height:48px;border-radius:var(--radius-xs);background:transparent;border:1px dashed var(--border-hi);color:var(--text-sub);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent;margin-bottom:8px;}
 .add-serie-btn:active{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
 /* RPE row */
 .ex-rpe-row{display:flex;align-items:center;gap:9px;margin-top:6px;padding-top:8px;border-top:1px solid var(--border);}
 .ex-rpe-lbl{font-size:.7rem;font-weight:600;color:var(--text-dim);flex-shrink:0;min-width:60px;}
 .ex-rpe-num{font-family:'DM Mono',monospace;font-size:.88rem;font-weight:600;min-width:26px;text-align:right;flex-shrink:0;}
-/* Session items */
-.si-item{display:flex;align-items:center;gap:9px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+/* Session items — AXE1: min-height 48px */
+.si-item{display:flex;align-items:center;gap:9px;padding:11px 0;min-height:48px;border-bottom:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .si-item:last-child{border-bottom:none;}
 .si-item:active{opacity:.7;}
 .si-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
@@ -132,22 +141,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 /* Chart */
 .chart-wrap{position:relative;height:140px;margin:5px 0;}
 .chart-wrap.sm{height:95px;}
-/* Buttons */
-.btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:14px;border-radius:var(--radius);font-family:'Syne',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;-webkit-tap-highlight-color:transparent;}
+/* Buttons — AXE1: min-height 48px */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:14px;min-height:48px;border-radius:var(--radius);font-family:'Syne',sans-serif;font-size:.93rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;-webkit-tap-highlight-color:transparent;}
 .btn-primary{background:var(--teal);color:var(--bg);}
 .btn-primary:active{transform:scale(.98);opacity:.9;}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
 .btn-outline:active{background:var(--surface2);}
 .btn-danger{background:var(--red-bg);border:1px solid var(--red);color:var(--red);}
-.btn-sm{padding:9px 14px;font-size:.8rem;border-radius:var(--radius-sm);width:auto;}
-.btn-icon{background:none;border:none;cursor:pointer;padding:6px;border-radius:var(--radius-xs);color:var(--text-dim);transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.btn-sm{padding:9px 14px;font-size:.8rem;border-radius:var(--radius-sm);width:auto;min-height:40px;}
+.btn-icon{background:none;border:none;cursor:pointer;padding:6px;border-radius:var(--radius-xs);color:var(--text-dim);transition:all .15s;-webkit-tap-highlight-color:transparent;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;}
 .btn-icon:active{color:var(--teal);}
 /* Foster bar */
 .fbar{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;margin:6px 0;}
 .ffill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--orange),var(--red));transition:width .35s ease;}
-/* Ex picker */
+/* Ex picker — AXE1: min-height 48px on chips */
 .ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
-.ex-chip{padding:8px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);font-size:.74rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:left;color:var(--text-dim);-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:5px;}
+.ex-chip{padding:10px 8px;min-height:48px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);font-size:.74rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:left;color:var(--text-dim);-webkit-tap-highlight-color:transparent;display:flex;align-items:center;gap:5px;}
 .ex-chip-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
 .ex-chip.sel{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
 /* Phase badge */
@@ -182,10 +191,56 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 /* Toast */
 .toast{position:fixed;bottom:calc(var(--tab-h)+var(--safe-b)+12px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:30px;font-weight:600;font-size:.83rem;opacity:0;transition:all .22s;pointer-events:none;z-index:1000;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* AXE4: PR toast special */
+.toast.pr{border-color:var(--gold);background:linear-gradient(135deg,var(--surface),rgba(229,168,32,.15));animation:prPulse .6s ease;}
+@keyframes prPulse{0%{transform:translateX(-50%) scale(.8);opacity:0;}50%{transform:translateX(-50%) scale(1.05);}100%{transform:translateX(-50%) scale(1);opacity:1;}}
 .divider{height:1px;background:var(--border);margin:11px 0;}
 .empty{text-align:center;padding:30px 16px;color:var(--text-dim);}
-.empty-icon{font-size:2rem;margin-bottom:9px;}
+.empty-icon{margin-bottom:9px;}
 .empty-text{font-size:.84rem;line-height:1.5;}
+/* AXE1: Rest timer */
+.rest-timer-wrap{margin-top:10px;padding:13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-align:center;}
+.rest-timer-btns{display:flex;gap:5px;justify-content:center;margin-bottom:10px;}
+.rest-timer-btns button{min-height:48px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;flex:1;}
+.rest-timer-btns button.act{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
+.rest-countdown{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:var(--teal);margin:8px 0;transition:color .3s;}
+.rest-countdown.warn{color:var(--orange);}
+.rest-countdown.done{color:var(--red);animation:pulse .5s infinite;}
+.rest-start-btn{min-height:48px;width:100%;padding:12px;border-radius:var(--radius-sm);border:none;background:var(--teal);color:var(--bg);font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.rest-start-btn:active{transform:scale(.98);opacity:.9;}
+.rest-start-btn.running{background:var(--red);color:#fff;}
+/* AXE1: Quick climb FAB */
+.fab-quick{position:fixed;bottom:calc(var(--tab-h) + var(--safe-b) + 16px);right:16px;z-index:150;width:56px;height:56px;border-radius:50%;background:var(--orange);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(249,115,22,.4);display:flex;align-items:center;justify-content:center;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.fab-quick:active{transform:scale(.9);}
+.fab-quick svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+/* AXE2: Injury checklist */
+.injury-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.injury-chip{padding:8px 12px;min-height:40px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-size:.74rem;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:4px;}
+.injury-chip.sel{border-color:var(--red);color:var(--red);background:var(--red-bg);}
+/* AXE3: Calendar heatmap */
+.heatmap-wrap{padding:4px 0;}
+.heatmap-legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.heatmap-legend-item{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--text-dim);}
+.heatmap-legend-item .hl-dot{width:8px;height:8px;border-radius:2px;}
+/* AXE3: Radar chart */
+.radar-wrap{position:relative;height:240px;margin:5px 0;}
+/* AXE4: Streak */
+.streak-card{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;}
+.streak-fire{font-size:1.5rem;flex-shrink:0;}
+.streak-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--orange);line-height:1;}
+.streak-lbl{font-size:.7rem;color:var(--text-dim);}
+/* AXE4: counter animation */
+@keyframes countUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.sv.animated{animation:countUp .4s ease;}
+/* AXE2: Bloc heatmap grid */
+.bloc-heatmap{display:grid;grid-template-columns:auto repeat(8,1fr);gap:2px;font-size:.6rem;margin-top:8px;}
+.bloc-heatmap .bh-label{color:var(--text-dim);display:flex;align-items:center;padding:2px 6px 2px 0;font-family:'DM Mono',monospace;white-space:nowrap;}
+.bloc-heatmap .bh-cell{width:100%;aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.7);}
+.bloc-heatmap .bh-header{font-size:.55rem;color:var(--text-sub);text-align:center;font-family:'DM Mono',monospace;padding:2px 0;}
+/* AXE2: injury alert */
+.injury-alert{padding:10px 13px;background:var(--red-bg);border:1px solid var(--red);border-radius:var(--radius-sm);margin-bottom:10px;display:flex;align-items:flex-start;gap:8px;}
+.injury-alert svg{flex-shrink:0;width:18px;height:18px;stroke:var(--red);fill:none;stroke-width:2;}
+.injury-alert-text{font-size:.78rem;color:var(--red);}
 </style>
 </head>
 <body>
@@ -193,7 +248,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
   <div class="nav-logo">Vertical<span>Log</span></div>
   <div style="display:flex;align-items:center;gap:8px">
     <div class="nav-phase" id="nav-phase">P1-S1</div>
-    <button class="btn-icon" onclick="exportData()" title="Exporter les données">
+    <button class="btn-icon" onclick="exportData()" title="Exporter les donnees">
       <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
   </div>
@@ -201,174 +256,239 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 
 <!-- DASHBOARD -->
 <section class="page active" id="page-home"><div class="app">
-  <div class="title">Dashboard</div><div class="sub" id="dash-date">…</div>
+  <div class="title">Dashboard</div><div class="sub" id="dash-date"></div>
+  <!-- AXE4: Streak -->
+  <div class="streak-card" id="streak-card" style="display:none">
+    <div class="streak-fire" id="streak-icon"></div>
+    <div><div class="streak-num" id="streak-num">0</div><div class="streak-lbl" id="streak-lbl">jours consecutifs</div></div>
+  </div>
   <!-- Sync banner -->
   <div class="sync-banner" id="sync-banner">
     <div class="sync-dot" id="sync-dot"></div>
-    <div class="sync-text" id="sync-text">Données locales uniquement. Utilisez le bouton ↓ pour exporter/importer sur un autre appareil.</div>
+    <div class="sync-text" id="sync-text">Donnees locales uniquement. Utilisez le bouton pour exporter/importer sur un autre appareil.</div>
     <button class="btn-icon" onclick="showImport()" style="flex-shrink:0" title="Importer">
       <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
   </div>
   <div class="sg">
-    <div class="stat"><div class="sv teal" id="sw-count">0</div><div class="sl">Séances cette semaine</div></div>
-    <div class="stat"><div class="sv gold" id="sw-foster">0</div><div class="sl">Foster semaine</div></div>
+    <div class="stat"><div class="sv teal" id="sw-count" data-target="0">0</div><div class="sl">Seances cette semaine</div></div>
+    <div class="stat"><div class="sv gold" id="sw-foster" data-target="0">0</div><div class="sl">Foster semaine</div></div>
   </div>
   <div class="sg sg3">
-    <div class="stat"><div class="sv blue" id="s-forme">—</div><div class="sl">Forme dernière</div></div>
-    <div class="stat"><div class="sv orange" id="s-rpe">—</div><div class="sl">RPE moyen</div></div>
-    <div class="stat"><div class="sv purple" id="s-total">0</div><div class="sl">Total séances</div></div>
+    <div class="stat"><div class="sv blue" id="s-forme">--</div><div class="sl">Forme derniere</div></div>
+    <div class="stat"><div class="sv orange" id="s-rpe" data-target="0">--</div><div class="sl">RPE moyen</div></div>
+    <div class="stat"><div class="sv purple" id="s-total" data-target="0">0</div><div class="sl">Total seances</div></div>
+  </div>
+  <!-- AXE3: Calendar heatmap -->
+  <div class="card">
+    <div class="card-hdr"><div class="card-lbl">Activite 12 semaines</div></div>
+    <div class="heatmap-wrap"><canvas id="heatmapCanvas" style="width:100%;height:auto"></canvas></div>
+    <div class="heatmap-legend">
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#58a6ff"></div>A</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#2dd4a0"></div>B</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#f97316"></div>Grimpe</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#a78bfa"></div>Cardio</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#484f58"></div>Repos</div>
+    </div>
   </div>
   <div class="card">
     <div class="card-hdr"><div class="card-lbl">Charge Foster</div><div class="pbadge pb1">Phase 1</div></div>
     <div class="chart-wrap"><canvas id="fosterChart"></canvas></div>
   </div>
   <div class="card">
-    <div class="card-hdr"><div class="card-lbl">Forme avant séance</div></div>
+    <div class="card-hdr"><div class="card-lbl">Forme avant seance</div></div>
     <div class="chart-wrap sm"><canvas id="formeChart"></canvas></div>
   </div>
   <div class="card">
-    <div class="card-hdr"><div class="card-lbl">Dernières séances</div><div style="font-size:.7rem;color:var(--text-dim)">Toucher pour détails</div></div>
-    <div id="recent-sessions"><div class="empty"><div class="empty-icon">🧗</div><div class="empty-text">Aucune séance.</div></div></div>
+    <div class="card-hdr"><div class="card-lbl">Dernieres seances</div><div style="font-size:.7rem;color:var(--text-dim)">Toucher pour details</div></div>
+    <div id="recent-sessions"></div>
   </div>
 </div></section>
 
 <!-- SAISIE -->
 <section class="page" id="page-log"><div class="app">
-  <div class="title">Nouvelle séance</div><div class="sub">Saisie rapide post-effort</div>
+  <div class="title">Nouvelle seance</div><div class="sub">Saisie rapide post-effort</div>
   <div class="card">
-    <div class="fl">Type de séance</div>
+    <div class="fl">Type de seance</div>
     <div class="seg" id="type-seg">
-      <button class="seg-btn" data-type="A" onclick="selType('A')">🔵 A</button>
-      <button class="seg-btn" data-type="B" onclick="selType('B')">🟢 B</button>
-      <button class="seg-btn" data-type="C" onclick="selType('C')">🟠 Grimpe</button>
-      <button class="seg-btn" data-type="Cardio" onclick="selType('Cardio')">💜 Cardio</button>
-      <button class="seg-btn" data-type="Repos" onclick="selType('Repos')">😴 Repos</button>
+      <button class="seg-btn" data-type="A" onclick="selType('A')">A</button>
+      <button class="seg-btn" data-type="B" onclick="selType('B')">B</button>
+      <button class="seg-btn" data-type="C" onclick="selType('C')">Grimpe</button>
+      <button class="seg-btn" data-type="Cardio" onclick="selType('Cardio')">Cardio</button>
+      <button class="seg-btn" data-type="Repos" onclick="selType('Repos')">Repos</button>
     </div>
   </div>
   <div class="card">
     <div class="fg"><label class="fl">Date</label><input class="fi" type="date" id="log-date"></div>
     <div class="fg"><label class="fl">Phase / Semaine</label><select class="fs" id="log-phase"></select></div>
-    <div class="fg" style="margin:0"><label class="fl">Durée (min)</label><input class="fi" type="number" id="log-dur" placeholder="75" min="1" max="300" inputmode="numeric"></div>
+    <div class="fg" style="margin:0"><label class="fl">Duree (min)</label><input class="fi" type="number" id="log-dur" placeholder="75" min="1" max="300" inputmode="numeric"></div>
   </div>
   <div class="card">
-    <div class="fl" style="margin-bottom:8px">Forme avant séance</div>
+    <div class="fl" style="margin-bottom:8px">Forme avant seance</div>
     <div class="slval teal" id="forme-val">3</div>
     <input type="range" id="forme-sl" min="1" max="5" step="1" value="3" oninput="onForme(this.value)">
-    <div class="sltrack"><span>😴 Épuisé</span><span>😐 Moyen</span><span>🔥 En forme</span></div>
+    <div class="sltrack"><span>Epuise</span><span>Moyen</span><span>En forme</span></div>
   </div>
   <div id="rpe-sec" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;padding:0 2px">
-      <div class="fl" style="margin:0">Exercices — Charges & RPE</div>
-      <div style="font-size:.72rem;color:var(--text-dim)">Moy. : <span id="rpe-avg" style="color:var(--orange);font-weight:700">—</span></div>
+      <div class="fl" style="margin:0">Exercices -- Charges & RPE</div>
+      <div style="font-size:.72rem;color:var(--text-dim)">Moy. : <span id="rpe-avg" style="color:var(--orange);font-weight:700">--</span></div>
     </div>
     <div id="ex-acc-list"></div>
+    <!-- AXE1: Rest timer -->
+    <div class="rest-timer-wrap" id="rest-timer">
+      <div class="fl" style="margin-bottom:8px;text-align:left">Timer repos inter-series</div>
+      <div class="rest-timer-btns">
+        <button onclick="setRestTime(60)" id="rest-60">60s</button>
+        <button onclick="setRestTime(90)" class="act" id="rest-90">90s</button>
+        <button onclick="setRestTime(120)" id="rest-120">120s</button>
+      </div>
+      <div class="rest-countdown" id="rest-display">1:30</div>
+      <button class="rest-start-btn" id="rest-start-btn" onclick="toggleRestTimer()">Demarrer repos</button>
+    </div>
   </div>
-  <div class="card" id="rpe-glob" style="display:none">
+  <!-- AXE1: RPE global always visible for C/Cardio/Repos -->
+  <div class="card" id="rpe-glob">
     <div class="fl" style="margin-bottom:8px">RPE global</div>
     <div class="slval orange" id="rpe-val">6</div>
     <input type="range" id="rpe-sl" min="1" max="10" step="1" value="6" oninput="onRPE(this.value)">
-    <div class="sltrack"><span>1 Léger</span><span>5 Modéré</span><span>10 Max</span></div>
+    <div class="sltrack"><span>1 Leger</span><span>5 Modere</span><span>10 Max</span></div>
   </div>
   <div class="card" id="grimpe-sec" style="display:none">
-    <div class="fg"><label class="fl">Voies / blocs réalisés</label><input class="fi" type="number" id="log-vol" placeholder="12" inputmode="numeric"></div>
-    <div class="fg"><label class="fl">Diff. max tentée</label><input class="fi" type="text" id="log-dtry" placeholder="7A"></div>
-    <div class="fg" style="margin:0"><label class="fl">Diff. max réussie</label><input class="fi" type="text" id="log-ddone" placeholder="6C+"></div>
+    <div class="fg"><label class="fl">Voies / blocs realises</label><input class="fi" type="number" id="log-vol" placeholder="12" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">Diff. max tentee</label><input class="fi" type="text" id="log-dtry" placeholder="7A"></div>
+    <div class="fg"><label class="fl">Diff. max reussie</label><input class="fi" type="text" id="log-ddone" placeholder="6C+"></div>
+  </div>
+  <!-- AXE2: Injury tracking -->
+  <div class="card" id="injury-sec" style="display:none">
+    <div class="fl" style="margin-bottom:8px">Zone douloureuse (optionnel)</div>
+    <div class="injury-grid" id="injury-grid">
+      <div class="injury-chip" data-zone="doigts" onclick="togInjury(this)">Doigts</div>
+      <div class="injury-chip" data-zone="epaules" onclick="togInjury(this)">Epaules</div>
+      <div class="injury-chip" data-zone="coudes" onclick="togInjury(this)">Coudes</div>
+      <div class="injury-chip" data-zone="dos" onclick="togInjury(this)">Dos</div>
+      <div class="injury-chip" data-zone="genoux" onclick="togInjury(this)">Genoux</div>
+    </div>
+    <div id="injury-intensity-sec" style="display:none">
+      <div class="fl" style="margin-bottom:4px">Intensite douleur</div>
+      <div class="slval red" id="injury-val" style="font-size:1.4rem">1</div>
+      <input type="range" id="injury-sl" min="1" max="5" step="1" value="1" oninput="document.getElementById('injury-val').textContent=this.value">
+      <div class="sltrack"><span>1 Legere</span><span>3 Moyenne</span><span>5 Severe</span></div>
+    </div>
   </div>
   <div class="card" id="foster-prev" style="display:none">
     <div class="card-hdr">
-      <div class="card-lbl">Foster estimé</div>
-      <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--gold)" id="foster-val">—</div>
+      <div class="card-lbl">Foster estime</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--gold)" id="foster-val">--</div>
     </div>
     <div class="fbar"><div class="ffill" id="foster-fill" style="width:0%"></div></div>
-    <div style="display:flex;justify-content:space-between;font-size:.63rem;color:var(--text-sub);font-family:'DM Mono',monospace;margin-top:3px"><span>Récup.</span><span>Optimal</span><span>Surcharge</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:.63rem;color:var(--text-sub);font-family:'DM Mono',monospace;margin-top:3px"><span>Recup.</span><span>Optimal</span><span>Surcharge</span></div>
   </div>
   <div class="card">
-    <div class="fg"><label class="fl">Points positifs</label><input class="fi" type="text" id="log-pos" placeholder="Bonne accroche…"></div>
-    <div class="fg" style="margin:0"><label class="fl">Points à corriger</label><input class="fi" type="text" id="log-neg" placeholder="Fatigue avant-bras…"></div>
+    <div class="fg"><label class="fl">Points positifs</label><input class="fi" type="text" id="log-pos" placeholder="Bonne accroche..."></div>
+    <div class="fg" style="margin:0"><label class="fl">Points a corriger</label><input class="fi" type="text" id="log-neg" placeholder="Fatigue avant-bras..."></div>
   </div>
   <button class="btn btn-primary" onclick="saveSession()">
     <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5"><path d="M5 13l4 4L19 7"/></svg>
-    Enregistrer la séance
+    Enregistrer la seance
   </button>
   <div style="height:8px"></div>
 </div></section>
 
 <!-- EXERCICES -->
 <section class="page" id="page-exercises"><div class="app">
-  <div class="title">Exercices</div><div class="sub">Évolution des charges</div>
+  <div class="title">Exercices</div><div class="sub">Evolution des charges</div>
   <div class="card"><div class="fl" style="margin-bottom:9px">Choisir un exercice</div><div class="ex-grid" id="ex-picker"></div></div>
   <div class="card" id="ex-detail" style="display:none">
     <div class="card-hdr">
-      <div class="card-lbl" id="ex-d-name">—</div>
-      <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text-dim)" id="ex-d-sess">—</div>
+      <div class="card-lbl" id="ex-d-name">--</div>
+      <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text-dim)" id="ex-d-sess">--</div>
     </div>
     <div class="sg" style="margin-bottom:11px">
-      <div class="stat"><div class="sv teal" id="ex-last">—</div><div class="sl" id="ex-last-lbl">Dernière charge</div></div>
-      <div class="stat"><div class="sv gold" id="ex-prog">—</div><div class="sl">Progression</div></div>
+      <div class="stat"><div class="sv teal" id="ex-last">--</div><div class="sl" id="ex-last-lbl">Derniere charge</div></div>
+      <div class="stat"><div class="sv gold" id="ex-prog">--</div><div class="sl">Progression</div></div>
     </div>
     <div class="chart-wrap"><canvas id="exChart"></canvas></div>
     <div style="margin-top:11px"><div class="fl" style="margin-bottom:7px">Historique</div><div id="ex-hist"></div></div>
   </div>
-  <div class="card" id="ex-empty"><div class="empty"><div class="empty-icon">💪</div><div class="empty-text">Sélectionne un exercice</div></div></div>
+  <!-- AXE2: Bloc heatmap -->
+  <div class="card" id="bloc-heatmap-card" style="display:none">
+    <div class="card-hdr"><div class="card-lbl">Heatmap Progression Bloc</div></div>
+    <div id="bloc-heatmap-grid"></div>
+  </div>
+  <div class="card" id="ex-empty">
+    <div class="empty">
+      <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="var(--border-hi)" stroke-width="2" stroke-dasharray="4 3"/><path d="M18 30c0-4 3-7 6-7s6 3 6 7" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="20" r="2" fill="var(--text-dim)"/><circle cx="30" cy="20" r="2" fill="var(--text-dim)"/></svg></div>
+      <div class="empty-text">Selectionne un exercice pour voir son evolution</div>
+    </div>
+  </div>
 </div></section>
 
 <!-- HISTORIQUE -->
 <section class="page" id="page-history"><div class="app">
   <div class="title">Historique</div><div class="sub">Toucher pour modifier ou supprimer</div>
-  <div class="card"><div id="hist-list"><div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Aucune séance.</div></div></div></div>
+  <div class="card"><div id="hist-list"></div></div>
 </div></section>
 
 <!-- ANALYSE -->
 <section class="page" id="page-analyse"><div class="app">
-  <div class="title">Analyse</div><div class="sub">Résumé hebdomadaire · Recommandations</div>
-  <div class="card"><div class="card-hdr"><div class="card-lbl">Résumé par semaine</div></div><div id="weekly-sum"></div></div>
+  <div class="title">Analyse</div><div class="sub">Resume hebdomadaire -- Recommandations</div>
+  <!-- AXE2: Injury alerts -->
+  <div id="injury-alerts"></div>
+  <div class="card"><div class="card-hdr"><div class="card-lbl">Resume par semaine</div></div><div id="weekly-sum"></div></div>
+  <!-- AXE3: Radar chart -->
+  <div class="card">
+    <div class="card-hdr"><div class="card-lbl">Profil Grimpeur</div></div>
+    <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+  </div>
   <div class="card">
     <div class="card-hdr"><div class="card-lbl">Notes coach</div></div>
     <div id="coach-list"></div>
     <div class="divider"></div>
     <div class="fg"><label class="fl">Semaine</label><select class="fs" id="coach-ph"></select></div>
-    <div class="fg"><label class="fl">Note</label><input class="fi" type="text" id="coach-note" placeholder="Observations…"></div>
+    <div class="fg"><label class="fl">Note</label><input class="fi" type="text" id="coach-note" placeholder="Observations..."></div>
     <button class="btn btn-outline btn-sm" onclick="saveNote()">Enregistrer</button>
   </div>
-  <div class="card"><div class="card-hdr"><div class="card-lbl">Périodisation 2026</div></div><div id="period-bars"></div></div>
+  <div class="card"><div class="card-hdr"><div class="card-lbl">Periodisation 2026</div></div><div id="period-bars"></div></div>
 </div></section>
 
 <div class="toast" id="toast"></div>
 
+<!-- AXE1: Quick Climb FAB (visible on Saisie page) -->
+<button class="fab-quick" id="fab-quick" style="display:none" onclick="quickClimb()" title="Seance rapide Grimpe">
+  <svg viewBox="0 0 24 24"><path d="M12 2L8 8h3v6H8l4 6 4-6h-3V8h3z"/></svg>
+</button>
+
 <!-- SESSION SHEET -->
 <div class="sheet-ov" id="sess-sheet">
   <div class="sheet">
-    <div style="padding:14px 16px 0"><div class="sh-handle"></div><div class="sh-title" id="sh-title">Séance</div><div class="sh-sub" id="sh-sub">—</div></div>
-    <!-- TABS inside sheet: Detail | Modifier -->
+    <div style="padding:14px 16px 0"><div class="sh-handle"></div><div class="sh-title" id="sh-title">Seance</div><div class="sh-sub" id="sh-sub">--</div></div>
     <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin:0 16px">
-      <button id="sh-tab-detail" onclick="shTab('detail')" style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:.8rem;font-weight:700;cursor:pointer;">Détails</button>
-      <button id="sh-tab-edit"   onclick="shTab('edit')"   style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-size:.8rem;font-weight:700;cursor:pointer;">Modifier</button>
+      <button id="sh-tab-detail" onclick="shTab('detail')" style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2px solid var(--teal);color:var(--teal);font-size:.8rem;font-weight:700;cursor:pointer;min-height:48px;">Details</button>
+      <button id="sh-tab-edit"   onclick="shTab('edit')"   style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-size:.8rem;font-weight:700;cursor:pointer;min-height:48px;">Modifier</button>
     </div>
-    <!-- Detail view -->
     <div id="sh-view-detail" class="sh-body" style="margin-top:4px"></div>
-    <!-- Edit view -->
     <div id="sh-view-edit" class="edit-form" style="display:none;margin-top:10px">
       <div class="edit-row"><label class="fl">Date</label><input class="fi" type="date" id="ed-date"></div>
-      <div class="edit-row"><label class="fl">Type de séance</label>
+      <div class="edit-row"><label class="fl">Type de seance</label>
         <select class="fs" id="ed-type">
-          <option value="A">🔵 Séance A</option>
-          <option value="B">🟢 Séance B</option>
-          <option value="C">🟠 Grimpe</option>
-          <option value="Cardio">💜 Cardio</option>
-          <option value="Repos">😴 Repos</option>
+          <option value="A">Seance A</option>
+          <option value="B">Seance B</option>
+          <option value="C">Grimpe</option>
+          <option value="Cardio">Cardio</option>
+          <option value="Repos">Repos</option>
         </select>
       </div>
       <div class="edit-row"><label class="fl">Phase / Semaine</label><select class="fs" id="ed-phase"></select></div>
-      <div class="edit-row"><label class="fl">Durée (min)</label><input class="fi" type="number" id="ed-dur" inputmode="numeric"></div>
+      <div class="edit-row"><label class="fl">Duree (min)</label><input class="fi" type="number" id="ed-dur" inputmode="numeric"></div>
       <div class="edit-row"><label class="fl">Forme /5</label><input class="fi" type="number" id="ed-forme" min="1" max="5" inputmode="numeric"></div>
       <div class="edit-row"><label class="fl">RPE moyen</label><input class="fi" type="number" id="ed-rpe" step="0.1" min="0" max="10" inputmode="decimal"></div>
       <div class="edit-row" id="ed-grimpe-rows" style="display:none">
-        <label class="fl">Diff. max réussie</label><input class="fi" type="text" id="ed-ddone">
+        <label class="fl">Diff. max reussie</label><input class="fi" type="text" id="ed-ddone">
         <label class="fl" style="margin-top:6px">Voies / blocs</label><input class="fi" type="number" id="ed-vol" inputmode="numeric">
       </div>
       <div class="edit-row"><label class="fl">Points positifs</label><input class="fi" type="text" id="ed-pos"></div>
-      <div class="edit-row" style="margin-bottom:4px"><label class="fl">Points à corriger</label><input class="fi" type="text" id="ed-neg"></div>
+      <div class="edit-row" style="margin-bottom:4px"><label class="fl">Points a corriger</label><input class="fi" type="text" id="ed-neg"></div>
     </div>
     <div class="sh-actions" id="sh-actions-detail">
       <button class="btn btn-outline" onclick="closeSheet()">Fermer</button>
@@ -390,14 +510,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
   <div class="sheet">
     <div style="padding:14px 16px 0"><div class="sh-handle"></div>
       <div class="sh-title">Synchronisation manuelle</div>
-      <div class="sh-sub">Copiez les données sur un appareil, collez-les sur l'autre.</div>
+      <div class="sh-sub">Copiez les donnees sur un appareil, collez-les sur l'autre.</div>
     </div>
     <div class="sh-body" style="margin-top:8px">
-      <div class="fl" style="margin-bottom:6px">Données exportées (copier)</div>
+      <div class="fl" style="margin-bottom:6px">Donnees exportees (copier)</div>
       <textarea id="export-area" readonly style="width:100%;height:100px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-dim);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;"></textarea>
-      <button class="btn btn-outline btn-sm" style="margin:6px 0 14px" onclick="copyExport()">📋 Copier</button>
-      <div class="fl" style="margin-bottom:6px">Coller les données à importer</div>
-      <textarea id="import-area" style="width:100%;height:100px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;" placeholder="Coller ici le JSON exporté depuis l'autre appareil…"></textarea>
+      <button class="btn btn-outline btn-sm" style="margin:6px 0 14px" onclick="copyExport()">Copier</button>
+      <div class="fl" style="margin-bottom:6px">Coller les donnees a importer</div>
+      <textarea id="import-area" style="width:100%;height:100px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;" placeholder="Coller ici le JSON exporte depuis l'autre appareil..."></textarea>
     </div>
     <div class="sh-actions">
       <button class="btn btn-outline" onclick="closeImport()">Fermer</button>
@@ -408,7 +528,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 
 <nav class="tab-bar"><div class="tab-bar-inner">
   <button class="tab-btn active" onclick="goTo('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
-  <button class="tab-btn" onclick="goTo('log',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Séance</button>
+  <button class="tab-btn" onclick="goTo('log',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Seance</button>
   <button class="tab-btn" onclick="goTo('exercises',this)"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Exercices</button>
   <button class="tab-btn" onclick="goTo('history',this)"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Historique</button>
   <button class="tab-btn" onclick="goTo('analyse',this)"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analyse</button>
@@ -416,9 +536,37 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 
 <script>
 'use strict';
+/* CHANGELOG
+ * AXE 1 — ERGONOMIE MOBILE & UX
+ * - Toutes les zones tactiles (boutons, seg-btn, accordeons, chips, items) ont min-height:48px
+ * - Slider thumb agrandi a 28px pour usage avec gants
+ * - Timer de repos inter-series avec durees configurables (60/90/120s), compte a rebours, vibration haptic
+ * - Bouton flottant "Seance rapide Grimpe" sur la page Saisie
+ * - Accordions exercices avec transition max-height (pas de sauts de layout)
+ * - RPE global toujours visible (plus cache si type C/Cardio/Repos)
+ *
+ * AXE 2 — NOUVELLES FONCTIONNALITES ESCALADE
+ * - Heatmap progression bloc : grille cotation x reussite sur 8 dernieres seances Grimpe
+ * - Suivi blessures : checklist zones (doigts, epaules, coudes, dos, genoux) + intensite 1-5
+ * - Alerte blessure dans page Analyse si zone revient >=3 fois sur 14 derniers jours
+ * - PR (Personal Record) automatique : detection + toast animation speciale a la sauvegarde
+ *
+ * AXE 3 — VISUALISATIONS & STATS
+ * - Mini heatmap calendrier style GitHub (12 semaines) sur le Dashboard avec couleurs par type
+ * - Graphique radar Canvas (Force doigts, Force generale, Endurance, Mobilite, Technique)
+ * - Barres de periodisation dynamiques calculees depuis le nombre de seances reelles
+ *
+ * AXE 4 — POLISH UI & MICRO-INTERACTIONS
+ * - Transitions page en slide horizontal (direction selon ordre des tabs)
+ * - Animation compteur (0 -> valeur) sur les stat-cards du Dashboard
+ * - Etat "streak" avec icone feu si >= 7 jours consecutifs
+ * - Empty states avec SVG inline coherents au theme (plus d'emoji)
+ * - Toast special PR avec animation pulse doree
+ */
+
 const TC={A:'#58a6ff',B:'#2dd4a0',C:'#f97316',Cardio:'#a78bfa',Repos:'#8b949e'};
-const TL={A:'Séance A — Fingerboard + HP',B:'Séance B — Jambes',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
-const TS={A:'Séance A',B:'Séance B',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
+const TL={A:'Seance A -- Fingerboard + HP',B:'Seance B -- Jambes',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
+const TS={A:'Seance A',B:'Seance B',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
 const FC=['','#f85149','#f97316','#e5a820','#58a6ff','#2dd4a0'];
 
 const EMA=[
@@ -450,6 +598,9 @@ const ALL_EX=[...EMA.map(e=>({...e,sess:'A'})),...EMB.map(e=>({...e,sess:'B'}))]
 
 const SEMS=(()=>{const s=[];for(const[p,w]of[[1,4],[2,8],[3,10],[4,8]]){let n=1;for(let i=1;i<=w;i++)s.push(i%4===0?`P${p}-Deload`:`P${p}-S${n++}`);}return s;})();
 
+/* AXE2: Climbing grades for heatmap */
+const GRADES=['5A','5B','5C','6A','6A+','6B','6B+','6C','6C+','7A','7A+','7B','7B+','7C','8A'];
+
 const DB={
   get sessions(){try{return JSON.parse(localStorage.getItem('vl3_s')||'[]');}catch{return[];}},
   set sessions(v){localStorage.setItem('vl3_s',JSON.stringify(v));},
@@ -457,12 +608,35 @@ const DB={
   set notes(v){localStorage.setItem('vl3_n',JSON.stringify(v));},
 };
 
-/* Navigation */
+/* AXE4: Page order for slide direction */
+const PAGE_ORDER=['home','log','exercises','history','analyse'];
+let currentPage='home';
+
+/* Navigation — AXE4: slide transitions */
 function goTo(p,btn){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  const oldIdx=PAGE_ORDER.indexOf(currentPage);
+  const newIdx=PAGE_ORDER.indexOf(p);
+  const oldPage=document.getElementById('page-'+currentPage);
+  const newPage=document.getElementById('page-'+p);
+  if(currentPage===p){
+    ({home:renderDash,exercises:renderExPicker,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
+    return;
+  }
   document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
   if(btn)btn.classList.add('active');
+  else{const tabs=document.querySelectorAll('.tab-btn');if(tabs[newIdx])tabs[newIdx].classList.add('active');}
+  // Remove old animations
+  oldPage.classList.remove('slide-in-right','slide-in-left','slide-out-right','slide-out-left','active');
+  newPage.classList.remove('slide-in-right','slide-in-left','slide-out-right','slide-out-left');
+  // Apply slide
+  if(newIdx>oldIdx){
+    newPage.classList.add('active','slide-in-right');
+  }else{
+    newPage.classList.add('active','slide-in-left');
+  }
+  currentPage=p;
+  // Show/hide FAB
+  document.getElementById('fab-quick').style.display=p==='log'?'flex':'none';
   ({home:renderDash,exercises:renderExPicker,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
 }
 
@@ -498,9 +672,29 @@ function selType(t){
   cType=t;
   document.querySelectorAll('.seg-btn').forEach(b=>{b.className='seg-btn';if(b.dataset.type===t)b.classList.add('act-'+t);});
   document.getElementById('rpe-sec').style.display=['A','B'].includes(t)?'block':'none';
-  document.getElementById('rpe-glob').style.display=['C','Cardio'].includes(t)?'block':'none';
+  // AXE1: RPE global always visible, but hidden for A/B (they have per-exercise RPE)
+  document.getElementById('rpe-glob').style.display=['A','B'].includes(t)?'none':'block';
   document.getElementById('grimpe-sec').style.display=t==='C'?'block':'none';
+  // AXE2: Show injury section for non-Repos sessions
+  document.getElementById('injury-sec').style.display=t!=='Repos'?'block':'none';
   if(['A','B'].includes(t))buildAccordion(t);
+}
+
+/* AXE1: Quick climb shortcut */
+function quickClimb(){
+  selType('C');
+  // Scroll to grimpe section
+  setTimeout(()=>{
+    const el=document.getElementById('grimpe-sec');
+    if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+  },100);
+}
+
+/* AXE2: Injury toggle */
+function togInjury(chip){
+  chip.classList.toggle('sel');
+  const anySelected=document.querySelectorAll('.injury-chip.sel').length>0;
+  document.getElementById('injury-intensity-sec').style.display=anySelected?'block':'none';
 }
 
 /* Previous data */
@@ -516,43 +710,43 @@ function serieCardHTML(ex, si, prev){
   if(ex.bilateral){
     return`<div class="sc" id="sc-${ex.name.replace(/\s/g,'_')}-${si}">
       <div class="sc-top">
-        <div class="sc-lbl">Série ${si+1}</div>
-        <button class="sc-del" onclick="removeSerie(this,'${ex.name}',${si})" title="Supprimer">✕</button>
+        <div class="sc-lbl">Serie ${si+1}</div>
+        <button class="sc-del" onclick="removeSerie(this,'${ex.name}',${si})" title="Supprimer">&#10005;</button>
       </div>
       <div class="sc-row">
         <div class="si-w c-w">
           <div class="si-lbl">CHARGE (kg)</div>
-          <input class="si-f cf ex-ci" type="number" step="0.5" min="0" value="${pch!=null?pch:''}" placeholder="—" data-ex="${ex.name}" data-set="${si}" data-field="charge" inputmode="decimal">
-          <div class="si-prev ${pch!=null?'hp':''}">${pch!=null?'↑ '+pch+' kg':'—'}</div>
+          <input class="si-f cf ex-ci" type="number" step="0.5" min="0" value="${pch!=null?pch:''}" placeholder="--" data-ex="${ex.name}" data-set="${si}" data-field="charge" inputmode="decimal">
+          <div class="si-prev ${pch!=null?'hp':''}">${pch!=null?pch+' kg':'--'}</div>
         </div>
         <div class="si-w r-w">
           <div class="si-lbl">${u} G</div>
-          <input class="si-f ex-ri" type="number" step="1" min="0" value="${pg!=null?pg:''}" placeholder="—" data-ex="${ex.name}" data-set="${si}" data-field="repsG" inputmode="numeric">
-          <div class="si-prev ${pg!=null?'hp':''}">${pg!=null?'↑ '+pg:'—'}</div>
+          <input class="si-f ex-ri" type="number" step="1" min="0" value="${pg!=null?pg:''}" placeholder="--" data-ex="${ex.name}" data-set="${si}" data-field="repsG" inputmode="numeric">
+          <div class="si-prev ${pg!=null?'hp':''}">${pg!=null?pg:'--'}</div>
         </div>
         <div class="si-w r-w">
           <div class="si-lbl">${u} D</div>
-          <input class="si-f ex-ri" type="number" step="1" min="0" value="${pd!=null?pd:''}" placeholder="—" data-ex="${ex.name}" data-set="${si}" data-field="repsD" inputmode="numeric">
-          <div class="si-prev ${pd!=null?'hp':''}">${pd!=null?'↑ '+pd:'—'}</div>
+          <input class="si-f ex-ri" type="number" step="1" min="0" value="${pd!=null?pd:''}" placeholder="--" data-ex="${ex.name}" data-set="${si}" data-field="repsD" inputmode="numeric">
+          <div class="si-prev ${pd!=null?'hp':''}">${pd!=null?pd:'--'}</div>
         </div>
       </div>
     </div>`;
   }else{
     return`<div class="sc" id="sc-${ex.name.replace(/\s/g,'_')}-${si}">
       <div class="sc-top">
-        <div class="sc-lbl">Série ${si+1}</div>
-        <button class="sc-del" onclick="removeSerie(this,'${ex.name}',${si})" title="Supprimer">✕</button>
+        <div class="sc-lbl">Serie ${si+1}</div>
+        <button class="sc-del" onclick="removeSerie(this,'${ex.name}',${si})" title="Supprimer">&#10005;</button>
       </div>
       <div class="sc-row">
         <div class="si-w c-w">
           <div class="si-lbl">CHARGE (kg)</div>
-          <input class="si-f cf ex-ci" type="number" step="0.5" min="0" value="${pch!=null?pch:''}" placeholder="—" data-ex="${ex.name}" data-set="${si}" data-field="charge" inputmode="decimal">
-          <div class="si-prev ${pch!=null?'hp':''}">${pch!=null?'↑ '+pch+' kg':'—'}</div>
+          <input class="si-f cf ex-ci" type="number" step="0.5" min="0" value="${pch!=null?pch:''}" placeholder="--" data-ex="${ex.name}" data-set="${si}" data-field="charge" inputmode="decimal">
+          <div class="si-prev ${pch!=null?'hp':''}">${pch!=null?pch+' kg':'--'}</div>
         </div>
         <div class="si-w r-w">
           <div class="si-lbl">${u}</div>
-          <input class="si-f ex-ri" type="number" step="1" min="0" value="${pg!=null?pg:''}" placeholder="—" data-ex="${ex.name}" data-set="${si}" data-field="reps" inputmode="numeric">
-          <div class="si-prev ${pg!=null?'hp':''}">${pg!=null?'↑ '+pg:'—'}</div>
+          <input class="si-f ex-ri" type="number" step="1" min="0" value="${pg!=null?pg:''}" placeholder="--" data-ex="${ex.name}" data-set="${si}" data-field="reps" inputmode="numeric">
+          <div class="si-prev ${pg!=null?'hp':''}">${pg!=null?pg:'--'}</div>
         </div>
       </div>
     </div>`;
@@ -565,7 +759,6 @@ const extraSeries={};
 function buildAccordion(type){
   const list=type==='A'?EMA:EMB;
   const container=document.getElementById('ex-acc-list');
-  // Reset extra series counters
   list.forEach(ex=>extraSeries[ex.name]=0);
 
   container.innerHTML=list.map((ex,idx)=>{
@@ -574,13 +767,13 @@ function buildAccordion(type){
     return`<div class="ex-acc" id="acc${idx}">
       <div class="ex-hdr" id="accH${idx}" onclick="togAcc(${idx})">
         <div class="ex-left"><div class="ex-dot"></div><div class="ex-name">${ex.name}</div></div>
-        <div class="ex-right"><div class="rpe-badge" id="rpeBadge${idx}">RPE —</div><div class="acc-chev">▾</div></div>
+        <div class="ex-right"><div class="rpe-badge" id="rpeBadge${idx}">RPE --</div><div class="acc-chev">&#9662;</div></div>
       </div>
       <div class="ex-body" id="accB${idx}">
         <div id="series-container-${idx}">${seriesHTML}</div>
-        <button class="add-serie-btn" onclick="addSerie(${idx},'${ex.name}',${ex.series},${ex.bilateral?'true':'false'})">+ Ajouter une série</button>
+        <button class="add-serie-btn" onclick="addSerie(${idx},'${ex.name}',${ex.series},${ex.bilateral?'true':'false'})">+ Ajouter une serie</button>
         <div class="ex-rpe-row">
-          <div class="ex-rpe-lbl">RPE séance</div>
+          <div class="ex-rpe-lbl">RPE seance</div>
           <input type="range" class="ex-rpe-inp" min="0" max="10" step="1" value="0" data-ex="${ex.name}" data-idx="${idx}" style="flex:1" oninput="onExRPE(${idx},+this.value)">
           <div class="ex-rpe-num" id="rpeNum${idx}" style="color:var(--text-sub)">0</div>
         </div>
@@ -593,24 +786,22 @@ function buildAccordion(type){
 function addSerie(accIdx, exName, baseSeries, bilateral){
   extraSeries[exName]=(extraSeries[exName]||0)+1;
   const newIdx=baseSeries+extraSeries[exName]-1;
-  // Find the exercise meta
   const ex=ALL_EX.find(e=>e.name===exName);
   if(!ex)return;
   const prev=prevExData(exName,cType);
   const html=serieCardHTML({...ex,bilateral},newIdx,prev?.[newIdx]??null);
   const container=document.getElementById('series-container-'+accIdx);
   container.insertAdjacentHTML('beforeend',html);
-  // Re-number labels
   renumberSeries(accIdx);
 }
 
 function removeSerie(btn, exName, si){
   const card=btn.closest('.sc');
   const container=card.parentElement;
-  // Prevent removing if only 1 serie remains
-  if(container.children.length<=1){toast('⚠️ Au moins 1 série requise');return;}
+  if(container.children.length<=1){toast('Au moins 1 serie requise');return;}
   card.remove();
-  renumberSeries(card.closest('.ex-body')?.id?.replace('accB','')??0);
+  const accBody=container.closest('.ex-body');
+  if(accBody)renumberSeries(accBody.id.replace('accB',''));
 }
 
 function renumberSeries(accIdx){
@@ -618,8 +809,7 @@ function renumberSeries(accIdx){
   if(!container)return;
   container.querySelectorAll('.sc').forEach((card,i)=>{
     const lbl=card.querySelector('.sc-lbl');
-    if(lbl)lbl.textContent='Série '+(i+1);
-    // Update data-set on inputs
+    if(lbl)lbl.textContent='Serie '+(i+1);
     card.querySelectorAll('[data-set]').forEach(inp=>inp.dataset.set=String(i));
   });
 }
@@ -630,14 +820,18 @@ function togAcc(idx){
   const wasOpen=body.classList.contains('open');
   document.querySelectorAll('.ex-body').forEach(b=>b.classList.remove('open'));
   document.querySelectorAll('.ex-hdr').forEach(h=>h.classList.remove('open'));
-  if(!wasOpen){body.classList.add('open');hdr.classList.add('open');setTimeout(()=>hdr.scrollIntoView({behavior:'smooth',block:'nearest'}),60);}
+  if(!wasOpen){
+    body.classList.add('open');hdr.classList.add('open');
+    // AXE1: smooth scroll without layout jumps
+    setTimeout(()=>hdr.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+  }
 }
 
 function onExRPE(idx,v){
   const numEl=document.getElementById('rpeNum'+idx);
   const badge=document.getElementById('rpeBadge'+idx);
   numEl.textContent=v;numEl.style.color=v>0?rpeColor(v):'var(--text-sub)';
-  badge.textContent=v>0?'RPE '+v:'RPE —';
+  badge.textContent=v>0?'RPE '+v:'RPE --';
   badge.style.color=v>0?rpeColor(v):'var(--text-sub)';
   badge.style.borderColor=v>0?rpeColor(v):'var(--border)';
   calcAvgRPE();calcFoster();
@@ -645,7 +839,7 @@ function onExRPE(idx,v){
 
 function calcAvgRPE(){
   const inp=[...document.querySelectorAll('.ex-rpe-inp')].filter(i=>+i.value>0);
-  if(!inp.length){document.getElementById('rpe-avg').textContent='—';return 0;}
+  if(!inp.length){document.getElementById('rpe-avg').textContent='--';return 0;}
   const avg=inp.reduce((s,i)=>s+(+i.value),0)/inp.length;
   const el=document.getElementById('rpe-avg');
   el.textContent=avg.toFixed(1);el.style.color=rpeColor(Math.round(avg));
@@ -656,11 +850,80 @@ function calcFoster(){
   const dur=parseFloat(document.getElementById('log-dur').value)||0;
   let rpe=['A','B'].includes(cType)?calcAvgRPE():+(document.getElementById('rpe-sl').value)||0;
   const foster=Math.round(dur*rpe);
-  document.getElementById('foster-val').textContent=foster||'—';
+  document.getElementById('foster-val').textContent=foster||'--';
   document.getElementById('foster-fill').style.width=Math.min((foster/600)*100,100)+'%';
   document.getElementById('foster-prev').style.display=(dur>0&&rpe>0)?'block':'none';
 }
 document.addEventListener('input',e=>{if(e.target.id==='log-dur')calcFoster();});
+
+/* AXE1: Rest timer */
+let restDuration=90, restInterval=null, restRemaining=0;
+function setRestTime(sec){
+  restDuration=sec;
+  [60,90,120].forEach(s=>{
+    const btn=document.getElementById('rest-'+s);
+    btn.classList.toggle('act',s===sec);
+  });
+  if(!restInterval){
+    restRemaining=sec;
+    document.getElementById('rest-display').textContent=fmtTimer(sec);
+  }
+}
+function fmtTimer(sec){const m=Math.floor(sec/60),s=sec%60;return m+':'+(s<10?'0':'')+s;}
+function toggleRestTimer(){
+  const btn=document.getElementById('rest-start-btn');
+  const display=document.getElementById('rest-display');
+  if(restInterval){
+    clearInterval(restInterval);restInterval=null;
+    btn.textContent='Demarrer repos';btn.classList.remove('running');
+    restRemaining=restDuration;
+    display.textContent=fmtTimer(restDuration);
+    display.className='rest-countdown';
+    return;
+  }
+  restRemaining=restDuration;
+  btn.textContent='Arreter';btn.classList.add('running');
+  display.className='rest-countdown';
+  display.textContent=fmtTimer(restRemaining);
+  restInterval=setInterval(()=>{
+    restRemaining--;
+    if(restRemaining<=10&&restRemaining>0)display.className='rest-countdown warn';
+    if(restRemaining<=0){
+      clearInterval(restInterval);restInterval=null;
+      display.textContent='0:00';display.className='rest-countdown done';
+      btn.textContent='Demarrer repos';btn.classList.remove('running');
+      // Haptic vibration
+      if(navigator.vibrate)navigator.vibrate([200,100,200,100,200]);
+      setTimeout(()=>{display.className='rest-countdown';display.textContent=fmtTimer(restDuration);},3000);
+      return;
+    }
+    display.textContent=fmtTimer(restRemaining);
+  },1000);
+}
+
+/* AXE2: Normalize grade for comparison */
+function gradeToNum(g){
+  if(!g)return-1;
+  const s=g.toString().toUpperCase().replace(/\s/g,'');
+  const idx=GRADES.indexOf(s);
+  if(idx>=0)return idx;
+  // Try partial match
+  for(let i=GRADES.length-1;i>=0;i--){
+    if(s.startsWith(GRADES[i].replace('+','')))return i;
+  }
+  return-1;
+}
+
+/* AXE2: Check for PR */
+function checkPR(newSession){
+  if(newSession.type!=='C'||!newSession.diffDone)return false;
+  const newGrade=gradeToNum(newSession.diffDone);
+  if(newGrade<0)return false;
+  const prevMax=DB.sessions.filter(s=>s.type==='C'&&s.diffDone).reduce((max,s)=>{
+    const g=gradeToNum(s.diffDone);return g>max?g:max;
+  },-1);
+  return newGrade>prevMax;
+}
 
 /* Save session */
 function saveSession(){
@@ -668,8 +931,8 @@ function saveSession(){
   const phase=document.getElementById('log-phase').value;
   const dur=parseFloat(document.getElementById('log-dur').value)||0;
   const forme=+document.getElementById('forme-sl').value;
-  if(!date){toast('⚠️ Date manquante');return;}
-  if(!dur){toast('⚠️ Durée manquante');return;}
+  if(!date){toast('Date manquante');return;}
+  if(!dur){toast('Duree manquante');return;}
   let rpe=0,rpeByEx={},exData={};
   if(['A','B'].includes(cType)){
     document.querySelectorAll('.ex-rpe-inp').forEach(i=>{const v=+i.value;if(v>0)rpeByEx[i.dataset.ex]=v;});
@@ -684,19 +947,40 @@ function saveSession(){
     });
   }else{rpe=+document.getElementById('rpe-sl').value||0;}
   const foster=Math.round(dur*rpe);
+  // AXE2: Collect injury data
+  const injuries=[];
+  document.querySelectorAll('.injury-chip.sel').forEach(chip=>{
+    injuries.push(chip.dataset.zone);
+  });
+  const injuryIntensity=injuries.length?+document.getElementById('injury-sl').value:0;
+
   const s={id:Date.now(),date,type:cType,phase,duration:dur,forme,rpe,rpeByEx,exData,foster,
     pos:document.getElementById('log-pos').value.trim(),neg:document.getElementById('log-neg').value.trim(),
     volume:cType==='C'?document.getElementById('log-vol').value:null,
     diffTry:cType==='C'?document.getElementById('log-dtry').value:null,
     diffDone:cType==='C'?document.getElementById('log-ddone').value:null,
+    injuries:injuries.length?injuries:null,
+    injuryIntensity:injuryIntensity||null,
   };
+  // AXE2: Check PR before saving
+  const isPR=checkPR(s);
   DB.sessions=[...DB.sessions,s];
   ['log-pos','log-neg','log-dur'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('forme-sl').value=3;onForme(3);
   document.getElementById('foster-prev').style.display='none';
+  // Reset injury UI
+  document.querySelectorAll('.injury-chip').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('injury-intensity-sec').style.display='none';
+  document.getElementById('injury-sl').value=1;
+  document.getElementById('injury-val').textContent='1';
   if(['A','B'].includes(cType))buildAccordion(cType);
   else{document.getElementById('rpe-sl').value=6;onRPE(6);}
-  updateNavPhase();toast('✅ Séance enregistrée !');
+  updateNavPhase();
+  if(isPR){
+    toastPR('NOUVEAU PR ! '+s.diffDone+' valide !');
+  }else{
+    toast('Seance enregistree !');
+  }
   setTimeout(()=>goTo('home',document.querySelector('.tab-btn')),700);
 }
 
@@ -706,30 +990,176 @@ function renderDash(){
   document.getElementById('dash-date').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const ws=new Date(now);ws.setDate(now.getDate()-now.getDay()+(now.getDay()===0?-6:1));ws.setHours(0,0,0,0);
   const tw=ss.filter(s=>new Date(s.date+'T00:00:00')>=ws);
-  document.getElementById('sw-count').textContent=tw.length;
-  document.getElementById('sw-foster').textContent=tw.reduce((a,s)=>a+(s.foster||0),0);
-  document.getElementById('s-total').textContent=ss.length;
+  const weekCount=tw.length;
+  const weekFoster=tw.reduce((a,s)=>a+(s.foster||0),0);
+  const totalCount=ss.length;
+
+  // AXE4: Counter animations
+  animateCounter('sw-count',weekCount);
+  animateCounter('sw-foster',weekFoster);
+  animateCounter('s-total',totalCount);
+
   const last=ss.at(-1);
-  document.getElementById('s-forme').textContent=last?'⭐'.repeat(last.forme||1):'—';
-  document.getElementById('s-rpe').textContent=last?.rpe?last.rpe.toFixed(1):'—';
+  const formeStr=last?'\u2B50'.repeat(last.forme||1):'--';
+  document.getElementById('s-forme').textContent=formeStr;
+  if(last?.rpe){
+    animateCounter('s-rpe',last.rpe,1);
+  }else{
+    document.getElementById('s-rpe').textContent='--';
+  }
+
+  // AXE4: Streak calculation
+  renderStreak(ss);
+
+  // AXE3: Calendar heatmap
+  drawHeatmap(ss);
+
   renderRecent(ss.slice(-6).reverse());
   drawChart('fosterChart',ss.slice(-14).map(s=>s.date),ss.slice(-14).map(s=>s.foster||0),'#e5a820','rgba(229,168,32,.12)',0,null);
   drawChart('formeChart',ss.slice(-10).map(s=>s.date),ss.slice(-10).map(s=>s.forme),'#58a6ff','rgba(88,166,255,.08)',1,5);
 }
 
+/* AXE4: Animate counter from 0 to target */
+function animateCounter(id,target,decimals=0){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.add('animated');
+  const duration=400;
+  const start=performance.now();
+  const numTarget=typeof target==='number'?target:parseFloat(target)||0;
+  function step(ts){
+    const progress=Math.min((ts-start)/duration,1);
+    const eased=1-Math.pow(1-progress,3);
+    const current=numTarget*eased;
+    el.textContent=decimals>0?current.toFixed(decimals):Math.round(current);
+    if(progress<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* AXE4: Streak */
+function renderStreak(ss){
+  const card=document.getElementById('streak-card');
+  if(!ss.length){card.style.display='none';return;}
+  const dates=new Set(ss.filter(s=>s.type!=='Repos').map(s=>s.date));
+  let streak=0;
+  const today=new Date();
+  for(let i=0;i<365;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const ds=d.toISOString().split('T')[0];
+    if(dates.has(ds))streak++;
+    else break;
+  }
+  if(streak===0){
+    // Check if yesterday had a session (user might not have trained today yet)
+    const yesterday=new Date(today);yesterday.setDate(yesterday.getDate()-1);
+    const ys=yesterday.toISOString().split('T')[0];
+    if(dates.has(ys)){
+      for(let i=1;i<365;i++){
+        const d=new Date(today);d.setDate(d.getDate()-i);
+        const ds=d.toISOString().split('T')[0];
+        if(dates.has(ds))streak++;
+        else break;
+      }
+    }
+  }
+  if(streak<=0){card.style.display='none';return;}
+  card.style.display='flex';
+  document.getElementById('streak-num').textContent=streak;
+  document.getElementById('streak-lbl').textContent=streak===1?'jour':'jours consecutifs';
+  const icon=document.getElementById('streak-icon');
+  if(streak>=7){
+    icon.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2c0 4-4 6-4 10a4 4 0 108 0c0-4-4-6-4-10z" fill="var(--orange)" stroke="var(--orange)" stroke-width="1.5"/><path d="M12 22a2 2 0 01-2-2c0-2 2-3 2-5 0 2 2 3 2 5a2 2 0 01-2 2z" fill="var(--gold)"/></svg>';
+  }else{
+    icon.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2c0 4-4 6-4 10a4 4 0 108 0c0-4-4-6-4-10z" stroke="var(--text-dim)" stroke-width="1.5" fill="none"/></svg>';
+  }
+}
+
+/* AXE3: Calendar heatmap (12 weeks) */
+function drawHeatmap(ss){
+  const cv=document.getElementById('heatmapCanvas');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=cv.parentElement.getBoundingClientRect().width;
+  const cellSize=Math.floor((W-30)/12);
+  const gap=2;
+  const H=7*(cellSize+gap)+20;
+  cv.width=W*dpr;cv.height=H*dpr;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  // Build date->type map
+  const dateMap={};
+  ss.forEach(s=>{dateMap[s.date]=s.type;});
+
+  const today=new Date();
+  // Find the Monday of 12 weeks ago
+  const startDate=new Date(today);
+  startDate.setDate(startDate.getDate()-83); // 12 weeks = 84 days
+  // Adjust to Monday
+  const dow=startDate.getDay();
+  startDate.setDate(startDate.getDate()-(dow===0?6:dow-1));
+
+  const dayLabels=['L','M','M','J','V','S','D'];
+  const labelW=18;
+
+  // Draw day labels
+  ctx.fillStyle='#484f58';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='left';
+  for(let d=0;d<7;d++){
+    if(d%2===0)ctx.fillText(dayLabels[d],0,16+d*(cellSize+gap)+cellSize/2+3);
+  }
+
+  // Draw cells
+  for(let w=0;w<12;w++){
+    for(let d=0;d<7;d++){
+      const date=new Date(startDate);
+      date.setDate(date.getDate()+w*7+d);
+      const ds=date.toISOString().split('T')[0];
+      const x=labelW+w*(cellSize+gap);
+      const y=16+d*(cellSize+gap);
+
+      const type=dateMap[ds];
+      if(type){
+        ctx.fillStyle=TC[type]||'#484f58';
+        ctx.globalAlpha=0.85;
+      }else{
+        ctx.fillStyle='#161b22';
+        ctx.globalAlpha=1;
+      }
+      ctx.beginPath();
+      ctx.roundRect(x,y,cellSize,cellSize,2);
+      ctx.fill();
+      ctx.globalAlpha=1;
+
+      // Highlight today
+      if(ds===today.toISOString().split('T')[0]){
+        ctx.strokeStyle='var(--text-dim)';ctx.lineWidth=1;
+        ctx.beginPath();ctx.roundRect(x,y,cellSize,cellSize,2);ctx.stroke();
+      }
+    }
+  }
+}
+
 function renderRecent(ss){
   const el=document.getElementById('recent-sessions');
-  if(!ss.length){el.innerHTML='<div class="empty"><div class="empty-icon">🧗</div><div class="empty-text">Aucune séance enregistrée.</div></div>';return;}
+  if(!ss.length){
+    el.innerHTML=`<div class="empty">
+      <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M24 8v16l8 8" stroke="var(--border-hi)" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="24" r="18" stroke="var(--border-hi)" stroke-width="2" stroke-dasharray="4 3"/><path d="M14 38l-2 4M34 38l2 4" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="empty-text">Aucune seance enregistree.<br><span style="color:var(--teal);cursor:pointer" onclick="goTo('log')">Commencer une seance</span></div>
+    </div>`;
+    return;
+  }
   el.innerHTML=ss.map(s=>`
     <div class="si-item" onclick="openSheet('${s.id}')">
       <div class="si-dot" style="background:${TC[s.type]||'#8b949e'}"></div>
       <div class="si-info">
         <div class="si-type">${TL[s.type]||s.type}</div>
-        <div class="si-meta">${fmtDate(s.date)} · ${s.duration}min · ${s.phase}${s.foster?' · Foster '+s.foster:''}</div>
+        <div class="si-meta">${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
-        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?s.rpe.toFixed(1):'—'}</div>
-        <div class="si-chev">›</div>
+        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?s.rpe.toFixed(1):'--'}</div>
+        <div class="si-chev">&rsaquo;</div>
       </div>
     </div>`).join('');
 }
@@ -738,40 +1168,46 @@ function renderRecent(ss){
 function renderHist(){
   const ss=[...DB.sessions].reverse();
   const el=document.getElementById('hist-list');
-  if(!ss.length){el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Aucune séance.</div></div>';return;}
+  if(!ss.length){
+    el.innerHTML=`<div class="empty">
+      <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="10" y="8" width="28" height="32" rx="4" stroke="var(--border-hi)" stroke-width="2" stroke-dasharray="4 3"/><line x1="16" y1="16" x2="32" y2="16" stroke="var(--text-sub)" stroke-width="1.5"/><line x1="16" y1="22" x2="28" y2="22" stroke="var(--text-sub)" stroke-width="1.5"/><line x1="16" y1="28" x2="24" y2="28" stroke="var(--text-sub)" stroke-width="1.5"/></svg></div>
+      <div class="empty-text">Aucune seance enregistree.</div>
+    </div>`;
+    return;
+  }
   el.innerHTML=ss.map(s=>`
     <div class="si-item" onclick="openSheet('${s.id}')">
       <div class="si-dot" style="background:${TC[s.type]||'#8b949e'}"></div>
       <div class="si-info">
         <div class="si-type">${TS[s.type]||s.type}</div>
-        <div class="si-meta">${fmtDate(s.date)} · ${s.duration}min · ${s.phase}${s.foster?' · Foster '+s.foster:''}</div>
+        <div class="si-meta">${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
-        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?s.rpe.toFixed(1):'—'}</div>
-        <div class="si-chev">›</div>
+        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?s.rpe.toFixed(1):'--'}</div>
+        <div class="si-chev">&rsaquo;</div>
       </div>
     </div>`).join('');
 }
 
-/* Sheet — detail + edit */
+/* Sheet -- detail + edit */
 let shId=null;
 
 function openSheet(id){
   const s=DB.sessions.find(x=>String(x.id)===String(id));if(!s)return;
   shId=id;
   document.getElementById('sh-title').textContent=TL[s.type]||s.type;
-  document.getElementById('sh-sub').textContent=`${fmtDate(s.date)} · ${s.phase} · ${s.duration} min`;
-  // Populate detail
+  document.getElementById('sh-sub').textContent=`${fmtDate(s.date)} -- ${s.phase} -- ${s.duration} min`;
   const rows=[
     ['Date',fmtDate(s.date)],['Type',TS[s.type]||s.type],['Phase',s.phase],
-    ['Durée',s.duration+' min'],['Forme','⭐'.repeat(s.forme||1)],
-    ['RPE moyen',s.rpe?s.rpe.toFixed(1)+' / 10':'—'],
-    ['Charge Foster',s.foster?s.foster+' UA':'—'],
-    s.diffDone?['Diff. réussie',s.diffDone]:null,
-    s.diffTry?['Diff. tentée',s.diffTry]:null,
+    ['Duree',s.duration+' min'],['Forme','\u2B50'.repeat(s.forme||1)],
+    ['RPE moyen',s.rpe?s.rpe.toFixed(1)+' / 10':'--'],
+    ['Charge Foster',s.foster?s.foster+' UA':'--'],
+    s.diffDone?['Diff. reussie',s.diffDone]:null,
+    s.diffTry?['Diff. tentee',s.diffTry]:null,
     s.volume?['Volume',s.volume+' voies/blocs']:null,
+    s.injuries?.length?['Zones douloureuses',s.injuries.join(', ')+' ('+s.injuryIntensity+'/5)']: null,
     s.pos?['Points positifs',s.pos]:null,
-    s.neg?['À corriger',s.neg]:null,
+    s.neg?['A corriger',s.neg]:null,
   ].filter(Boolean);
   let exHtml='';
   if(s.exData&&Object.keys(s.exData).length){
@@ -779,7 +1215,7 @@ function openSheet(id){
     Object.entries(s.exData).forEach(([n,sets])=>{
       const lines=Object.entries(sets).map(([si,v])=>{
         const c=v.charge!=null?v.charge+'kg':'';
-        const r=v.reps!=null?' · '+v.reps:v.repsG!=null?' · G:'+v.repsG+' D:'+(v.repsD??'—'):'';
+        const r=v.reps!=null?' -- '+v.reps:v.repsG!=null?' -- G:'+v.repsG+' D:'+(v.repsD??'--'):'';
         return`S${+si+1}: ${c}${r}`;
       }).join(' / ');
       exHtml+=`<div class="sh-row"><div class="sh-lbl">${n}</div><div class="sh-val">${lines}</div></div>`;
@@ -787,7 +1223,6 @@ function openSheet(id){
   }
   document.getElementById('sh-view-detail').innerHTML=
     rows.map(([l,v])=>`<div class="sh-row"><div class="sh-lbl">${l}</div><div class="sh-val">${v}</div></div>`).join('')+exHtml;
-  // Populate edit form
   document.getElementById('ed-date').value=s.date;
   document.getElementById('ed-type').value=s.type;
   document.getElementById('ed-phase').value=s.phase;
@@ -842,7 +1277,7 @@ function saveEdit(){
   DB.sessions=sessions;
   closeSheet();
   renderDash();renderHist();
-  toast('✅ Séance modifiée');
+  toast('Seance modifiee');
 }
 
 function closeSheet(){
@@ -853,10 +1288,10 @@ function closeSheet(){
 function delSession(){
   if(!shId)return;
   DB.sessions=DB.sessions.filter(s=>String(s.id)!==String(shId));
-  closeSheet();renderDash();renderHist();toast('🗑 Séance supprimée');
+  closeSheet();renderDash();renderHist();toast('Seance supprimee');
 }
 
-/* Export / Import (sync between devices) */
+/* Export / Import */
 function exportData(){
   document.getElementById('export-area').value=JSON.stringify({sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()},null,0);
   document.getElementById('import-sheet').classList.add('show');
@@ -875,24 +1310,23 @@ function closeImport(){
 function copyExport(){
   const ta=document.getElementById('export-area');
   ta.select();ta.setSelectionRange(0,99999);
-  try{navigator.clipboard.writeText(ta.value).then(()=>toast('📋 Copié !'));}
-  catch{document.execCommand('copy');toast('📋 Copié !');}
+  try{navigator.clipboard.writeText(ta.value).then(()=>toast('Copie !'));}
+  catch{document.execCommand('copy');toast('Copie !');}
 }
 function doImport(){
   const raw=document.getElementById('import-area').value.trim();
-  if(!raw){toast('⚠️ Rien à importer');return;}
+  if(!raw){toast('Rien a importer');return;}
   try{
     const data=JSON.parse(raw);
-    if(!data.sessions){toast('⚠️ Format invalide');return;}
-    // Merge: keep existing + add new ones not already present
+    if(!data.sessions){toast('Format invalide');return;}
     const existing=DB.sessions;
     const existingIds=new Set(existing.map(s=>String(s.id)));
     const newOnes=data.sessions.filter(s=>!existingIds.has(String(s.id)));
     DB.sessions=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(data.notes)DB.notes={...DB.notes,...data.notes};
     closeImport();renderDash();renderHist();
-    toast(`✅ ${newOnes.length} séance(s) importée(s)`);
-  }catch{toast('⚠️ JSON invalide');}
+    toast(`${newOnes.length} seance(s) importee(s)`);
+  }catch{toast('JSON invalide');}
 }
 
 /* Exercises */
@@ -904,6 +1338,8 @@ function renderExPicker(){
       <div class="ex-chip-dot" style="background:${ex.sess==='A'?'var(--blue)':'var(--teal)'}"></div>
       ${ex.name}
     </div>`).join('');
+  // AXE2: Render bloc heatmap
+  renderBlocHeatmap();
 }
 function selExercise(name,sess){
   selEx=name;renderExPicker();
@@ -915,37 +1351,91 @@ function selExercise(name,sess){
   document.getElementById('ex-detail').style.display='block';
   document.getElementById('ex-empty').style.display='none';
   document.getElementById('ex-d-name').textContent=name;
-  document.getElementById('ex-d-sess').textContent='Séance '+sess;
+  document.getElementById('ex-d-sess').textContent='Seance '+sess;
   const charges=hist.map(h=>h.charge).filter(v=>v!=null);
   const hasC=charges.length>0;
   const vals=hasC?hist.map(h=>h.charge):hist.map(h=>h.rpe);
   const labels=hist.map(h=>h.date);
   const lastV=vals.filter(v=>v!=null).at(-1),firstV=vals.find(v=>v!=null);
-  document.getElementById('ex-last').textContent=lastV!=null?(hasC?lastV+' kg':lastV+' RPE'):'—';
-  document.getElementById('ex-last-lbl').textContent=hasC?'Dernière charge S1 (kg)':'Dernier RPE';
+  document.getElementById('ex-last').textContent=lastV!=null?(hasC?lastV+' kg':lastV+' RPE'):'--';
+  document.getElementById('ex-last-lbl').textContent=hasC?'Derniere charge S1 (kg)':'Dernier RPE';
   if(firstV!=null&&lastV!=null&&firstV!==lastV){
     const d=lastV-firstV;
     document.getElementById('ex-prog').textContent=(d>=0?'+':'')+d+(hasC?' kg':' RPE');
     document.getElementById('ex-prog').style.color=d>0?(hasC?'var(--teal)':'var(--red)'):(hasC?'var(--red)':'var(--teal)');
-  }else{document.getElementById('ex-prog').textContent='—';document.getElementById('ex-prog').style.color='var(--gold)';}
+  }else{document.getElementById('ex-prog').textContent='--';document.getElementById('ex-prog').style.color='var(--gold)';}
   drawChart('exChart',labels,vals,'#2dd4a0','rgba(45,212,160,.1)');
   const histEl=document.getElementById('ex-hist');
-  if(!hist.length){histEl.innerHTML='<div class="empty" style="padding:12px 0"><div class="empty-text">Aucune donnée encore.</div></div>';return;}
+  if(!hist.length){histEl.innerHTML='<div class="empty" style="padding:12px 0"><div class="empty-text">Aucune donnee encore.</div></div>';return;}
   histEl.innerHTML=hist.slice(-8).reverse().map(h=>`
     <div class="si-item" style="cursor:default">
       <div class="si-info">
-        <div class="si-type" style="font-size:.83rem">${fmtDate(h.date)} · <span style="color:var(--text-dim)">${h.phase}</span></div>
-        <div class="si-meta">${h.charge!=null?'S1: '+h.charge+' kg':''}${h.reps!=null?' · '+h.reps+' reps/sec':''}${h.rpe!=null?' · RPE '+h.rpe:''}</div>
+        <div class="si-type" style="font-size:.83rem">${fmtDate(h.date)} -- <span style="color:var(--text-dim)">${h.phase}</span></div>
+        <div class="si-meta">${h.charge!=null?'S1: '+h.charge+' kg':''}${h.reps!=null?' -- '+h.reps+' reps/sec':''}${h.rpe!=null?' -- RPE '+h.rpe:''}</div>
       </div>
       <div class="si-rpe" style="${h.charge!=null?'background:var(--teal-bg);color:var(--teal)':'background:rgba('+rpeRGB(h.rpe||0)+',.15);color:'+rpeColor(h.rpe||0)}">
-        ${h.charge!=null?h.charge+' kg':h.rpe!=null?'RPE '+h.rpe:'—'}
+        ${h.charge!=null?h.charge+' kg':h.rpe!=null?'RPE '+h.rpe:'--'}
       </div>
     </div>`).join('');
+}
+
+/* AXE2: Bloc heatmap */
+function renderBlocHeatmap(){
+  const grimpe=DB.sessions.filter(s=>s.type==='C').slice(-8);
+  const card=document.getElementById('bloc-heatmap-card');
+  const grid=document.getElementById('bloc-heatmap-grid');
+  if(grimpe.length<2){card.style.display='none';return;}
+  card.style.display='block';
+
+  // Find grade range from sessions
+  const allGrades=new Set();
+  grimpe.forEach(s=>{
+    if(s.diffDone)allGrades.add(s.diffDone.toUpperCase().replace(/\s/g,''));
+    if(s.diffTry)allGrades.add(s.diffTry.toUpperCase().replace(/\s/g,''));
+  });
+  // Filter GRADES to only those in range
+  const gradeNums=[...allGrades].map(g=>gradeToNum(g)).filter(n=>n>=0);
+  if(!gradeNums.length){card.style.display='none';return;}
+  const minG=Math.max(0,Math.min(...gradeNums)-1);
+  const maxG=Math.min(GRADES.length-1,Math.max(...gradeNums)+1);
+  const displayGrades=GRADES.slice(minG,maxG+1);
+
+  // Build HTML grid
+  let html='';
+  // Header row
+  html+='<div class="bh-label"></div>';
+  grimpe.forEach(s=>{html+=`<div class="bh-header">${s.date.slice(5)}</div>`;});
+
+  // Grade rows
+  displayGrades.slice().reverse().forEach(grade=>{
+    const gNum=GRADES.indexOf(grade);
+    html+=`<div class="bh-label">${grade}</div>`;
+    grimpe.forEach(s=>{
+      const doneNum=gradeToNum(s.diffDone);
+      const tryNum=gradeToNum(s.diffTry);
+      let color='var(--surface2)';
+      let label='';
+      if(doneNum>=gNum){
+        color='#3fb950';label='\u2713';  // green = validated this grade or above
+      }else if(tryNum>=gNum&&doneNum<gNum){
+        color='#f97316';label='\u00B7';  // orange = attempted but not validated
+      }else if(doneNum===gNum-1){
+        color='#f85149';label='';  // red = just below max
+      }
+      html+=`<div class="bh-cell" style="background:${color}">${label}</div>`;
+    });
+  });
+
+  grid.innerHTML=`<div class="bloc-heatmap" style="grid-template-columns:auto repeat(${grimpe.length},1fr)">${html}</div>`;
 }
 
 /* Analyse */
 function renderAnalyse(){
   const ss=DB.sessions;
+
+  // AXE2: Injury alerts
+  renderInjuryAlerts(ss);
+
   const byP={};
   ss.forEach(s=>{
     if(!byP[s.phase])byP[s.phase]={c:0,f:0,formes:[],rpes:[],A:0,B:0,C:0};
@@ -954,38 +1444,183 @@ function renderAnalyse(){
     if(s.type==='A')p.A++;if(s.type==='B')p.B++;if(s.type==='C')p.C++;
   });
   const wEl=document.getElementById('weekly-sum');
-  if(!Object.keys(byP).length){wEl.innerHTML='<div class="empty"><div class="empty-text">Commence à enregistrer des séances.</div></div>';return;}
-  wEl.innerHTML=Object.entries(byP).map(([ph,d])=>{
-    const af=d.formes.length?(d.formes.reduce((a,b)=>a+b,0)/d.formes.length).toFixed(1):'—';
-    const ar=d.rpes.length?(d.rpes.reduce((a,b)=>a+b,0)/d.rpes.length).toFixed(1):'—';
-    const warn=parseFloat(ar)>8||parseFloat(af)<2.5;
-    const act=warn?'→ Réduire volume, ajouter repos':parseFloat(af)>=4?'→ Progresser : +5% charge':'→ Maintenir le plan';
-    return`<div style="padding:11px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
-        <div style="font-family:'DM Mono',monospace;font-size:.83rem;font-weight:600">${ph}</div>
-        <div style="font-size:.76rem;font-weight:700;color:${warn?'var(--red)':'var(--green)'}">${warn?'⚠️ Vigilance':'✅ OK'}</div>
-      </div>
-      <div class="sg sg3" style="gap:5px;margin-bottom:6px">
-        <div class="stat" style="padding:8px"><div class="sv teal" style="font-size:1.05rem">${d.c}</div><div class="sl">Séances</div></div>
-        <div class="stat" style="padding:8px"><div class="sv blue" style="font-size:1.05rem">${af}</div><div class="sl">Forme /5</div></div>
-        <div class="stat" style="padding:8px"><div class="sv orange" style="font-size:1.05rem">${ar}</div><div class="sl">RPE moy.</div></div>
-      </div>
-      <div style="font-size:.76rem;color:var(--text-dim);font-style:italic;margin-bottom:3px">${act}</div>
-      <div style="font-size:.68rem;color:var(--text-sub);font-family:'DM Mono',monospace">Foster: ${d.f} · A:${d.A} B:${d.B} C:${d.C}</div>
+  if(!Object.keys(byP).length){
+    wEl.innerHTML=`<div class="empty">
+      <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="28" rx="3" stroke="var(--border-hi)" stroke-width="2" stroke-dasharray="4 3"/><line x1="8" y1="20" x2="40" y2="20" stroke="var(--border-hi)" stroke-width="1.5"/><circle cx="16" cy="16" r="2" fill="var(--text-sub)"/><circle cx="24" cy="16" r="2" fill="var(--text-sub)"/></svg></div>
+      <div class="empty-text">Commence a enregistrer des seances.</div>
     </div>`;
-  }).join('');
+  }else{
+    wEl.innerHTML=Object.entries(byP).map(([ph,d])=>{
+      const af=d.formes.length?(d.formes.reduce((a,b)=>a+b,0)/d.formes.length).toFixed(1):'--';
+      const ar=d.rpes.length?(d.rpes.reduce((a,b)=>a+b,0)/d.rpes.length).toFixed(1):'--';
+      const warn=parseFloat(ar)>8||parseFloat(af)<2.5;
+      const act=warn?'Reduire volume, ajouter repos':parseFloat(af)>=4?'Progresser : +5% charge':'Maintenir le plan';
+      return`<div style="padding:11px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+          <div style="font-family:'DM Mono',monospace;font-size:.83rem;font-weight:600">${ph}</div>
+          <div style="font-size:.76rem;font-weight:700;color:${warn?'var(--red)':'var(--green)'}">${warn?'Vigilance':'OK'}</div>
+        </div>
+        <div class="sg sg3" style="gap:5px;margin-bottom:6px">
+          <div class="stat" style="padding:8px"><div class="sv teal" style="font-size:1.05rem">${d.c}</div><div class="sl">Seances</div></div>
+          <div class="stat" style="padding:8px"><div class="sv blue" style="font-size:1.05rem">${af}</div><div class="sl">Forme /5</div></div>
+          <div class="stat" style="padding:8px"><div class="sv orange" style="font-size:1.05rem">${ar}</div><div class="sl">RPE moy.</div></div>
+        </div>
+        <div style="font-size:.76rem;color:var(--text-dim);font-style:italic;margin-bottom:3px">${act}</div>
+        <div style="font-size:.68rem;color:var(--text-sub);font-family:'DM Mono',monospace">Foster: ${d.f} -- A:${d.A} B:${d.B} C:${d.C}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // AXE3: Radar chart
+  drawRadar(ss);
+
   renderCoachNotes();
-  document.getElementById('period-bars').innerHTML=[[1,'Adaptation anatomique','#2dd4a0',4],[2,'Force maximale doigts','#58a6ff',8],[3,'Endurance de force','#f97316',10],[4,'Affûtage + Peaking','#e5a820',8]].map(([n,l,c,w])=>`
-    <div style="margin-bottom:11px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:.78rem;font-weight:600;color:${c}">Phase ${n} — ${l}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text-dim)">${w} sem.</div>
-      </div>
-      <div style="height:5px;border-radius:3px;background:var(--surface2)">
-        <div style="height:100%;border-radius:3px;background:${c};width:${w/30*100}%"></div>
-      </div>
+
+  // AXE3: Dynamic periodization bars
+  renderPeriodBars(ss);
+}
+
+/* AXE2: Injury alerts */
+function renderInjuryAlerts(ss){
+  const el=document.getElementById('injury-alerts');
+  const twoWeeksAgo=new Date();twoWeeksAgo.setDate(twoWeeksAgo.getDate()-14);
+  const recent=ss.filter(s=>new Date(s.date+'T00:00:00')>=twoWeeksAgo&&s.injuries?.length);
+  const zoneCounts={};
+  recent.forEach(s=>{
+    s.injuries.forEach(z=>{zoneCounts[z]=(zoneCounts[z]||0)+1;});
+  });
+  const alerts=Object.entries(zoneCounts).filter(([,c])=>c>=3);
+  if(!alerts.length){el.innerHTML='';return;}
+  el.innerHTML=alerts.map(([zone,count])=>`
+    <div class="injury-alert">
+      <svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="injury-alert-text"><strong>${zone}</strong> signalee ${count} fois sur les 14 derniers jours. Envisagez une evaluation ou du repos cible.</div>
     </div>`).join('');
 }
+
+/* AXE3: Radar chart */
+function drawRadar(ss){
+  const cv=document.getElementById('radarChart');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=cv.parentElement.getBoundingClientRect().width;
+  const H=240;
+  cv.width=W*dpr;cv.height=H*dpr;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+
+  const cx=W/2,cy=H/2+5,r=Math.min(W,H)/2-30;
+  const labels=['Force doigts','Force gen.','Endurance','Mobilite','Technique'];
+  const n=labels.length;
+
+  // Calculate scores (0-10 scale)
+  const last20=ss.slice(-20);
+  const sessA=last20.filter(s=>s.type==='A');
+  const sessB=last20.filter(s=>s.type==='B');
+  const sessC=last20.filter(s=>s.type==='C');
+
+  // Force doigts: avg RPE of dead hang exercises (higher charge = better)
+  const dhData=sessA.filter(s=>s.exData?.['Dead Hang Half Crimp']?.['0']?.charge);
+  const forceDoigts=dhData.length?Math.min(10,dhData.reduce((a,s)=>a+s.exData['Dead Hang Half Crimp']['0'].charge,0)/dhData.length/3):0;
+
+  // Force generale: avg RPE of A sessions
+  const forceGen=sessA.length?Math.min(10,sessA.reduce((a,s)=>a+(s.rpe||0),0)/sessA.length):0;
+
+  // Endurance: climbing frequency * avg volume
+  const climbFreq=sessC.length;
+  const avgVol=sessC.length?sessC.reduce((a,s)=>a+(+s.volume||0),0)/sessC.length:0;
+  const endurance=Math.min(10,(climbFreq*0.8+avgVol*0.3));
+
+  // Mobilite: based on B sessions (flexibility focus)
+  const mobilite=sessB.length?Math.min(10,sessB.reduce((a,s)=>a+(s.forme||3),0)/sessB.length*2):0;
+
+  // Technique: based on max grade achieved relative to attempts
+  const maxDone=sessC.reduce((m,s)=>{const g=gradeToNum(s.diffDone);return g>m?g:m;},-1);
+  const technique=maxDone>=0?Math.min(10,(maxDone+1)*0.8):0;
+
+  const scores=[forceDoigts,forceGen,endurance,mobilite,technique];
+
+  // Draw grid
+  for(let ring=1;ring<=5;ring++){
+    const rr=r*ring/5;
+    ctx.beginPath();
+    for(let i=0;i<=n;i++){
+      const angle=Math.PI*2*i/n-Math.PI/2;
+      const x=cx+rr*Math.cos(angle);
+      const y=cy+rr*Math.sin(angle);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='#30363d';ctx.lineWidth=1;ctx.stroke();
+  }
+
+  // Draw axes
+  for(let i=0;i<n;i++){
+    const angle=Math.PI*2*i/n-Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+r*Math.cos(angle),cy+r*Math.sin(angle));
+    ctx.strokeStyle='#30363d';ctx.lineWidth=1;ctx.stroke();
+  }
+
+  // Draw data polygon
+  ctx.beginPath();
+  scores.forEach((s,i)=>{
+    const angle=Math.PI*2*i/n-Math.PI/2;
+    const rr=r*Math.min(s,10)/10;
+    const x=cx+rr*Math.cos(angle);
+    const y=cy+rr*Math.sin(angle);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle='rgba(45,212,160,.15)';ctx.fill();
+  ctx.strokeStyle='#2dd4a0';ctx.lineWidth=2;ctx.stroke();
+
+  // Draw points
+  scores.forEach((s,i)=>{
+    const angle=Math.PI*2*i/n-Math.PI/2;
+    const rr=r*Math.min(s,10)/10;
+    const x=cx+rr*Math.cos(angle);
+    const y=cy+rr*Math.sin(angle);
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle='#2dd4a0';ctx.fill();
+    ctx.strokeStyle='#0d1117';ctx.lineWidth=2;ctx.stroke();
+  });
+
+  // Labels
+  ctx.fillStyle='#8b949e';ctx.font="10px 'Inter',sans-serif";ctx.textAlign='center';
+  labels.forEach((lbl,i)=>{
+    const angle=Math.PI*2*i/n-Math.PI/2;
+    const x=cx+(r+18)*Math.cos(angle);
+    const y=cy+(r+18)*Math.sin(angle);
+    ctx.textBaseline='middle';
+    if(i===0)ctx.textBaseline='bottom';
+    if(Math.abs(i-n/2)<0.5)ctx.textBaseline='top';
+    ctx.fillText(lbl+' ('+scores[i].toFixed(1)+')',x,y);
+  });
+}
+
+/* AXE3: Dynamic periodization bars */
+function renderPeriodBars(ss){
+  const phases=[[1,'Adaptation anatomique','#2dd4a0',4],[2,'Force maximale doigts','#58a6ff',8],[3,'Endurance de force','#f97316',10],[4,'Affutage + Peaking','#e5a820',8]];
+  document.getElementById('period-bars').innerHTML=phases.map(([n,l,c,totalWeeks])=>{
+    // Count sessions in this phase
+    const phaseSessions=ss.filter(s=>s.phase&&s.phase.startsWith('P'+n));
+    const completedWeeks=new Set(phaseSessions.map(s=>s.phase)).size;
+    const pct=Math.min(100,Math.round(completedWeeks/totalWeeks*100));
+    return`<div style="margin-bottom:11px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:.78rem;font-weight:600;color:${c}">Phase ${n} -- ${l}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text-dim)">${completedWeeks}/${totalWeeks} sem.</div>
+      </div>
+      <div style="height:5px;border-radius:3px;background:var(--surface2)">
+        <div style="height:100%;border-radius:3px;background:${c};width:${pct}%;transition:width .4s ease"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderCoachNotes(){
   const n=DB.notes,el=document.getElementById('coach-list'),e=Object.entries(n);
   el.innerHTML=!e.length?'<div style="font-size:.8rem;color:var(--text-dim);padding:6px 0">Aucune note.</div>':e.map(([p,v])=>`
@@ -996,8 +1631,8 @@ function renderCoachNotes(){
 }
 function saveNote(){
   const p=document.getElementById('coach-ph').value,n=document.getElementById('coach-note').value.trim();
-  if(!n){toast('⚠️ Saisir une note');return;}
-  DB.notes={...DB.notes,[p]:n};document.getElementById('coach-note').value='';renderCoachNotes();toast('✅ Note enregistrée');
+  if(!n){toast('Saisir une note');return;}
+  DB.notes={...DB.notes,[p]:n};document.getElementById('coach-note').value='';renderCoachNotes();toast('Note enregistree');
 }
 
 /* Chart */
@@ -1033,7 +1668,15 @@ function drawChart(id,labels,data,lc,ac,yMinFixed,yMaxFixed){
 
 /* Utils */
 function fmtDate(d){return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function toast(msg){const t=document.getElementById('toast');t.className='toast';t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function toastPR(msg){
+  const t=document.getElementById('toast');
+  t.className='toast pr';
+  t.textContent=msg;
+  t.classList.add('show');
+  if(navigator.vibrate)navigator.vibrate([100,50,100,50,200]);
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
 
 init();
 </script>
