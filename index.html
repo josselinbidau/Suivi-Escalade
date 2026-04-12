@@ -527,34 +527,77 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
   <div class="sheet">
     <div style="padding:14px 16px 0"><div class="sh-handle"></div>
       <div class="sh-title">Synchronisation</div>
-      <div class="sh-sub">Synchronisez entre mobile et PC. Zero compte requis.</div>
+      <div class="sh-sub">Sync multi-appareils. Zero compte requis.</div>
     </div>
     <div class="sh-body" style="margin-top:8px">
-      <div class="fl" style="margin-bottom:6px">Code de synchronisation</div>
-      <div style="display:flex;gap:6px;margin-bottom:4px">
-        <input class="fi" type="text" id="sync-code-input" placeholder="Ex: abc123..." style="flex:1;font-family:'DM Mono',monospace;font-size:.85rem;letter-spacing:.05em">
-      </div>
-      <div style="font-size:.65rem;color:var(--text-sub);margin-bottom:12px;line-height:1.5" id="sync-status-text">
-        Premier appareil : cliquez Envoyer pour generer un code.<br>
-        Autre appareil : entrez le meme code puis cliquez Recevoir.
+
+      <!-- Step indicator -->
+      <div style="display:flex;gap:0;margin-bottom:14px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)">
+        <button id="sync-tab-push" onclick="switchSyncTab('push')" style="flex:1;padding:10px 4px;background:var(--accent-bg);border:none;border-right:1px solid var(--border);color:var(--accent);font-size:.73rem;font-weight:700;cursor:pointer;min-height:40px;">
+          ⬆ Envoyer
+        </button>
+        <button id="sync-tab-pull" onclick="switchSyncTab('pull')" style="flex:1;padding:10px 4px;background:none;border:none;color:var(--text-dim);font-size:.73rem;font-weight:700;cursor:pointer;min-height:40px;">
+          ⬇ Recevoir
+        </button>
       </div>
 
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <button class="btn btn-primary" onclick="cloudPush()" style="flex:1" id="btn-push">
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 19V6m0 0l-5 5m5-5l5 5"/><path d="M5 21h14"/></svg>
-          Envoyer
+      <!-- PUSH panel -->
+      <div id="sync-panel-push">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:.75rem;color:var(--text-dim);line-height:1.6">
+          <b style="color:var(--text)">Depuis cet appareil :</b><br>
+          1. Cliquez <b style="color:var(--accent)">Envoyer mes donnees</b><br>
+          2. Un code s'affiche — copiez-le<br>
+          3. Sur l'autre appareil, collez ce code dans l'onglet Recevoir
+        </div>
+        <button class="btn btn-primary" onclick="cloudPush()" style="width:100%;margin-bottom:10px">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 19V6m0 0l-5 5m5-5l5 5"/><path d="M5 21h14"/></svg>
+          Envoyer mes donnees
         </button>
-        <button class="btn btn-outline" onclick="cloudPull()" style="flex:1" id="btn-pull">
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 5v13m0 0l5-5m-5 5l-5-5"/><path d="M5 3h14"/></svg>
-          Recevoir
+        <!-- Code display zone -->
+        <div id="sync-code-display" style="display:none;margin-bottom:10px">
+          <div class="fl" style="margin-bottom:5px">Votre code de synchronisation</div>
+          <div style="display:flex;gap:6px">
+            <div id="sync-code-box" style="flex:1;background:var(--surface3);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:10px 12px;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--accent);word-break:break-all;letter-spacing:.04em"></div>
+            <button class="btn-icon" onclick="copySyncCode()" title="Copier le code" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;flex-shrink:0">
+              <svg id="copy-icon" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
+          <div style="font-size:.65rem;color:var(--text-sub);margin-top:5px">Ce code pointe vers vos donnees en ligne. Gardez-le.</div>
+        </div>
+      </div>
+
+      <!-- PULL panel -->
+      <div id="sync-panel-pull" style="display:none">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:.75rem;color:var(--text-dim);line-height:1.6">
+          <b style="color:var(--text)">Sur ce nouvel appareil :</b><br>
+          1. Collez le code genere sur l'autre appareil<br>
+          2. Cliquez <b style="color:var(--blue)">Recevoir les donnees</b><br>
+          3. Vos seances se fusionnent automatiquement
+        </div>
+        <div class="fl" style="margin-bottom:5px">Code de synchronisation</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <input class="fi" type="text" id="sync-code-input" placeholder="Collez le code ici..." style="flex:1;font-family:'DM Mono',monospace;font-size:.82rem;letter-spacing:.04em">
+        </div>
+        <button class="btn btn-outline" onclick="cloudPull()" style="width:100%;border-color:var(--blue);color:var(--blue);margin-bottom:10px">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 5v13m0 0l5-5m-5 5l-5-5"/><path d="M5 21h14"/></svg>
+          Recevoir les donnees
         </button>
       </div>
+
+      <!-- Status bar -->
+      <div id="sync-status-text" style="font-size:.72rem;color:var(--text-dim);min-height:18px;text-align:center;margin-bottom:2px"></div>
 
       <div class="divider"></div>
-      <div class="fl" style="margin:10px 0 6px">Export / Import manuel (JSON)</div>
+      <div class="fl" style="margin:10px 0 6px">Sauvegarde manuelle (JSON)</div>
       <div style="display:flex;gap:6px;margin-bottom:8px">
-        <button class="btn btn-outline btn-sm" style="flex:1" onclick="copyExport()">Copier JSON</button>
-        <button class="btn btn-outline btn-sm" style="flex:1" onclick="showManualImport()">Coller JSON</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="downloadBackup()">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Telecharger
+        </button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="showManualImport()">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 3 12 8 17 3"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Importer fichier
+        </button>
       </div>
       <div id="manual-import-sec" style="display:none">
         <textarea id="import-area" style="width:100%;height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;" placeholder="Coller ici le JSON..."></textarea>
@@ -1348,12 +1391,15 @@ function delSession(){
   closeSheet();renderDash();renderHist();toast('Seance supprimee');
 }
 
-/* Sync via jsonblob.com — API REST avec CORS natif, zero compte */
+/* ============================================================
+   SYNC ENGINE — jsonblob.com (API REST CORS, zero compte)
+   ============================================================ */
 const BLOB_API='https://jsonblob.com/api/jsonBlob';
 
 function getSyncBlobId(){return localStorage.getItem('vl3_blob_id')||'';}
 function setSyncBlobId(id){localStorage.setItem('vl3_blob_id',id);}
 
+/* Banner (dot + texte en haut du dashboard) */
 function updateSyncBanner(){
   const id=getSyncBlobId();
   const dot=document.getElementById('sync-dot');
@@ -1361,91 +1407,113 @@ function updateSyncBanner(){
   const lastSync=localStorage.getItem('vl3_last_sync');
   if(id){
     dot.className='sync-dot ok';
-    const code=id.slice(-8);
-    text.textContent=lastSync?'Sync: ...'+code+' -- '+new Date(lastSync).toLocaleString('fr-FR'):'Sync: ...'+code+' -- jamais synchronise';
+    text.textContent=lastSync
+      ?'Sync OK — '+new Date(lastSync).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+      :'Sync configure. Pas encore envoye.';
   }else{
-    dot.className='sync-dot';
-    text.textContent='Non synchronise. Touchez pour configurer.';
+    dot.className='sync-dot warn';
+    text.textContent='Non synchronise — Touchez pour configurer';
   }
 }
 
-/* Push = envoyer les donnees locales vers le cloud */
+/* Tabs push/pull dans la sheet */
+function switchSyncTab(tab){
+  const isPush=tab==='push';
+  document.getElementById('sync-panel-push').style.display=isPush?'block':'none';
+  document.getElementById('sync-panel-pull').style.display=isPush?'none':'block';
+  document.getElementById('sync-tab-push').style.background=isPush?'var(--accent-bg)':'none';
+  document.getElementById('sync-tab-push').style.color=isPush?'var(--accent)':'var(--text-dim)';
+  document.getElementById('sync-tab-pull').style.background=isPush?'none':'rgba(100,181,246,.1)';
+  document.getElementById('sync-tab-pull').style.color=isPush?'var(--text-dim)':'var(--blue)';
+  document.getElementById('sync-status-text').textContent='';
+}
+
+/* Copier le code affiché */
+function copySyncCode(){
+  const code=document.getElementById('sync-code-box').textContent;
+  if(!code)return;
+  navigator.clipboard.writeText(code).then(()=>{
+    const icon=document.getElementById('copy-icon');
+    icon.innerHTML='<polyline points="20 6 9 17 4 12"/>';
+    toast('Code copie !');
+    setTimeout(()=>{icon.innerHTML='<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>';},2000);
+  }).catch(()=>toast('Copie impossible — copiez manuellement'));
+}
+
+/* PUSH — envoyer les donnees locales vers le cloud */
 async function cloudPush(){
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Envoi en cours...';statusEl.style.color='var(--accent)';
-  const payload={sessions:DB.sessions,notes:DB.notes,updated:new Date().toISOString()};
+  const payload={sessions:DB.sessions,notes:DB.notes,updated:new Date().toISOString(),
+    meta:{sessions:DB.sessions.length,appVersion:'vl3'}};
   try{
     let blobId=getSyncBlobId();
-    // Si un code est saisi manuellement, l'utiliser
-    const inputCode=document.getElementById('sync-code-input').value.trim();
-    if(inputCode&&inputCode!==blobId)blobId=inputCode;
 
     if(blobId){
-      // Mettre a jour le blob existant
+      /* Mettre a jour le blob existant */
       const res=await fetch(BLOB_API+'/'+blobId,{
         method:'PUT',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
         body:JSON.stringify(payload)
       });
       if(res.ok){
-        setSyncBlobId(blobId);
-        document.getElementById('sync-code-input').value=blobId;
-        localStorage.setItem('vl3_last_sync',new Date().toISOString());
-        updateSyncBanner();
-        statusEl.textContent='Envoye ! '+payload.sessions.length+' seances.';statusEl.style.color='var(--green)';
-        toast(payload.sessions.length+' seances envoyees !');
-        return;
+        _onPushSuccess(blobId,payload.sessions.length);return;
       }
-      // Blob expire ou invalide, on en cree un nouveau
-      console.warn('Blob PUT failed, creating new one');
+      /* Blob expire — on en cree un nouveau */
+      console.warn('Blob expiré, creation nouveau');
       blobId='';
     }
 
-    // Creer un nouveau blob
+    /* Creer un nouveau blob */
     const res=await fetch(BLOB_API,{
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify(payload)
     });
-    if(!res.ok)throw new Error('Serveur: '+res.status);
-    // L'ID est dans le header Location
+    if(!res.ok)throw new Error('Serveur '+res.status);
     const loc=res.headers.get('Location')||'';
     const newId=loc.split('/').pop();
-    if(!newId)throw new Error('Impossible de recuperer l\'ID');
-    setSyncBlobId(newId);
-    document.getElementById('sync-code-input').value=newId;
-    localStorage.setItem('vl3_last_sync',new Date().toISOString());
-    updateSyncBanner();
-    statusEl.textContent='Envoye ! Code: '+newId.slice(-8)+'. Notez ce code pour l\'autre appareil.';statusEl.style.color='var(--green)';
-    toast('Envoye ! Copiez le code.');
+    if(!newId)throw new Error('ID introuvable dans la reponse');
+    _onPushSuccess(newId,payload.sessions.length);
   }catch(err){
     console.error('Push error:',err);
     statusEl.textContent='Erreur: '+err.message;statusEl.style.color='var(--red)';
-    toast('Erreur envoi: '+err.message);
+    toast('Erreur envoi');
   }
 }
 
-/* Pull = recevoir les donnees depuis le cloud */
+function _onPushSuccess(blobId,count){
+  setSyncBlobId(blobId);
+  localStorage.setItem('vl3_last_sync',new Date().toISOString());
+  updateSyncBanner();
+  /* Afficher le code */
+  document.getElementById('sync-code-box').textContent=blobId;
+  document.getElementById('sync-code-display').style.display='block';
+  const statusEl=document.getElementById('sync-status-text');
+  statusEl.textContent='✓ '+count+' seance(s) envoyee(s). Copiez le code pour l\'autre appareil.';
+  statusEl.style.color='var(--green)';
+  toast(count+' seances envoyees !');
+}
+
+/* PULL — recevoir les donnees depuis le cloud */
 async function cloudPull(){
   const inputCode=document.getElementById('sync-code-input').value.trim();
-  if(!inputCode){toast('Entrez le code de synchronisation');return;}
+  if(!inputCode){toast('Collez le code de synchronisation');return;}
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Reception en cours...';statusEl.style.color='var(--accent)';
   try{
-    const res=await fetch(BLOB_API+'/'+inputCode,{
-      headers:{'Accept':'application/json'}
-    });
+    const res=await fetch(BLOB_API+'/'+inputCode,{headers:{'Accept':'application/json'}});
     if(res.status===404){
       statusEl.textContent='Code introuvable. Verifiez le code saisi.';statusEl.style.color='var(--red)';
       toast('Code introuvable');return;
     }
-    if(!res.ok)throw new Error('Serveur: '+res.status);
+    if(!res.ok)throw new Error('Serveur '+res.status);
     const cloudData=await res.json();
     if(!cloudData.sessions||!Array.isArray(cloudData.sessions)){
       statusEl.textContent='Donnees invalides sur le serveur.';statusEl.style.color='var(--red)';
       toast('Donnees invalides');return;
     }
-    // Merge
+    /* Merge intelligent : on ajoute uniquement les sessions absentes localement */
     const existing=DB.sessions;
     const existingIds=new Set(existing.map(s=>String(s.id)));
     const newOnes=cloudData.sessions.filter(s=>!existingIds.has(String(s.id)));
@@ -1454,9 +1522,10 @@ async function cloudPull(){
     setSyncBlobId(inputCode);
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
-    statusEl.textContent=newOnes.length+' nouvelle(s) seance(s). Total: '+DB.sessions.length;statusEl.style.color='var(--green)';
-    closeImport();renderDash();renderHist();
-    toast(newOnes.length+' seance(s) recues !');
+    statusEl.textContent='✓ '+newOnes.length+' nouvelle(s) seance(s) recue(s). Total: '+DB.sessions.length;
+    statusEl.style.color='var(--green)';
+    toast(newOnes.length+' seance(s) recue(s) !');
+    setTimeout(()=>{closeImport();renderDash();renderHist();},1200);
   }catch(err){
     console.error('Pull error:',err);
     statusEl.textContent='Erreur: '+err.message;statusEl.style.color='var(--red)';
@@ -1464,10 +1533,20 @@ async function cloudPull(){
   }
 }
 
-/* Sync sheet */
+/* Sync sheet — ouverture / fermeture */
 function showSyncSheet(){
-  document.getElementById('sync-code-input').value=getSyncBlobId();
+  /* Restaurer code existant si deja configure */
+  const id=getSyncBlobId();
+  if(id){
+    document.getElementById('sync-code-box').textContent=id;
+    document.getElementById('sync-code-display').style.display='block';
+  }else{
+    document.getElementById('sync-code-display').style.display='none';
+  }
+  document.getElementById('sync-code-input').value=id;
   document.getElementById('manual-import-sec').style.display='none';
+  document.getElementById('sync-status-text').textContent='';
+  switchSyncTab('push');
   document.getElementById('import-sheet').classList.add('show');
   document.body.style.overflow='hidden';
 }
@@ -1481,11 +1560,20 @@ function showManualImport(){
   const sec=document.getElementById('manual-import-sec');
   sec.style.display=sec.style.display==='none'?'block':'none';
 }
-function copyExport(){
-  const json=JSON.stringify({sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()},null,0);
-  try{navigator.clipboard.writeText(json).then(()=>toast('JSON copie !'));}
-  catch{toast('Erreur de copie');}
+
+/* Sauvegarde JSON en fichier local */
+function downloadBackup(){
+  const data={sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='vertical-log-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();URL.revokeObjectURL(a.href);
+  toast('Sauvegarde telechargee');
 }
+function copyExport(){downloadBackup();}
+
+/* Import JSON manuel (coller) */
 function doImport(){
   const raw=document.getElementById('import-area').value.trim();
   if(!raw){toast('Rien a importer');return;}
