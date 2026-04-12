@@ -527,77 +527,48 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
   <div class="sheet">
     <div style="padding:14px 16px 0"><div class="sh-handle"></div>
       <div class="sh-title">Synchronisation</div>
-      <div class="sh-sub">Sync multi-appareils. Zero compte requis.</div>
+      <div class="sh-sub">Sync via GitHub — josselinbidau/Suivi-Escalade</div>
     </div>
     <div class="sh-body" style="margin-top:8px">
-
-      <!-- Step indicator -->
-      <div style="display:flex;gap:0;margin-bottom:14px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border)">
-        <button id="sync-tab-push" onclick="switchSyncTab('push')" style="flex:1;padding:10px 4px;background:var(--accent-bg);border:none;border-right:1px solid var(--border);color:var(--accent);font-size:.73rem;font-weight:700;cursor:pointer;min-height:40px;">
-          ⬆ Envoyer
-        </button>
-        <button id="sync-tab-pull" onclick="switchSyncTab('pull')" style="flex:1;padding:10px 4px;background:none;border:none;color:var(--text-dim);font-size:.73rem;font-weight:700;cursor:pointer;min-height:40px;">
-          ⬇ Recevoir
-        </button>
-      </div>
-
-      <!-- PUSH panel -->
-      <div id="sync-panel-push">
+      <!-- GitHub Token Config -->
+      <div id="gh-config-section">
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:.75rem;color:var(--text-dim);line-height:1.6">
-          <b style="color:var(--text)">Depuis cet appareil :</b><br>
-          1. Cliquez <b style="color:var(--accent)">Envoyer mes donnees</b><br>
-          2. Un code s'affiche — copiez-le<br>
-          3. Sur l'autre appareil, collez ce code dans l'onglet Recevoir
+          <b style="color:var(--text)">Configuration GitHub :</b><br>
+          Un <b style="color:var(--accent)">Personal Access Token</b> (classic) avec la permission <b style="color:var(--accent)">repo</b> est requis.
         </div>
-        <button class="btn btn-primary" onclick="cloudPush()" style="width:100%;margin-bottom:10px">
-          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 19V6m0 0l-5 5m5-5l5 5"/><path d="M5 21h14"/></svg>
-          Envoyer mes donnees
-        </button>
-        <!-- Code display zone -->
-        <div id="sync-code-display" style="display:none;margin-bottom:10px">
-          <div class="fl" style="margin-bottom:5px">Votre code de synchronisation</div>
-          <div style="display:flex;gap:6px">
-            <div id="sync-code-box" style="flex:1;background:var(--surface3);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:10px 12px;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--accent);word-break:break-all;letter-spacing:.04em"></div>
-            <button class="btn-icon" onclick="copySyncCode()" title="Copier le code" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;flex-shrink:0">
-              <svg id="copy-icon" viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            </button>
-          </div>
-          <div style="font-size:.65rem;color:var(--text-sub);margin-top:5px">Ce code pointe vers vos donnees en ligne. Gardez-le.</div>
+        <div class="fg"><label class="fl">Token GitHub</label>
+          <input class="fi" type="password" id="gh-token-input" placeholder="ghp_xxxxxxxxxxxx" style="font-family:'DM Mono',monospace;font-size:.82rem;letter-spacing:.04em">
         </div>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <button class="btn btn-outline btn-sm" style="flex:1" onclick="saveGHToken()">Sauvegarder</button>
+          <button class="btn btn-outline btn-sm" style="flex:1" onclick="clearGHToken()">Supprimer</button>
+        </div>
+        <div id="gh-token-status" style="font-size:.68rem;color:var(--text-sub);margin-bottom:10px"></div>
       </div>
-
-      <!-- PULL panel -->
-      <div id="sync-panel-pull" style="display:none">
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:.75rem;color:var(--text-dim);line-height:1.6">
-          <b style="color:var(--text)">Sur ce nouvel appareil :</b><br>
-          1. Collez le code genere sur l'autre appareil<br>
-          2. Cliquez <b style="color:var(--blue)">Recevoir les donnees</b><br>
-          3. Vos seances se fusionnent automatiquement
-        </div>
-        <div class="fl" style="margin-bottom:5px">Code de synchronisation</div>
-        <div style="display:flex;gap:6px;margin-bottom:10px">
-          <input class="fi" type="text" id="sync-code-input" placeholder="Collez le code ici..." style="flex:1;font-family:'DM Mono',monospace;font-size:.82rem;letter-spacing:.04em">
-        </div>
-        <button class="btn btn-outline" onclick="cloudPull()" style="width:100%;border-color:var(--blue);color:var(--blue);margin-bottom:10px">
-          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 5v13m0 0l5-5m-5 5l-5-5"/><path d="M5 21h14"/></svg>
-          Recevoir les donnees
-        </button>
-      </div>
-
-      <!-- Status bar -->
-      <div id="sync-status-text" style="font-size:.72rem;color:var(--text-dim);min-height:18px;text-align:center;margin-bottom:2px"></div>
 
       <div class="divider"></div>
-      <div class="fl" style="margin:10px 0 6px">Sauvegarde manuelle (JSON)</div>
+
+      <!-- Sync actions -->
+      <div style="font-size:.65rem;color:var(--text-sub);margin-bottom:12px;line-height:1.5;text-align:center" id="sync-status-text">
+        Configurez votre token puis envoyez ou recevez vos donnees.
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="btn btn-primary" onclick="ghPush()" style="flex:1" id="btn-push">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 19V6m0 0l-5 5m5-5l5 5"/><path d="M5 21h14"/></svg>
+          Envoyer
+        </button>
+        <button class="btn btn-outline" onclick="ghPull()" style="flex:1" id="btn-pull">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><path d="M12 5v13m0 0l5-5m-5 5l-5-5"/><path d="M5 3h14"/></svg>
+          Recevoir
+        </button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="fl" style="margin:10px 0 6px">Export / Import manuel (JSON)</div>
       <div style="display:flex;gap:6px;margin-bottom:8px">
-        <button class="btn btn-outline btn-sm" style="flex:1" onclick="downloadBackup()">
-          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Telecharger
-        </button>
-        <button class="btn btn-outline btn-sm" style="flex:1" onclick="showManualImport()">
-          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 3 12 8 17 3"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Importer fichier
-        </button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="copyExport()">Copier JSON</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="showManualImport()">Coller JSON</button>
       </div>
       <div id="manual-import-sec" style="display:none">
         <textarea id="import-area" style="width:100%;height:80px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;padding:10px;outline:none;resize:none;" placeholder="Coller ici le JSON..."></textarea>
@@ -1392,161 +1363,177 @@ function delSession(){
 }
 
 /* ============================================================
-   SYNC ENGINE — jsonblob.com (API REST CORS, zero compte)
+   SYNC ENGINE — GitHub API (Contents API)
+   Repo: josselinbidau/Suivi-Escalade
+   Fichier: data/vertical-log-data.json
    ============================================================ */
-const BLOB_API='https://jsonblob.com/api/jsonBlob';
+const GH_OWNER='josselinbidau';
+const GH_REPO='Suivi-Escalade';
+const GH_FILE_PATH='data/vertical-log-data.json';
+const GH_API='https://api.github.com';
 
-function getSyncBlobId(){return localStorage.getItem('vl3_blob_id')||'';}
-function setSyncBlobId(id){localStorage.setItem('vl3_blob_id',id);}
+function getGHToken(){return localStorage.getItem('vl3_gh_token')||'';}
+function setGHToken(t){localStorage.setItem('vl3_gh_token',t);}
+function clearGHTokenStorage(){localStorage.removeItem('vl3_gh_token');}
+
+/* Token UI */
+function saveGHToken(){
+  const input=document.getElementById('gh-token-input');
+  const token=input.value.trim();
+  if(!token){toast('Entrez un token');return;}
+  setGHToken(token);
+  input.value='';
+  updateGHTokenStatus();
+  updateSyncBanner();
+  toast('Token sauvegarde !');
+}
+function clearGHToken(){
+  clearGHTokenStorage();
+  document.getElementById('gh-token-input').value='';
+  updateGHTokenStatus();
+  updateSyncBanner();
+  toast('Token supprime');
+}
+function updateGHTokenStatus(){
+  const el=document.getElementById('gh-token-status');
+  const token=getGHToken();
+  if(token){
+    el.textContent='Token configure ('+token.slice(0,4)+'...'+token.slice(-4)+')';
+    el.style.color='var(--green)';
+  }else{
+    el.textContent='Aucun token configure.';
+    el.style.color='var(--text-sub)';
+  }
+}
 
 /* Banner (dot + texte en haut du dashboard) */
 function updateSyncBanner(){
-  const id=getSyncBlobId();
+  const token=getGHToken();
   const dot=document.getElementById('sync-dot');
   const text=document.getElementById('sync-text');
   const lastSync=localStorage.getItem('vl3_last_sync');
-  if(id){
+  if(token&&lastSync){
     dot.className='sync-dot ok';
-    text.textContent=lastSync
-      ?'Sync OK — '+new Date(lastSync).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
-      :'Sync configure. Pas encore envoye.';
+    text.textContent='GitHub sync OK — '+new Date(lastSync).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }else if(token){
+    dot.className='sync-dot ok';
+    text.textContent='GitHub configure. Pas encore synchronise.';
   }else{
     dot.className='sync-dot warn';
     text.textContent='Non synchronise — Touchez pour configurer';
   }
 }
 
-/* Tabs push/pull dans la sheet */
-function switchSyncTab(tab){
-  const isPush=tab==='push';
-  document.getElementById('sync-panel-push').style.display=isPush?'block':'none';
-  document.getElementById('sync-panel-pull').style.display=isPush?'none':'block';
-  document.getElementById('sync-tab-push').style.background=isPush?'var(--accent-bg)':'none';
-  document.getElementById('sync-tab-push').style.color=isPush?'var(--accent)':'var(--text-dim)';
-  document.getElementById('sync-tab-pull').style.background=isPush?'none':'rgba(100,181,246,.1)';
-  document.getElementById('sync-tab-pull').style.color=isPush?'var(--text-dim)':'var(--blue)';
-  document.getElementById('sync-status-text').textContent='';
+/* GitHub API helpers */
+function ghHeaders(){
+  return{
+    'Authorization':'Bearer '+getGHToken(),
+    'Accept':'application/vnd.github+json',
+    'Content-Type':'application/json',
+    'X-GitHub-Api-Version':'2022-11-28'
+  };
 }
 
-/* Copier le code affiché */
-function copySyncCode(){
-  const code=document.getElementById('sync-code-box').textContent;
-  if(!code)return;
-  navigator.clipboard.writeText(code).then(()=>{
-    const icon=document.getElementById('copy-icon');
-    icon.innerHTML='<polyline points="20 6 9 17 4 12"/>';
-    toast('Code copie !');
-    setTimeout(()=>{icon.innerHTML='<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>';},2000);
-  }).catch(()=>toast('Copie impossible — copiez manuellement'));
+/* Get current file SHA (needed for updates) */
+async function ghGetFile(){
+  const url=GH_API+'/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+GH_FILE_PATH;
+  const res=await fetch(url,{headers:ghHeaders()});
+  if(res.status===404)return{exists:false,sha:null,content:null};
+  if(!res.ok)throw new Error('GitHub GET: '+res.status+' '+res.statusText);
+  const data=await res.json();
+  const decoded=JSON.parse(atob(data.content.replace(/\n/g,'')));
+  return{exists:true,sha:data.sha,content:decoded};
 }
 
-/* PUSH — envoyer les donnees locales vers le cloud */
-async function cloudPush(){
+/* Push = envoyer les donnees locales vers GitHub */
+async function ghPush(){
+  const token=getGHToken();
+  if(!token){toast('Configurez votre token GitHub');return;}
   const statusEl=document.getElementById('sync-status-text');
-  statusEl.textContent='Envoi en cours...';statusEl.style.color='var(--accent)';
+  statusEl.textContent='Envoi vers GitHub...';statusEl.style.color='var(--accent)';
   const payload={sessions:DB.sessions,notes:DB.notes,updated:new Date().toISOString(),
     meta:{sessions:DB.sessions.length,appVersion:'vl3'}};
   try{
-    let blobId=getSyncBlobId();
-
-    if(blobId){
-      /* Mettre a jour le blob existant */
-      const res=await fetch(BLOB_API+'/'+blobId,{
-        method:'PUT',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify(payload)
-      });
-      if(res.ok){
-        _onPushSuccess(blobId,payload.sessions.length);return;
-      }
-      /* Blob expire — on en cree un nouveau */
-      console.warn('Blob expiré, creation nouveau');
-      blobId='';
+    /* Recuperer le SHA du fichier existant (si il existe) */
+    let sha=null;
+    try{
+      const existing=await ghGetFile();
+      if(existing.exists)sha=existing.sha;
+    }catch(e){
+      /* Si 404, le fichier n'existe pas encore — on le cree */
+      if(!e.message.includes('404'))throw e;
     }
-
-    /* Creer un nouveau blob */
-    const res=await fetch(BLOB_API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify(payload)
+    /* Encoder en base64 */
+    const jsonStr=JSON.stringify(payload,null,2);
+    const encoded=btoa(unescape(encodeURIComponent(jsonStr)));
+    /* Creer ou mettre a jour le fichier */
+    const body={
+      message:'Sync Vertical Log — '+payload.sessions.length+' seances — '+new Date().toISOString().slice(0,16),
+      content:encoded
+    };
+    if(sha)body.sha=sha;
+    const url=GH_API+'/repos/'+GH_OWNER+'/'+GH_REPO+'/contents/'+GH_FILE_PATH;
+    const res=await fetch(url,{
+      method:'PUT',
+      headers:ghHeaders(),
+      body:JSON.stringify(body)
     });
-    if(!res.ok)throw new Error('Serveur '+res.status);
-    const loc=res.headers.get('Location')||'';
-    const newId=loc.split('/').pop();
-    if(!newId)throw new Error('ID introuvable dans la reponse');
-    _onPushSuccess(newId,payload.sessions.length);
+    if(!res.ok){
+      const errData=await res.json().catch(()=>({}));
+      throw new Error('GitHub '+res.status+': '+(errData.message||res.statusText));
+    }
+    localStorage.setItem('vl3_last_sync',new Date().toISOString());
+    updateSyncBanner();
+    statusEl.textContent='Envoye ! '+payload.sessions.length+' seances sur GitHub.';statusEl.style.color='var(--green)';
+    toast(payload.sessions.length+' seances envoyees !');
   }catch(err){
-    console.error('Push error:',err);
+    console.error('GitHub push error:',err);
     statusEl.textContent='Erreur: '+err.message;statusEl.style.color='var(--red)';
     toast('Erreur envoi');
   }
 }
 
-function _onPushSuccess(blobId,count){
-  setSyncBlobId(blobId);
-  localStorage.setItem('vl3_last_sync',new Date().toISOString());
-  updateSyncBanner();
-  /* Afficher le code */
-  document.getElementById('sync-code-box').textContent=blobId;
-  document.getElementById('sync-code-display').style.display='block';
+/* Pull = recevoir les donnees depuis GitHub */
+async function ghPull(){
+  const token=getGHToken();
+  if(!token){toast('Configurez votre token GitHub');return;}
   const statusEl=document.getElementById('sync-status-text');
-  statusEl.textContent='✓ '+count+' seance(s) envoyee(s). Copiez le code pour l\'autre appareil.';
-  statusEl.style.color='var(--green)';
-  toast(count+' seances envoyees !');
-}
-
-/* PULL — recevoir les donnees depuis le cloud */
-async function cloudPull(){
-  const inputCode=document.getElementById('sync-code-input').value.trim();
-  if(!inputCode){toast('Collez le code de synchronisation');return;}
-  const statusEl=document.getElementById('sync-status-text');
-  statusEl.textContent='Reception en cours...';statusEl.style.color='var(--accent)';
+  statusEl.textContent='Reception depuis GitHub...';statusEl.style.color='var(--accent)';
   try{
-    const res=await fetch(BLOB_API+'/'+inputCode,{headers:{'Accept':'application/json'}});
-    if(res.status===404){
-      statusEl.textContent='Code introuvable. Verifiez le code saisi.';statusEl.style.color='var(--red)';
-      toast('Code introuvable');return;
+    const fileData=await ghGetFile();
+    if(!fileData.exists){
+      statusEl.textContent='Aucune donnee trouvee sur GitHub. Envoyez d\'abord vos donnees.';statusEl.style.color='var(--text-dim)';
+      toast('Aucune donnee sur GitHub');return;
     }
-    if(!res.ok)throw new Error('Serveur '+res.status);
-    const cloudData=await res.json();
+    const cloudData=fileData.content;
     if(!cloudData.sessions||!Array.isArray(cloudData.sessions)){
-      statusEl.textContent='Donnees invalides sur le serveur.';statusEl.style.color='var(--red)';
+      statusEl.textContent='Donnees invalides sur GitHub.';statusEl.style.color='var(--red)';
       toast('Donnees invalides');return;
     }
-    /* Merge intelligent : on ajoute uniquement les sessions absentes localement */
+    /* Merge intelligent : ajouter les sessions absentes localement */
     const existing=DB.sessions;
     const existingIds=new Set(existing.map(s=>String(s.id)));
     const newOnes=cloudData.sessions.filter(s=>!existingIds.has(String(s.id)));
     DB.sessions=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(cloudData.notes)DB.notes={...DB.notes,...cloudData.notes};
-    setSyncBlobId(inputCode);
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
-    statusEl.textContent='✓ '+newOnes.length+' nouvelle(s) seance(s) recue(s). Total: '+DB.sessions.length;
-    statusEl.style.color='var(--green)';
-    toast(newOnes.length+' seance(s) recue(s) !');
-    setTimeout(()=>{closeImport();renderDash();renderHist();},1200);
+    statusEl.textContent=newOnes.length+' nouvelle(s) seance(s). Total: '+DB.sessions.length;statusEl.style.color='var(--green)';
+    toast(newOnes.length+' seance(s) recues !');
+    setTimeout(()=>{closeImport();renderDash();renderHist();},800);
   }catch(err){
-    console.error('Pull error:',err);
+    console.error('GitHub pull error:',err);
     statusEl.textContent='Erreur: '+err.message;statusEl.style.color='var(--red)';
     toast('Erreur reception');
   }
 }
 
-/* Sync sheet — ouverture / fermeture */
+/* Sync sheet */
 function showSyncSheet(){
-  /* Restaurer code existant si deja configure */
-  const id=getSyncBlobId();
-  if(id){
-    document.getElementById('sync-code-box').textContent=id;
-    document.getElementById('sync-code-display').style.display='block';
-  }else{
-    document.getElementById('sync-code-display').style.display='none';
-  }
-  document.getElementById('sync-code-input').value=id;
   document.getElementById('manual-import-sec').style.display='none';
-  document.getElementById('sync-status-text').textContent='';
-  switchSyncTab('push');
+  updateGHTokenStatus();
+  document.getElementById('sync-status-text').textContent='Configurez votre token puis envoyez ou recevez vos donnees.';
+  document.getElementById('sync-status-text').style.color='var(--text-sub)';
   document.getElementById('import-sheet').classList.add('show');
   document.body.style.overflow='hidden';
 }
@@ -1560,20 +1547,11 @@ function showManualImport(){
   const sec=document.getElementById('manual-import-sec');
   sec.style.display=sec.style.display==='none'?'block':'none';
 }
-
-/* Sauvegarde JSON en fichier local */
-function downloadBackup(){
-  const data={sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='vertical-log-backup-'+new Date().toISOString().slice(0,10)+'.json';
-  a.click();URL.revokeObjectURL(a.href);
-  toast('Sauvegarde telechargee');
+function copyExport(){
+  const json=JSON.stringify({sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()},null,0);
+  try{navigator.clipboard.writeText(json).then(()=>toast('JSON copie !'));}
+  catch{toast('Erreur de copie');}
 }
-function copyExport(){downloadBackup();}
-
-/* Import JSON manuel (coller) */
 function doImport(){
   const raw=document.getElementById('import-area').value.trim();
   if(!raw){toast('Rien a importer');return;}
