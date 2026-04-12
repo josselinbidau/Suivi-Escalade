@@ -1,9 +1,28 @@
 {
-  "sessions": [],
+  "sessions": [
+    {
+      "id": 1775417212343,
+      "date": "2026-04-05",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 180,
+      "forme": 4,
+      "rpe": 6,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 1080,
+      "pos": "Bonne sensation et engagement",
+      "neg": "Aller dans le plus dur",
+      "volume": "5",
+      "diffTry": "6a",
+      "diffDone": "6a",
+      "climbSub": "Falaise"
+    }
+  ],
   "notes": {},
-  "updated": "2026-04-12T10:41:42.695Z",
+  "updated": "2026-04-12T10:43:24.086Z",
   "meta": {
-    "sessions": 0,
+    "sessions": 1,
     "appVersion": "vl3"
   }
 }
