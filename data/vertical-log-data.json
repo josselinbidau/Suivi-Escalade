@@ -17,12 +17,30 @@
       "diffTry": "6a",
       "diffDone": "6a",
       "climbSub": "Falaise"
+    },
+    {
+      "id": 1775990772858,
+      "date": "2026-04-11",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 120,
+      "forme": 4,
+      "rpe": 7,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 840,
+      "pos": "6C à vue dans le dévers",
+      "neg": "Relâchement sur les pinces",
+      "volume": "5",
+      "diffTry": "6c",
+      "diffDone": "6c",
+      "climbSub": "Voie"
     }
   ],
   "notes": {},
-  "updated": "2026-04-12T10:43:24.086Z",
+  "updated": "2026-04-12T10:46:18.395Z",
   "meta": {
-    "sessions": 1,
+    "sessions": 2,
     "appVersion": "vl3"
   }
 }
