@@ -223,14 +223,30 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 .ex-rest-btn:active{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
 .ex-rest-btn.running{border-color:var(--orange);color:var(--orange);background:var(--orange-bg);}
 .ex-rest-btn.done{border-color:var(--green);color:var(--green);background:rgba(63,185,80,.1);animation:pulse .5s 3;}
+.ex-rest-btn.effort{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
 .ex-rest-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
 /* AXE3: Calendar heatmap */
 .heatmap-wrap{padding:4px 0;}
 .heatmap-legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
 .heatmap-legend-item{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--text-dim);}
 .heatmap-legend-item .hl-dot{width:8px;height:8px;border-radius:2px;}
-/* AXE3: Radar chart */
-.radar-wrap{position:relative;height:240px;margin:5px 0;}
+/* Anatomy muscle diagrams */
+.anatomy-tabs{display:flex;gap:0;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);margin-bottom:10px;}
+.anatomy-tab{flex:1;padding:9px 4px;min-height:40px;background:none;border:none;color:var(--text-dim);font-size:.73rem;font-weight:700;cursor:pointer;transition:all .18s;}
+.anatomy-tab.sel{background:var(--accent-bg);color:var(--accent);}
+.anatomy-panel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px 4px;text-align:center;}
+.anatomy-panel-title{font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;font-family:'DM Mono',monospace;}
+.anatomy-svg{width:100%;height:auto;display:block;margin:0 auto;}
+.muscle-path{fill:#f0f4f2;stroke:#8a9b93;stroke-width:1;transition:fill .3s,stroke .3s;stroke-linejoin:round;}
+.muscle-path.active-a{fill:rgba(80,141,124,.5);stroke:#3d6b5d;stroke-width:1.3;}
+.muscle-path.active-b{fill:rgba(124,198,182,.5);stroke:#3d8a78;stroke-width:1.3;}
+.muscle-path.active-ab{fill:rgba(80,141,124,.65);stroke:#2d5046;stroke-width:1.5;}
+.muscle-label{font-size:11px;fill:var(--text);font-family:'Inter',sans-serif;font-weight:600;pointer-events:none;}
+.muscle-label-sm{font-size:9.5px;fill:var(--text-dim);font-family:'Inter',sans-serif;font-weight:500;pointer-events:none;font-style:italic;}
+.muscle-leader{stroke:var(--text-sub);stroke-width:0.5;fill:none;}
+.muscle-dot{fill:var(--text-sub);}
+.anatomy-legend-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.68rem;color:var(--text-dim);}
+.anatomy-legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
 /* AXE4: Streak */
 .streak-card{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;}
 .streak-fire{font-size:1.5rem;flex-shrink:0;}
@@ -453,10 +469,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <section class="page" id="page-analyse"><div class="app">
   <div class="title">Analyse</div><div class="sub">Resume hebdomadaire -- Recommandations</div>
   <div class="card"><div class="card-hdr"><div class="card-lbl">Resume par semaine</div></div><div id="weekly-sum"></div></div>
-  <!-- AXE3: Radar chart -->
+  <!-- Muscles sollicites -->
   <div class="card">
-    <div class="card-hdr"><div class="card-lbl">Profil Grimpeur</div></div>
-    <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+    <div class="card-hdr">
+      <div class="card-lbl">Muscles sollicites</div>
+      <div style="font-size:.68rem;color:var(--text-dim)">Dernieres seances A+B</div>
+    </div>
+    <div class="anatomy-tabs">
+      <button class="anatomy-tab sel" onclick="switchAnatomyTab('front')">Vue de face</button>
+      <button class="anatomy-tab" onclick="switchAnatomyTab('back')">Vue de dos</button>
+    </div>
+    <div id="anatomy-front"></div>
+    <div id="anatomy-back" style="display:none"></div>
+    <div id="anatomy-legend" style="margin-top:8px"></div>
   </div>
   <div class="card">
     <div class="card-hdr"><div class="card-lbl">Notes coach</div></div>
@@ -834,9 +859,9 @@ function buildAccordion(type){
       <div class="ex-body" id="accB${idx}">
         <div id="series-container-${idx}">${seriesHTML}</div>
         <button class="add-serie-btn" onclick="addSerie(${idx},'${ex.name}',${ex.series},${ex.bilateral?'true':'false'})">+ Ajouter une serie</button>
-        <button class="ex-rest-btn" id="restBtn${idx}" onclick="startExRest(${idx},${ex.rest})">
+        <button class="ex-rest-btn" id="restBtn${idx}" onclick="${ex.unit==='sec'?`startAutoChain(${idx},'${ex.name}',${ex.rest})`:`startExRest(${idx},${ex.rest})`}">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span id="restLbl${idx}">Repos ${restLabel}</span>
+          <span id="restLbl${idx}">${ex.unit==='sec'?'Effort + Repos':'Repos '+restLabel}</span>
         </button>
         <div class="ex-rpe-row">
           <div class="ex-rpe-lbl">RPE seance</div>
@@ -922,25 +947,57 @@ function calcFoster(){
 }
 document.addEventListener('input',e=>{if(e.target.id==='log-dur')calcFoster();});
 
+/* Audio beep system (Web Audio API) */
+let _audioCtx=null;
+function getAudioCtx(){
+  if(!_audioCtx)_audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state==='suspended')_audioCtx.resume();
+  return _audioCtx;
+}
+function beep(freq,durationMs){
+  try{
+    const ctx=getAudioCtx();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=freq;osc.type='square';
+    gain.gain.value=0.15;
+    osc.start();osc.stop(ctx.currentTime+durationMs/1000);
+  }catch(e){/* silent fallback */}
+}
+function beepShort(){beep(880,100);}
+function beepLong(){beep(660,400);}
+
 /* Per-exercise rest timer */
 let activeRestIdx=null,activeRestInterval=null;
 function fmtTimer(sec){const m=Math.floor(sec/60),s=sec%60;return m+':'+(s<10?'0':'')+s;}
+
+function _getExByIdx(idx){
+  const list=cType==='A'?EMA:EMB;
+  return list[idx]||{rest:60,unit:'reps'};
+}
+function _resetTimerBtn(idx){
+  const btn=document.getElementById('restBtn'+idx);
+  const lbl=document.getElementById('restLbl'+idx);
+  if(btn)btn.classList.remove('running','done','effort');
+  if(lbl){
+    const ex=_getExByIdx(idx);
+    if(ex.unit==='sec'){lbl.textContent='Effort + Repos';}
+    else{const r=ex.rest||60;lbl.textContent='Repos '+(r>=60?(r/60)+'min':r+'s');}
+  }
+}
+
 function startExRest(idx,duration){
-  // Stop any running timer
   if(activeRestInterval){
     clearInterval(activeRestInterval);
-    const oldBtn=document.getElementById('restBtn'+activeRestIdx);
-    const oldLbl=document.getElementById('restLbl'+activeRestIdx);
-    if(oldBtn){oldBtn.classList.remove('running','done');}
-    const oldEx=[...EMA,...EMB].find((_,i)=>i===activeRestIdx)||{rest:60};
-    if(oldLbl){const r=oldEx.rest||60;oldLbl.textContent='Repos '+(r>=60?(r/60)+'min':r+'s');}
+    _resetTimerBtn(activeRestIdx);
     if(activeRestIdx===idx){activeRestInterval=null;activeRestIdx=null;return;}
   }
   activeRestIdx=idx;
   const btn=document.getElementById('restBtn'+idx);
   const lbl=document.getElementById('restLbl'+idx);
   let remaining=duration;
-  btn.classList.add('running');btn.classList.remove('done');
+  btn.classList.add('running');btn.classList.remove('done','effort');
   lbl.textContent=fmtTimer(remaining);
   activeRestInterval=setInterval(()=>{
     remaining--;
@@ -948,15 +1005,76 @@ function startExRest(idx,duration){
       clearInterval(activeRestInterval);activeRestInterval=null;
       btn.classList.remove('running');btn.classList.add('done');
       lbl.textContent='GO !';
+      beepLong();
       if(navigator.vibrate)navigator.vibrate([200,100,200,100,200]);
-      setTimeout(()=>{
-        btn.classList.remove('done');
-        const r=duration;lbl.textContent='Repos '+(r>=60?(r/60)+'min':r+'s');
-        activeRestIdx=null;
-      },3000);
+      setTimeout(()=>{_resetTimerBtn(idx);activeRestIdx=null;},3000);
       return;
     }
     lbl.textContent=fmtTimer(remaining);
+    if(remaining===10)beepShort();
+    if(remaining<=3)beepShort();
+    if(remaining<=5)btn.classList.add('done');
+  },1000);
+}
+
+/* Auto-chain timer for unit:'sec' exercises (effort → rest → effort → rest → ...) */
+function startAutoChain(idx,exName,restDuration){
+  if(activeRestInterval){
+    clearInterval(activeRestInterval);
+    _resetTimerBtn(activeRestIdx);
+    if(activeRestIdx===idx){activeRestInterval=null;activeRestIdx=null;return;}
+  }
+  activeRestIdx=idx;
+  const btn=document.getElementById('restBtn'+idx);
+  const lbl=document.getElementById('restLbl'+idx);
+  const container=document.getElementById('series-container-'+idx);
+  const inputs=container.querySelectorAll('.ex-ri');
+  const effortDurations=[];
+  inputs.forEach(inp=>{
+    if(inp.dataset.field==='repsD')return;
+    const v=parseInt(inp.value);
+    effortDurations.push(v>0?v:0);
+  });
+  const totalSeries=effortDurations.length;
+  if(totalSeries===0||effortDurations.every(d=>d===0)){
+    startExRest(idx,restDuration);return;
+  }
+  let currentSerie=0;
+  let phase='effort';
+  let remaining=effortDurations[0];
+
+  function updateDisplay(){
+    const pLbl=phase==='effort'?'EFFORT':'REPOS';
+    lbl.textContent=pLbl+' '+(currentSerie+1)+'/'+totalSeries+' \u2014 '+fmtTimer(remaining);
+    btn.classList.remove('running','done','effort');
+    btn.classList.add(phase==='effort'?'effort':'running');
+  }
+  updateDisplay();
+
+  activeRestInterval=setInterval(()=>{
+    remaining--;
+    if(remaining===10)beepShort();
+    if(remaining>0&&remaining<=3)beepShort();
+    if(remaining<=0){
+      beepLong();
+      if(navigator.vibrate)navigator.vibrate([200,100,200]);
+      if(phase==='effort'){
+        if(currentSerie>=totalSeries-1){
+          clearInterval(activeRestInterval);activeRestInterval=null;
+          btn.classList.remove('running','effort');btn.classList.add('done');
+          lbl.textContent='TERMINE !';
+          setTimeout(()=>{_resetTimerBtn(idx);activeRestIdx=null;},3000);
+          return;
+        }
+        phase='rest';remaining=restDuration;
+      }else{
+        currentSerie++;phase='effort';
+        remaining=effortDurations[currentSerie]||effortDurations[0];
+      }
+      updateDisplay();return;
+    }
+    const pLbl=phase==='effort'?'EFFORT':'REPOS';
+    lbl.textContent=pLbl+' '+(currentSerie+1)+'/'+totalSeries+' \u2014 '+fmtTimer(remaining);
     if(remaining<=5)btn.classList.add('done');
   },1000);
 }
@@ -1148,9 +1266,12 @@ function drawHeatmap(ss){
   ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,W,H);
 
-  // Build date->type map
+  // Build date->types map (array of unique types per day)
   const dateMap={};
-  ss.forEach(s=>{dateMap[s.date]=s.type;});
+  ss.forEach(s=>{
+    if(!dateMap[s.date])dateMap[s.date]=[];
+    if(!dateMap[s.date].includes(s.type))dateMap[s.date].push(s.type);
+  });
 
   const today=new Date();
   // Find the Monday of 12 weeks ago
@@ -1178,17 +1299,25 @@ function drawHeatmap(ss){
       const x=labelW+w*(cellSize+gap);
       const y=16+d*(cellSize+gap);
 
-      const type=dateMap[ds];
-      if(type){
-        ctx.fillStyle=TC[type]||'#8a9b93';
+      const types=dateMap[ds];
+      if(types&&types.length){
         ctx.globalAlpha=0.85;
+        if(types.length===1){
+          ctx.fillStyle=TC[types[0]]||'#8a9b93';
+          ctx.beginPath();ctx.roundRect(x,y,cellSize,cellSize,2);ctx.fill();
+        }else{
+          ctx.save();
+          ctx.beginPath();ctx.roundRect(x,y,cellSize,cellSize,2);ctx.clip();
+          ctx.fillStyle=TC[types[0]]||'#8a9b93';
+          ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+cellSize,y);ctx.lineTo(x,y+cellSize);ctx.closePath();ctx.fill();
+          ctx.fillStyle=TC[types[1]]||'#8a9b93';
+          ctx.beginPath();ctx.moveTo(x+cellSize,y);ctx.lineTo(x+cellSize,y+cellSize);ctx.lineTo(x,y+cellSize);ctx.closePath();ctx.fill();
+          ctx.restore();
+        }
       }else{
-        ctx.fillStyle='#edf3f1';
-        ctx.globalAlpha=1;
+        ctx.fillStyle='#edf3f1';ctx.globalAlpha=1;
+        ctx.beginPath();ctx.roundRect(x,y,cellSize,cellSize,2);ctx.fill();
       }
-      ctx.beginPath();
-      ctx.roundRect(x,y,cellSize,cellSize,2);
-      ctx.fill();
       ctx.globalAlpha=1;
 
       // Highlight today
@@ -1707,8 +1836,8 @@ function renderAnalyse(){
     }).join('');
   }
 
-  // AXE3: Radar chart
-  drawRadar(ss);
+  // Anatomy muscle diagrams
+  renderAnatomy(ss);
 
   renderCoachNotes();
 
@@ -1717,107 +1846,397 @@ function renderAnalyse(){
 }
 
 /* AXE2: Injury alerts */
-/* AXE3: Radar chart */
-function drawRadar(ss){
-  const cv=document.getElementById('radarChart');if(!cv)return;
-  const ctx=cv.getContext('2d');
-  const dpr=window.devicePixelRatio||1;
-  const W=cv.parentElement.getBoundingClientRect().width;
-  const H=240;
-  cv.width=W*dpr;cv.height=H*dpr;
-  cv.style.width=W+'px';cv.style.height=H+'px';
-  ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,W,H);
 
-  const cx=W/2,cy=H/2+5,r=Math.min(W,H)/2-30;
-  const labels=['Force doigts','Force gen.','Endurance','Mobilite','Technique'];
-  const n=labels.length;
+/* ============================================================
+   ANATOMY MUSCLE DIAGRAMS
+   ============================================================ */
+const EXERCISE_MUSCLES={
+  'Dead Hang Half Crimp':['forearm-flexors'],
+  'Dead Hang Sloper':['forearm-flexors'],
+  'Pull-up':['latissimus','biceps','rhomboids','trapezius','posterior-deltoid','serratus'],
+  'Negative Pull-up':['latissimus','biceps','rhomboids','trapezius','posterior-deltoid','serratus'],
+  'Low Row':['rhomboids','trapezius','biceps','erector-spinae','posterior-deltoid'],
+  'Archer Rows':['rhomboids','trapezius','biceps','erector-spinae','posterior-deltoid'],
+  'Prone Y':['posterior-deltoid','rotator-cuff','serratus','trapezius'],
+  'External Rotations':['rotator-cuff','posterior-deltoid','serratus'],
+  'Press Up':['pectorals','deltoid-ant','triceps','serratus'],
+  'Hollow Body Hold':['rectus-abdominis','obliques'],
+  'Hanging Knee Raises':['rectus-abdominis','obliques'],
+  'Side Plank':['obliques','rectus-abdominis','erector-spinae'],
+  'Single Leg RDL':['hamstrings','gluteus','erector-spinae'],
+  'Hamstring Walks':['hamstrings','gluteus','erector-spinae'],
+  'Glute Bridge':['gluteus','hamstrings','erector-spinae'],
+  'Bulgarian Split Squat':['quadriceps','gluteus'],
+  'Deep Squat':['quadriceps','gluteus'],
+  'High Step':['adductors','gluteus','quadriceps'],
+  'Copenhagen Plank':['adductors','obliques'],
+  'Isometric Hang Sloper':['forearm-flexors','serratus','trapezius','rotator-cuff'],
+  'Shoulder Shrugs':['trapezius','forearm-flexors','serratus']
+};
 
-  // Calculate scores (0-10 scale)
-  const last20=ss.slice(-20);
-  const sessA=last20.filter(s=>s.type==='A');
-  const sessB=last20.filter(s=>s.type==='B');
-  const sessC=last20.filter(s=>s.type==='C');
+const MUSCLE_LABELS={
+  'deltoid-ant':'Deltoidesant.','pectorals':'Pectoraux','biceps':'Biceps',
+  'forearm-flexors':'Flech.av-bras','rectus-abdominis':'Grands droits','obliques':'Obliques',
+  'quadriceps':'Quadriceps','adductors':'Adducteurs','tibialis':'Tibial ant.',
+  'trapezius':'Trapezes','rhomboids':'Rhomboides','posterior-deltoid':'Delt. post.',
+  'latissimus':'Grand dorsal','erector-spinae':'Erect. spinaux','triceps':'Triceps',
+  'forearm-extensors':'Ext. av-bras','gluteus':'Fessiers','hamstrings':'Ischio-jamb.',
+  'calves':'Mollets','rotator-cuff':'Coiffe rot.','serratus':'Dentele ant.'
+};
 
-  // Force doigts: avg RPE of dead hang exercises (higher charge = better)
-  const dhData=sessA.filter(s=>s.exData?.['Dead Hang Half Crimp']?.['0']?.charge);
-  const forceDoigts=dhData.length?Math.min(10,dhData.reduce((a,s)=>a+s.exData['Dead Hang Half Crimp']['0'].charge,0)/dhData.length/3):0;
+/* Tab switching for anatomy views */
+function switchAnatomyTab(view){
+  document.querySelectorAll('.anatomy-tab').forEach(t=>t.classList.remove('sel'));
+  document.querySelector('.anatomy-tab[onclick*="'+view+'"]').classList.add('sel');
+  document.getElementById('anatomy-front').style.display=view==='front'?'block':'none';
+  document.getElementById('anatomy-back').style.display=view==='back'?'block':'none';
+}
 
-  // Force generale: avg RPE of A sessions
-  const forceGen=sessA.length?Math.min(10,sessA.reduce((a,s)=>a+(s.rpe||0),0)/sessA.length):0;
+/* SVG anatomical diagrams — inspired by Apprendre-a-dessiner.org style */
+/* Full-body SVGs — 8-head proportion system (1 head = 55px, total ~440px)
+   Landmarks: Head 0-55, Chin-Nipples 55-110, Nipples-Navel 110-165,
+   8-head canon: 1 head=100px. Body center x=250. Total height ~820px.
+   H1: 0-100 head. H2: 100-200 shoulders/pecs. H3: 200-300 navel.
+   H4: 300-400 crotch (midpoint). H5-H6: 400-600 thighs/knees.
+   H7-H8: 600-800 lower legs. Shoulders ~240px wide (~2.4 heads).
+   Hips ~155px wide (~1.55 heads). */
+function svgFrontBody(){
+  return`<svg class="anatomy-svg" viewBox="0 0 500 950" xmlns="http://www.w3.org/2000/svg">
+  <!-- Head (H1: y 20-120) -->
+  <ellipse cx="250" cy="62" rx="35" ry="44" fill="none" stroke="var(--border)" stroke-width="1"/>
+  <!-- Neck -->
+  <path d="M236 106 L236 130 Q236 140 242 142 L258 142 Q264 140 264 130 L264 106" fill="none" stroke="var(--border)" stroke-width="0.8"/>
 
-  // Endurance: climbing frequency * avg volume
-  const climbFreq=sessC.length;
-  const avgVol=sessC.length?sessC.reduce((a,s)=>a+(+s.volume||0),0)/sessC.length:0;
-  const endurance=Math.min(10,(climbFreq*0.8+avgVol*0.3));
+  <!-- === MUSCLES FACE === -->
+  <!-- Trapeze (visible de face, en cintre de chaque cote du cou) -->
+  <path id="f-trapezius-l" class="muscle-path" d="M236 120 L224 126 L200 136 L178 148 L186 146 L210 136 L230 128 L236 124 Z"/>
+  <path id="f-trapezius-r" class="muscle-path" d="M264 120 L276 126 L300 136 L322 148 L314 146 L290 136 L270 128 L264 124 Z"/>
 
-  // Mobilite: based on B sessions (flexibility focus)
-  const mobilite=sessB.length?Math.min(10,sessB.reduce((a,s)=>a+(s.forme||3),0)/sessB.length*2):0;
+  <!-- Deltoide ant. (epaule arrondie, forme de goutte inversee) -->
+  <path id="f-deltoid-ant-l" class="muscle-path" d="M200 136 L172 146 L156 168 L160 192 L172 196 L186 182 L196 164 L200 148 Z"/>
+  <path id="f-deltoid-ant-r" class="muscle-path" d="M300 136 L328 146 L344 168 L340 192 L328 196 L314 182 L304 164 L300 148 Z"/>
 
-  // Technique: based on max grade achieved relative to attempts
-  const maxDone=sessC.reduce((m,s)=>{const g=gradeToNum(s.diffDone);return g>m?g:m;},-1);
-  const technique=maxDone>=0?Math.min(10,(maxDone+1)*0.8):0;
+  <!-- Grand pectoral (large eventail depuis epaule vers sternum) -->
+  <path id="f-pectorals-l" class="muscle-path" d="M198 148 L214 140 L236 138 L250 148 L248 180 L240 200 L222 206 L202 198 L188 182 L184 166 Z"/>
+  <path id="f-pectorals-r" class="muscle-path" d="M302 148 L286 140 L264 138 L250 148 L252 180 L260 200 L278 206 L298 198 L312 182 L316 166 Z"/>
 
-  const scores=[forceDoigts,forceGen,endurance,mobilite,technique];
+  <!-- Dentele anterieur (dents laterales sous pec, sur les cotes) -->
+  <path id="f-serratus-l" class="muscle-path" d="M184 188 L176 200 L170 224 L174 248 L182 252 L188 240 L190 218 L190 200 Z"/>
+  <path id="f-serratus-r" class="muscle-path" d="M316 188 L324 200 L330 224 L326 248 L318 252 L312 240 L310 218 L310 200 Z"/>
 
-  // Draw grid
-  for(let ring=1;ring<=5;ring++){
-    const rr=r*ring/5;
-    ctx.beginPath();
-    for(let i=0;i<=n;i++){
-      const angle=Math.PI*2*i/n-Math.PI/2;
-      const x=cx+rr*Math.cos(angle);
-      const y=cy+rr*Math.sin(angle);
-      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    }
-    ctx.closePath();
-    ctx.strokeStyle='#e3ece8';ctx.lineWidth=1;ctx.stroke();
+  <!-- Biceps (fusiforme, ventre renfle au milieu) -->
+  <path id="f-biceps-l" class="muscle-path" d="M160 196 L146 204 L130 240 L122 276 L128 286 L140 280 L150 252 L162 222 L170 202 Z"/>
+  <path id="f-biceps-r" class="muscle-path" d="M340 196 L354 204 L370 240 L378 276 L372 286 L360 280 L350 252 L338 222 L330 202 Z"/>
+
+  <!-- Flechisseurs avant-bras -->
+  <path id="f-forearm-flexors-l" class="muscle-path" d="M128 288 L118 298 L98 346 L88 396 L94 402 L106 396 L116 354 L130 308 L136 292 Z"/>
+  <path id="f-forearm-flexors-r" class="muscle-path" d="M372 288 L382 298 L402 346 L412 396 L406 402 L394 396 L384 354 L370 308 L364 292 Z"/>
+
+  <!-- Grand droit de l'abdomen (tablette de chocolat) -->
+  <path id="f-rectus-abdominis" class="muscle-path" d="M238 200 L238 230 L236 270 L234 310 L234 350 L236 380 L250 396 L264 380 L266 350 L266 310 L264 270 L262 230 L262 200 L250 188 Z"/>
+  <!-- Inscriptions tendineuses horizontales -->
+  <line x1="238" y1="230" x2="262" y2="230" stroke="var(--border-hi)" stroke-width="0.6"/>
+  <line x1="236" y1="268" x2="264" y2="268" stroke="var(--border-hi)" stroke-width="0.6"/>
+  <line x1="234" y1="306" x2="266" y2="306" stroke="var(--border-hi)" stroke-width="0.6"/>
+  <line x1="234" y1="344" x2="266" y2="344" stroke="var(--border-hi)" stroke-width="0.6"/>
+  <line x1="250" y1="188" x2="250" y2="396" stroke="var(--border-hi)" stroke-width="0.4"/>
+
+  <!-- Obliques externes -->
+  <path id="f-obliques-l" class="muscle-path" d="M184 192 L196 200 L220 206 L238 200 L238 380 L230 396 L214 392 L196 378 L180 348 L172 310 L170 270 L172 238 L176 210 Z"/>
+  <path id="f-obliques-r" class="muscle-path" d="M316 192 L304 200 L280 206 L262 200 L262 380 L270 396 L286 392 L304 378 L320 348 L328 310 L330 270 L328 238 L324 210 Z"/>
+
+  <!-- === JAMBES (H5-H8) === -->
+  <!-- Quadriceps — vaste externe (lateral, le plus gros) -->
+  <path id="f-quadriceps-vl-l" class="muscle-path" d="M206 410 L194 440 L180 500 L172 560 L172 610 L178 636 L188 640 L196 624 L202 570 L208 510 L214 460 L218 430 L216 414 Z"/>
+  <path id="f-quadriceps-vl-r" class="muscle-path" d="M294 410 L306 440 L320 500 L328 560 L328 610 L322 636 L312 640 L304 624 L298 570 L292 510 L286 460 L282 430 L284 414 Z"/>
+
+  <!-- Quadriceps — droit anterieur (milieu, fusiforme) -->
+  <path id="f-quadriceps-l" class="muscle-path" d="M218 418 L212 448 L206 496 L202 548 L202 600 L208 636 L218 640 L226 636 L228 600 L230 548 L232 496 L232 460 L230 430 Z"/>
+  <path id="f-quadriceps-r" class="muscle-path" d="M282 418 L288 448 L294 496 L298 548 L298 600 L292 636 L282 640 L274 636 L272 600 L270 548 L268 496 L268 460 L270 430 Z"/>
+
+  <!-- Quadriceps — vaste interne (medial, goutte pres du genou) -->
+  <path id="f-quadriceps-vm-l" class="muscle-path" d="M232 440 L238 480 L242 530 L240 586 L236 620 L228 636 L218 640 L212 626 L214 580 L218 530 L224 470 Z"/>
+  <path id="f-quadriceps-vm-r" class="muscle-path" d="M268 440 L262 480 L258 530 L260 586 L264 620 L272 636 L282 640 L288 626 L286 580 L282 530 L276 470 Z"/>
+
+  <!-- Adducteurs (face interne cuisse, triangle allonge) -->
+  <path id="f-adductors-l" class="muscle-path" d="M236 404 L242 440 L246 496 L244 560 L238 600 L232 594 L234 540 L234 480 L234 430 Z"/>
+  <path id="f-adductors-r" class="muscle-path" d="M264 404 L258 440 L254 496 L256 560 L262 600 L268 594 L266 540 L266 480 L266 430 Z"/>
+
+  <!-- Tibial anterieur (face avant jambe, sous genou) -->
+  <path id="f-tibialis-l" class="muscle-path" d="M198 652 L190 690 L184 740 L182 790 L186 810 L198 812 L200 780 L204 730 L208 682 L210 656 Z"/>
+  <path id="f-tibialis-r" class="muscle-path" d="M302 652 L310 690 L316 740 L318 790 L314 810 L302 812 L300 780 L296 730 L292 682 L290 656 Z"/>
+
+  <!-- Contour corps -->
+  <path d="M206 404 L190 430 L170 500 L166 570 L168 636 L162 700 L158 770 L162 830 L174 850 L210 854 L222 846 L228 810 L234 760 L242 700 L248 660 L250 650 L252 660 L258 700 L266 760 L272 810 L278 846 L290 854 L326 850 L338 830 L342 770 L338 700 L332 636 L334 570 L330 500 L310 430 L294 404" fill="none" stroke="var(--border)" stroke-width="0.8"/>
+  <!-- Bras -->
+  <path d="M172 146 L148 170 L128 228 L110 296 L90 370 L84 410 L92 414 L108 400 L128 330 L144 280" fill="none" stroke="var(--border)" stroke-width="0.8"/>
+  <path d="M328 146 L352 170 L372 228 L390 296 L410 370 L416 410 L408 414 L392 400 L372 330 L356 280" fill="none" stroke="var(--border)" stroke-width="0.8"/>
+  <!-- Mains -->
+  <path d="M84 410 L78 430 L80 440 L90 440 L92 430 L92 414" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+  <path d="M416 410 L422 430 L420 440 L410 440 L408 430 L408 414" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+  <!-- Pieds -->
+  <path d="M162 830 L156 854 L166 866 L208 866 L222 858 L222 846" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+  <path d="M338 830 L344 854 L334 866 L292 866 L278 858 L278 846" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+
+  <!-- === LABELS === -->
+  <circle class="muscle-dot" cx="194" cy="138" r="2"/><line class="muscle-leader" x1="194" y1="138" x2="56" y2="126"/>
+  <text class="muscle-label" x="52" y="123" text-anchor="end">Trapeze</text>
+
+  <circle class="muscle-dot" cx="168" cy="170" r="2"/><line class="muscle-leader" x1="168" y1="170" x2="42" y2="156"/>
+  <text class="muscle-label" x="38" y="153" text-anchor="end">Deltoide ant.</text>
+
+  <circle class="muscle-dot" cx="210" cy="172" r="2"/><line class="muscle-leader" x1="210" y1="172" x2="42" y2="186"/>
+  <text class="muscle-label" x="38" y="183" text-anchor="end">Grand pectoral</text>
+
+  <circle class="muscle-dot" cx="178" cy="230" r="2"/><line class="muscle-leader" x1="178" y1="230" x2="42" y2="218"/>
+  <text class="muscle-label" x="38" y="215" text-anchor="end">Dentele ant.</text>
+
+  <circle class="muscle-dot" cx="140" cy="252" r="2"/><line class="muscle-leader" x1="140" y1="252" x2="42" y2="248"/>
+  <text class="muscle-label" x="38" y="245" text-anchor="end">Biceps</text>
+
+  <circle class="muscle-dot" cx="110" cy="352" r="2"/><line class="muscle-leader" x1="110" y1="352" x2="42" y2="340"/>
+  <text class="muscle-label" x="38" y="337" text-anchor="end">Flechisseurs</text>
+  <text class="muscle-label-sm" x="38" y="349" text-anchor="end">(avant-bras)</text>
+
+  <circle class="muscle-dot" cx="260" cy="290" r="2"/><line class="muscle-leader" x1="260" y1="290" x2="456" y2="282"/>
+  <text class="muscle-label" x="460" y="279">Grand droit</text>
+  <text class="muscle-label-sm" x="460" y="293">(abdominaux)</text>
+
+  <circle class="muscle-dot" cx="310" cy="310" r="2"/><line class="muscle-leader" x1="310" y1="310" x2="456" y2="316"/>
+  <text class="muscle-label" x="460" y="313">Oblique ext.</text>
+
+  <circle class="muscle-dot" cx="182" cy="520" r="2"/><line class="muscle-leader" x1="182" y1="520" x2="42" y2="504"/>
+  <text class="muscle-label" x="38" y="501" text-anchor="end">Vaste ext.</text>
+
+  <circle class="muscle-dot" cx="210" cy="530" r="2"/><line class="muscle-leader" x1="210" y1="530" x2="42" y2="536"/>
+  <text class="muscle-label" x="38" y="533" text-anchor="end">Droit ant.</text>
+  <text class="muscle-label-sm" x="38" y="547" text-anchor="end">(quadriceps)</text>
+
+  <circle class="muscle-dot" cx="276" cy="570" r="2"/><line class="muscle-leader" x1="276" y1="570" x2="456" y2="560"/>
+  <text class="muscle-label" x="460" y="557">Vaste int.</text>
+
+  <circle class="muscle-dot" cx="258" cy="490" r="2"/><line class="muscle-leader" x1="258" y1="490" x2="456" y2="490"/>
+  <text class="muscle-label" x="460" y="487">Adducteurs</text>
+
+  <circle class="muscle-dot" cx="196" cy="740" r="2"/><line class="muscle-leader" x1="196" y1="740" x2="42" y2="728"/>
+  <text class="muscle-label" x="38" y="725" text-anchor="end">Tibial ant.</text>
+</svg>`;
+}
+
+/* Full-body back view SVG — 8-head proportions, viewBox 500x950 */
+function svgBackBody(){
+  return`<svg class="anatomy-svg" viewBox="0 0 500 950" xmlns="http://www.w3.org/2000/svg">
+  <!-- Head -->
+  <ellipse cx="250" cy="62" rx="35" ry="44" fill="none" stroke="var(--border)" stroke-width="1"/>
+  <path d="M236 106 L236 130 Q236 140 242 142 L258 142 Q264 140 264 130 L264 106" fill="none" stroke="var(--border)" stroke-width="0.8"/>
+
+  <!-- === MUSCLES DOS === -->
+  <!-- Trapeze (grand losange/diamant, de la nuque au milieu du dos) -->
+  <path id="b-trapezius" class="muscle-path" d="M236 118 L218 126 L194 138 L172 154 L164 168 L180 172 L204 162 L228 150 L250 144 L272 150 L296 162 L320 172 L336 168 L328 154 L306 138 L282 126 L264 118 L250 114 Z"/>
+
+  <!-- Deltoide posterieur -->
+  <path id="b-posterior-deltoid-l" class="muscle-path" d="M194 138 L168 150 L156 172 L162 196 L176 198 L190 180 L198 160 Z"/>
+  <path id="b-posterior-deltoid-r" class="muscle-path" d="M306 138 L332 150 L344 172 L338 196 L324 198 L310 180 L302 160 Z"/>
+
+  <!-- Infra-epineux / Coiffe rotateurs (sous l'epine scapulaire) -->
+  <path id="b-rotator-cuff-l" class="muscle-path" d="M198 152 L218 148 L232 156 L232 184 L222 196 L200 190 L190 176 Z"/>
+  <path id="b-rotator-cuff-r" class="muscle-path" d="M302 152 L282 148 L268 156 L268 184 L278 196 L300 190 L310 176 Z"/>
+
+  <!-- Petit rond + Grand rond -->
+  <path id="b-teres-l" class="muscle-path" d="M190 182 L182 198 L186 218 L198 224 L212 212 L206 194 Z"/>
+  <path id="b-teres-r" class="muscle-path" d="M310 182 L318 198 L314 218 L302 224 L288 212 L294 194 Z"/>
+
+  <!-- Rhomboides (entre colonne et omoplates) -->
+  <path id="b-rhomboids-l" class="muscle-path" d="M232 152 L244 146 L248 158 L248 200 L242 210 L228 200 L224 178 Z"/>
+  <path id="b-rhomboids-r" class="muscle-path" d="M268 152 L256 146 L252 158 L252 200 L258 210 L272 200 L276 178 Z"/>
+
+  <!-- Grand dorsal (grand papillon en V) -->
+  <path id="b-latissimus-l" class="muscle-path" d="M186 218 L174 234 L164 262 L164 300 L172 338 L190 370 L212 386 L234 390 L248 380 L248 340 L248 290 L248 240 L248 210 L242 214 L224 206 L206 218 Z"/>
+  <path id="b-latissimus-r" class="muscle-path" d="M314 218 L326 234 L336 262 L336 300 L328 338 L310 370 L288 386 L266 390 L252 380 L252 340 L252 290 L252 240 L252 210 L258 214 L276 206 L294 218 Z"/>
+
+  <!-- Erecteurs du rachis / Lombaires (deux colonnes le long de la colonne) -->
+  <path id="b-erector-spinae" class="muscle-path" d="M248 200 L248 388 L250 400 L252 388 L252 200 L250 190 Z"/>
+
+  <!-- Dentele anterieur (lateral, sous omoplate) -->
+  <path id="b-serratus-l" class="muscle-path" d="M180 194 L170 210 L166 240 L172 258 L184 248 L188 222 Z"/>
+  <path id="b-serratus-r" class="muscle-path" d="M320 194 L330 210 L334 240 L328 258 L316 248 L312 222 Z"/>
+
+  <!-- Triceps (3 chefs, face posterieure bras) -->
+  <path id="b-triceps-l" class="muscle-path" d="M162 198 L148 208 L132 250 L124 292 L132 298 L144 290 L154 256 L168 216 Z"/>
+  <path id="b-triceps-r" class="muscle-path" d="M338 198 L352 208 L368 250 L376 292 L368 298 L356 290 L346 256 L332 216 Z"/>
+
+  <!-- Extenseurs avant-bras -->
+  <path id="b-forearm-extensors-l" class="muscle-path" d="M132 300 L122 314 L102 366 L92 408 L98 414 L112 406 L122 368 L136 318 L140 304 Z"/>
+  <path id="b-forearm-extensors-r" class="muscle-path" d="M368 300 L378 314 L398 366 L408 408 L402 414 L388 406 L378 368 L364 318 L360 304 Z"/>
+
+  <!-- Grand fessier (large et arrondi) -->
+  <path id="b-gluteus-l" class="muscle-path" d="M210 394 L190 388 L170 396 L160 416 L164 440 L180 458 L200 466 L222 468 L242 462 L250 448 L250 428 L246 412 L234 400 Z"/>
+  <path id="b-gluteus-r" class="muscle-path" d="M290 394 L310 388 L330 396 L340 416 L336 440 L320 458 L300 466 L278 468 L258 462 L250 448 L250 428 L254 412 L266 400 Z"/>
+
+  <!-- Ischio-jambiers (biceps femoral ext. + semi-tendineux int.) -->
+  <path id="b-hamstrings-l" class="muscle-path" d="M200 470 L186 492 L172 536 L166 580 L170 622 L178 640 L188 636 L192 600 L198 558 L204 520 L212 492 L224 476 L242 470 L234 484 L228 516 L224 564 L222 610 L228 636 L240 632 L244 596 L246 550 L246 508 L242 480 Z"/>
+  <path id="b-hamstrings-r" class="muscle-path" d="M300 470 L314 492 L328 536 L334 580 L330 622 L322 640 L312 636 L308 600 L302 558 L296 520 L288 492 L276 476 L258 470 L266 484 L272 516 L276 564 L278 610 L272 636 L260 632 L256 596 L254 550 L254 508 L258 480 Z"/>
+
+  <!-- Mollets / Gastrocnemiens (2 chefs, forme de coeur inverse) -->
+  <path id="b-calves-l" class="muscle-path" d="M170 648 L166 680 L164 720 L168 766 L178 790 L192 798 L208 798 L222 790 L230 770 L234 730 L236 690 L238 656 L230 646 L214 654 L200 660 L186 654 Z"/>
+  <path id="b-calves-r" class="muscle-path" d="M330 648 L334 680 L336 720 L332 766 L322 790 L308 798 L292 798 L278 790 L270 770 L266 730 L264 690 L262 656 L270 646 L286 654 L300 660 L314 654 Z"/>
+
+  <!-- Contour corps -->
+  <path d="M210 394 L170 400 L156 442 L158 510 L154 580 L156 648 L150 720 L152 790 L158 830 L176 854 L214 858 L232 846 L240 800 L246 740 L250 680 L250 660 L250 680 L254 740 L260 800 L268 846 L286 858 L324 854 L342 830 L348 790 L350 720 L346 648 L344 580 L342 510 L344 442 L330 400 L290 394" fill="none" stroke="var(--border)" stroke-width="0.8"/>
+  <!-- Bras -->
+  <path d="M168 150 L144 178 L126 240 L110 310 L94 384 L86 416 L96 420 L112 408 L132 330 L150 272" fill="none" stroke="var(--border)" stroke-width="0.8"/>
+  <path d="M332 150 L356 178 L374 240 L390 310 L406 384 L414 416 L404 420 L388 408 L368 330 L350 272" fill="none" stroke="var(--border)" stroke-width="0.8"/>
+  <!-- Mains -->
+  <path d="M86 416 L80 436 L82 446 L94 446 L96 436 L96 420" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+  <path d="M414 416 L420 436 L418 446 L406 446 L404 436 L404 420" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+  <!-- Pieds -->
+  <path d="M158 830 L152 854 L164 866 L212 866 L232 858 L232 846" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+  <path d="M342 830 L348 854 L336 866 L288 866 L268 858 L268 846" fill="none" stroke="var(--border)" stroke-width="0.6"/>
+
+  <!-- === LABELS === -->
+  <circle class="muscle-dot" cx="296" cy="148" r="2"/><line class="muscle-leader" x1="296" y1="148" x2="456" y2="132"/>
+  <text class="muscle-label" x="460" y="129">Trapeze</text>
+
+  <circle class="muscle-dot" cx="168" cy="172" r="2"/><line class="muscle-leader" x1="168" y1="172" x2="38" y2="158"/>
+  <text class="muscle-label" x="34" y="155" text-anchor="end">Delt. post.</text>
+
+  <circle class="muscle-dot" cx="286" cy="174" r="2"/><line class="muscle-leader" x1="286" y1="174" x2="456" y2="168"/>
+  <text class="muscle-label" x="460" y="165">Infra-epineux</text>
+  <text class="muscle-label-sm" x="460" y="179">(coiffe des rotateurs)</text>
+
+  <circle class="muscle-dot" cx="194" cy="210" r="2"/><line class="muscle-leader" x1="194" y1="210" x2="38" y2="200"/>
+  <text class="muscle-label" x="34" y="197" text-anchor="end">Petit/Gd rond</text>
+
+  <circle class="muscle-dot" cx="264" cy="186" r="2"/><line class="muscle-leader" x1="264" y1="186" x2="456" y2="204"/>
+  <text class="muscle-label" x="460" y="201">Rhomboides</text>
+
+  <circle class="muscle-dot" cx="176" cy="236" r="2"/><line class="muscle-leader" x1="176" y1="236" x2="38" y2="238"/>
+  <text class="muscle-label" x="34" y="235" text-anchor="end">Dentele ant.</text>
+
+  <circle class="muscle-dot" cx="148" cy="262" r="2"/><line class="muscle-leader" x1="148" y1="262" x2="38" y2="270"/>
+  <text class="muscle-label" x="34" y="267" text-anchor="end">Triceps</text>
+
+  <circle class="muscle-dot" cx="326" cy="310" r="2"/><line class="muscle-leader" x1="326" y1="310" x2="456" y2="300"/>
+  <text class="muscle-label" x="460" y="297">Grand dorsal</text>
+
+  <circle class="muscle-dot" cx="252" cy="360" r="2"/><line class="muscle-leader" x1="252" y1="360" x2="456" y2="342"/>
+  <text class="muscle-label" x="460" y="339">Lombaires</text>
+  <text class="muscle-label-sm" x="460" y="353">(erect. spinaux)</text>
+
+  <circle class="muscle-dot" cx="116" cy="374" r="2"/><line class="muscle-leader" x1="116" y1="374" x2="38" y2="366"/>
+  <text class="muscle-label" x="34" y="363" text-anchor="end">Extenseurs</text>
+  <text class="muscle-label-sm" x="34" y="377" text-anchor="end">(avant-bras)</text>
+
+  <circle class="muscle-dot" cx="316" cy="440" r="2"/><line class="muscle-leader" x1="316" y1="440" x2="456" y2="434"/>
+  <text class="muscle-label" x="460" y="431">Grand fessier</text>
+
+  <circle class="muscle-dot" cx="176" cy="550" r="2"/><line class="muscle-leader" x1="176" y1="550" x2="38" y2="534"/>
+  <text class="muscle-label" x="34" y="525" text-anchor="end">Ischio-jambiers</text>
+  <text class="muscle-label-sm" x="34" y="539" text-anchor="end">(biceps femoral +</text>
+  <text class="muscle-label-sm" x="34" y="551" text-anchor="end">semi-tendineux)</text>
+
+  <circle class="muscle-dot" cx="322" cy="730" r="2"/><line class="muscle-leader" x1="322" y1="730" x2="456" y2="722"/>
+  <text class="muscle-label" x="460" y="719">Mollets</text>
+  <text class="muscle-label-sm" x="460" y="733">(gastrocnemiens)</text>
+</svg>`;
+}
+
+/* Render anatomy diagrams */
+function renderAnatomy(ss){
+  const frontEl=document.getElementById('anatomy-front');
+  const backEl=document.getElementById('anatomy-back');
+  const legendEl=document.getElementById('anatomy-legend');
+  if(!frontEl||!backEl)return;
+
+  // Find last session A and last session B with exercise data
+  const lastA=[...ss].reverse().find(s=>s.type==='A'&&s.exData);
+  const lastB=[...ss].reverse().find(s=>s.type==='B'&&s.exData);
+
+  // Collect active muscles per source
+  const musclesA=new Set();
+  const musclesB=new Set();
+
+  if(lastA&&lastA.exData){
+    Object.keys(lastA.exData).forEach(exName=>{
+      const muscles=EXERCISE_MUSCLES[exName];
+      if(muscles)muscles.forEach(m=>musclesA.add(m));
+    });
+  }
+  if(lastB&&lastB.exData){
+    Object.keys(lastB.exData).forEach(exName=>{
+      const muscles=EXERCISE_MUSCLES[exName];
+      if(muscles)muscles.forEach(m=>musclesB.add(m));
+    });
   }
 
-  // Draw axes
-  for(let i=0;i<n;i++){
-    const angle=Math.PI*2*i/n-Math.PI/2;
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+r*Math.cos(angle),cy+r*Math.sin(angle));
-    ctx.strokeStyle='#e3ece8';ctx.lineWidth=1;ctx.stroke();
+  // Render both SVGs
+  frontEl.innerHTML=`<div class="anatomy-panel"><div class="anatomy-panel-title">Vue de face</div>${svgFrontBody()}</div>`;
+  backEl.innerHTML=`<div class="anatomy-panel"><div class="anatomy-panel-title">Vue de dos</div>${svgBackBody()}</div>`;
+
+  // Map muscle IDs to SVG element IDs (front)
+  const frontMap={
+    'trapezius':['f-trapezius-l','f-trapezius-r'],
+    'deltoid-ant':['f-deltoid-ant-l','f-deltoid-ant-r'],
+    'pectorals':['f-pectorals-l','f-pectorals-r'],
+    'serratus':['f-serratus-l','f-serratus-r'],
+    'biceps':['f-biceps-l','f-biceps-r'],
+    'forearm-flexors':['f-forearm-flexors-l','f-forearm-flexors-r'],
+    'rectus-abdominis':['f-rectus-abdominis'],
+    'obliques':['f-obliques-l','f-obliques-r'],
+    'quadriceps':['f-quadriceps-l','f-quadriceps-r','f-quadriceps-vl-l','f-quadriceps-vl-r','f-quadriceps-vm-l','f-quadriceps-vm-r'],
+    'adductors':['f-adductors-l','f-adductors-r'],
+    'tibialis':['f-tibialis-l','f-tibialis-r']
+  };
+  // Map muscle IDs to SVG element IDs (back)
+  const backMap={
+    'trapezius':['b-trapezius'],
+    'posterior-deltoid':['b-posterior-deltoid-l','b-posterior-deltoid-r'],
+    'rotator-cuff':['b-rotator-cuff-l','b-rotator-cuff-r','b-teres-l','b-teres-r'],
+    'rhomboids':['b-rhomboids-l','b-rhomboids-r'],
+    'latissimus':['b-latissimus-l','b-latissimus-r'],
+    'erector-spinae':['b-erector-spinae'],
+    'serratus':['b-serratus-l','b-serratus-r'],
+    'triceps':['b-triceps-l','b-triceps-r'],
+    'forearm-extensors':['b-forearm-extensors-l','b-forearm-extensors-r'],
+    'gluteus':['b-gluteus-l','b-gluteus-r'],
+    'hamstrings':['b-hamstrings-l','b-hamstrings-r'],
+    'calves':['b-calves-l','b-calves-r']
+  };
+
+  // Apply colors to both views
+  function applyColors(parentEl,muscleMap){
+    Object.entries(muscleMap).forEach(([muscle,ids])=>{
+      const inA=musclesA.has(muscle);
+      const inB=musclesB.has(muscle);
+      if(!inA&&!inB)return;
+      const cls=inA&&inB?'active-ab':inA?'active-a':'active-b';
+      ids.forEach(id=>{
+        const el=parentEl.querySelector('#'+id);
+        if(el)el.classList.add(cls);
+      });
+    });
   }
+  applyColors(frontEl,frontMap);
+  applyColors(backEl,backMap);
 
-  // Draw data polygon
-  ctx.beginPath();
-  scores.forEach((s,i)=>{
-    const angle=Math.PI*2*i/n-Math.PI/2;
-    const rr=r*Math.min(s,10)/10;
-    const x=cx+rr*Math.cos(angle);
-    const y=cy+rr*Math.sin(angle);
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-  });
-  ctx.closePath();
-  ctx.fillStyle='rgba(80,141,124,.12)';ctx.fill();
-  ctx.strokeStyle='#508d7c';ctx.lineWidth=2;ctx.stroke();
-
-  // Draw points
-  scores.forEach((s,i)=>{
-    const angle=Math.PI*2*i/n-Math.PI/2;
-    const rr=r*Math.min(s,10)/10;
-    const x=cx+rr*Math.cos(angle);
-    const y=cy+rr*Math.sin(angle);
-    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
-    ctx.fillStyle='#508d7c';ctx.fill();
-    ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.stroke();
-  });
-
-  // Labels
-  ctx.fillStyle='#5a6b63';ctx.font="10px 'Inter',sans-serif";ctx.textAlign='center';
-  labels.forEach((lbl,i)=>{
-    const angle=Math.PI*2*i/n-Math.PI/2;
-    const x=cx+(r+18)*Math.cos(angle);
-    const y=cy+(r+18)*Math.sin(angle);
-    ctx.textBaseline='middle';
-    if(i===0)ctx.textBaseline='bottom';
-    if(Math.abs(i-n/2)<0.5)ctx.textBaseline='top';
-    ctx.fillText(lbl+' ('+scores[i].toFixed(1)+')',x,y);
-  });
+  // Build legend
+  const allActive=new Set([...musclesA,...musclesB]);
+  if(allActive.size===0){
+    legendEl.innerHTML='<div style="font-size:.72rem;color:var(--text-sub);text-align:center;padding:6px 0">Aucune seance A/B enregistree.</div>';
+  }else{
+    const countA=musclesA.size;
+    const countB=musclesB.size;
+    const countBoth=[...musclesA].filter(m=>musclesB.has(m)).length;
+    legendEl.innerHTML=`
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:4px">
+        <div class="anatomy-legend-row"><div class="anatomy-legend-dot" style="background:rgba(80,141,124,.5)"></div>Seance A (${countA})</div>
+        <div class="anatomy-legend-row"><div class="anatomy-legend-dot" style="background:rgba(124,198,182,.5)"></div>Seance B (${countB})</div>
+        <div class="anatomy-legend-row"><div class="anatomy-legend-dot" style="background:rgba(80,141,124,.65)"></div>A+B (${countBoth})</div>
+      </div>
+      <div style="font-size:.62rem;color:var(--text-sub);text-align:center">
+        ${lastA?'A: '+fmtDate(lastA.date):''}${lastA&&lastB?' — ':''}${lastB?'B: '+fmtDate(lastB.date):''}
+      </div>`;
+  }
 }
 
 /* AXE3: Dynamic periodization bars */
