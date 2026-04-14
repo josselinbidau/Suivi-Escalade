@@ -35,12 +35,30 @@
       "diffTry": "6c",
       "diffDone": "6c",
       "climbSub": "Voie"
+    },
+    {
+      "id": 1776010142042,
+      "date": "2026-04-12",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 90,
+      "forme": 3,
+      "rpe": 5,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 450,
+      "pos": "",
+      "neg": "",
+      "volume": "9",
+      "diffTry": "7",
+      "diffDone": "7",
+      "climbSub": "Bloc"
     }
   ],
   "notes": {},
-  "updated": "2026-04-12T10:46:18.395Z",
+  "updated": "2026-04-14T13:14:40.366Z",
   "meta": {
-    "sessions": 2,
+    "sessions": 3,
     "appVersion": "vl3"
   }
 }
