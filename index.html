@@ -651,18 +651,18 @@ const TS={A:'Seance A',B:'Seance B',C:'Grimpe',Cardio:'Cardio',Repos:'Repos'};
 const FC=['','#c32026','#e8a838','#e8a838','#7cc6b6','#508d7c'];
 
 const EMA=[
-  {name:'Dead Hang Half Crimp',series:3,unit:'sec',rest:180},
-  {name:'Dead Hang Sloper',series:3,unit:'sec',rest:180},
+  {name:'Dead Hang Half Crimp',series:3,unit:'sec',rest:180,defaultEffort:10},
+  {name:'Dead Hang Sloper',series:3,unit:'sec',rest:180,defaultEffort:10},
   {name:'Pull-up',series:4,unit:'reps',rest:150},
-  {name:'Negative Pull-up',series:4,unit:'sec',rest:120},
+  {name:'Negative Pull-up',series:4,unit:'reps',rest:120},
   {name:'Low Row',series:4,unit:'reps',rest:90},
   {name:'Archer Rows',series:4,unit:'reps',bilateral:true,rest:90},
   {name:'Prone Y',series:3,unit:'reps',rest:60},
   {name:'External Rotations',series:3,unit:'reps',bilateral:true,rest:60},
   {name:'Press Up',series:3,unit:'reps',rest:60},
-  {name:'Hollow Body Hold',series:3,unit:'sec',rest:60},
+  {name:'Hollow Body Hold',series:3,unit:'sec',rest:60,defaultEffort:30},
   {name:'Hanging Knee Raises',series:3,unit:'reps',rest:60},
-  {name:'Side Plank',series:3,unit:'sec',bilateral:true,rest:45},
+  {name:'Side Plank',series:3,unit:'sec',bilateral:true,rest:45,defaultEffort:30},
 ];
 const EMB=[
   {name:'Single Leg RDL',series:3,unit:'reps',bilateral:true,rest:90},
@@ -671,8 +671,8 @@ const EMB=[
   {name:'Bulgarian Split Squat',series:3,unit:'reps',bilateral:true,rest:90},
   {name:'Deep Squat',series:3,unit:'reps',rest:60},
   {name:'High Step',series:3,unit:'reps',bilateral:true,rest:60},
-  {name:'Copenhagen Plank',series:3,unit:'sec',bilateral:true,rest:60},
-  {name:'Isometric Hang Sloper',series:3,unit:'sec',rest:120},
+  {name:'Copenhagen Plank',series:3,unit:'sec',bilateral:true,rest:60,defaultEffort:20},
+  {name:'Isometric Hang Sloper',series:3,unit:'sec',rest:120,defaultEffort:8},
   {name:'Shoulder Shrugs',series:3,unit:'reps',rest:60},
 ];
 const ALL_EX=[...EMA.map(e=>({...e,sess:'A'})),...EMB.map(e=>({...e,sess:'B'}))];
@@ -1017,7 +1017,13 @@ function startExRest(idx,duration){
   },1000);
 }
 
-/* Auto-chain timer for unit:'sec' exercises (effort → rest → effort → rest → ...) */
+/* Auto-chain timer for unit:'sec' exercises
+   PREP 10s → EFFORT → REPOS → EFFORT → REPOS → ... → EFFORT → TERMINE
+   Bilateral: PREP → EFFORT G → TRANSITION 10s → EFFORT D → REPOS → repeat → TERMINE
+   Default effort 20s if inputs are empty */
+const CHAIN_PREP=10;
+const CHAIN_TRANSITION=10;
+
 function startAutoChain(idx,exName,restDuration){
   if(activeRestInterval){
     clearInterval(activeRestInterval);
@@ -1027,27 +1033,72 @@ function startAutoChain(idx,exName,restDuration){
   activeRestIdx=idx;
   const btn=document.getElementById('restBtn'+idx);
   const lbl=document.getElementById('restLbl'+idx);
+  const ex=_getExByIdx(idx);
+  const isBilateral=!!ex.bilateral;
+  const defEffort=ex.defaultEffort||20;
+
+  /* Read effort durations from series inputs — use defaultEffort from PDF if empty */
   const container=document.getElementById('series-container-'+idx);
-  const inputs=container.querySelectorAll('.ex-ri');
-  const effortDurations=[];
-  inputs.forEach(inp=>{
-    if(inp.dataset.field==='repsD')return;
-    const v=parseInt(inp.value);
-    effortDurations.push(v>0?v:0);
-  });
-  const totalSeries=effortDurations.length;
-  if(totalSeries===0||effortDurations.every(d=>d===0)){
-    startExRest(idx,restDuration);return;
+  const effortG=[],effortD=[];
+  if(isBilateral){
+    container.querySelectorAll('.ex-ri').forEach(inp=>{
+      const v=parseInt(inp.value);
+      if(inp.dataset.field==='repsG')effortG.push(v>0?v:defEffort);
+      else if(inp.dataset.field==='repsD')effortD.push(v>0?v:defEffort);
+    });
+  }else{
+    container.querySelectorAll('.ex-ri').forEach(inp=>{
+      if(inp.dataset.field==='reps'){
+        const v=parseInt(inp.value);
+        effortG.push(v>0?v:defEffort);
+      }
+    });
   }
-  let currentSerie=0;
-  let phase='effort';
-  let remaining=effortDurations[0];
+  const totalSeries=effortG.length;
+  if(totalSeries===0){startExRest(idx,restDuration);return;}
+
+  /* Build the complete phase sequence */
+  const phases=[];
+  /* Start with preparation phase */
+  phases.push({type:'prep',side:null,serie:0,dur:CHAIN_PREP});
+  for(let s=0;s<totalSeries;s++){
+    if(isBilateral){
+      phases.push({type:'effort',side:'G',serie:s,dur:effortG[s]});
+      phases.push({type:'transition',side:null,serie:s,dur:CHAIN_TRANSITION});
+      phases.push({type:'effort',side:'D',serie:s,dur:effortD[s]||effortG[s]});
+    }else{
+      phases.push({type:'effort',side:null,serie:s,dur:effortG[s]});
+    }
+    if(s<totalSeries-1){
+      phases.push({type:'rest',side:null,serie:s,dur:restDuration});
+    }
+  }
+
+  let phaseIdx=0;
+  let remaining=phases[0].dur;
+
+  function phaseLabel(){
+    const p=phases[phaseIdx];
+    if(p.type==='prep')return 'PREPARATION';
+    const serieStr=(p.serie+1)+'/'+totalSeries;
+    if(p.type==='effort'){
+      return 'EFFORT'+(p.side?' '+p.side:'')+' '+serieStr;
+    }
+    if(p.type==='transition')return 'CHANGEMENT '+serieStr;
+    return 'REPOS '+serieStr;
+  }
+
+  function phaseClass(){
+    const p=phases[phaseIdx];
+    if(p.type==='prep'||p.type==='transition')return 'running';
+    if(p.type==='effort')return 'effort';
+    return 'running';
+  }
 
   function updateDisplay(){
-    const pLbl=phase==='effort'?'EFFORT':'REPOS';
-    lbl.textContent=pLbl+' '+(currentSerie+1)+'/'+totalSeries+' \u2014 '+fmtTimer(remaining);
+    lbl.textContent=phaseLabel()+' \u2014 '+fmtTimer(remaining);
     btn.classList.remove('running','done','effort');
-    btn.classList.add(phase==='effort'?'effort':'running');
+    btn.classList.add(phaseClass());
   }
   updateDisplay();
 
@@ -1058,23 +1109,19 @@ function startAutoChain(idx,exName,restDuration){
     if(remaining<=0){
       beepLong();
       if(navigator.vibrate)navigator.vibrate([200,100,200]);
-      if(phase==='effort'){
-        if(currentSerie>=totalSeries-1){
-          clearInterval(activeRestInterval);activeRestInterval=null;
-          btn.classList.remove('running','effort');btn.classList.add('done');
-          lbl.textContent='TERMINE !';
-          setTimeout(()=>{_resetTimerBtn(idx);activeRestIdx=null;},3000);
-          return;
-        }
-        phase='rest';remaining=restDuration;
-      }else{
-        currentSerie++;phase='effort';
-        remaining=effortDurations[currentSerie]||effortDurations[0];
+      phaseIdx++;
+      if(phaseIdx>=phases.length){
+        clearInterval(activeRestInterval);activeRestInterval=null;
+        btn.classList.remove('running','effort');btn.classList.add('done');
+        lbl.textContent='TERMINE !';
+        setTimeout(()=>{_resetTimerBtn(idx);activeRestIdx=null;},3000);
+        return;
       }
-      updateDisplay();return;
+      remaining=phases[phaseIdx].dur;
+      updateDisplay();
+      return;
     }
-    const pLbl=phase==='effort'?'EFFORT':'REPOS';
-    lbl.textContent=pLbl+' '+(currentSerie+1)+'/'+totalSeries+' \u2014 '+fmtTimer(remaining);
+    lbl.textContent=phaseLabel()+' \u2014 '+fmtTimer(remaining);
     if(remaining<=5)btn.classList.add('done');
   },1000);
 }
