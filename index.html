@@ -947,61 +947,106 @@ function calcFoster(){
 }
 document.addEventListener('input',e=>{if(e.target.id==='log-dur')calcFoster();});
 
-/* Audio beep system (Web Audio API) — iOS compatible */
-let _audioCtx=null;
-let _audioUnlocked=false;
+/* Audio beep system — HTMLAudioElement with pre-generated WAV data URIs
+   More reliable on iOS than Web Audio API (which is blocked in background/setInterval) */
 
-function getAudioCtx(){
-  if(!_audioCtx){
-    const Ctx=window.AudioContext||window.webkitAudioContext;
-    if(!Ctx)return null;
-    _audioCtx=new Ctx();
+/* Generate a mono 16-bit PCM WAV as base64 data URI */
+function _makeBeepWav(freq,durationMs,volume){
+  const SR=22050;
+  const N=Math.floor(SR*durationMs/1000);
+  const dataSize=N*2;
+  const buf=new ArrayBuffer(44+dataSize);
+  const v=new DataView(buf);
+  /* RIFF */
+  v.setUint8(0,82);v.setUint8(1,73);v.setUint8(2,70);v.setUint8(3,70);
+  v.setUint32(4,36+dataSize,true);
+  v.setUint8(8,87);v.setUint8(9,65);v.setUint8(10,86);v.setUint8(11,69);
+  /* fmt */
+  v.setUint8(12,102);v.setUint8(13,109);v.setUint8(14,116);v.setUint8(15,32);
+  v.setUint32(16,16,true);
+  v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,SR,true);v.setUint32(28,SR*2,true);
+  v.setUint16(32,2,true);v.setUint16(34,16,true);
+  /* data */
+  v.setUint8(36,100);v.setUint8(37,97);v.setUint8(38,116);v.setUint8(39,97);
+  v.setUint32(40,dataSize,true);
+  /* PCM samples with attack/release envelope */
+  const attack=Math.min(220,Math.floor(N*0.1));
+  const release=Math.min(440,Math.floor(N*0.15));
+  for(let i=0;i<N;i++){
+    let env=volume;
+    if(i<attack)env*=i/attack;
+    else if(i>N-release)env*=(N-i)/release;
+    const s=Math.sin(2*Math.PI*freq*i/SR)*env;
+    v.setInt16(44+i*2,Math.max(-1,Math.min(1,s))*32767,true);
   }
-  if(_audioCtx.state==='suspended')_audioCtx.resume();
-  return _audioCtx;
+  /* Convert to base64 */
+  const bytes=new Uint8Array(buf);
+  let bin='';
+  for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+  return 'data:audio/wav;base64,'+btoa(bin);
 }
 
-/* Unlock audio on first user interaction — critical for iOS Safari */
+/* Pre-generate both beeps as Audio elements */
+let _beepShortAudio=null;
+let _beepLongAudio=null;
+let _audioUnlocked=false;
+
+function _initBeeps(){
+  if(_beepShortAudio)return;
+  try{
+    _beepShortAudio=new Audio(_makeBeepWav(880,150,0.7));
+    _beepLongAudio=new Audio(_makeBeepWav(660,500,0.7));
+    _beepShortAudio.preload='auto';
+    _beepLongAudio.preload='auto';
+    _beepShortAudio.load();
+    _beepLongAudio.load();
+  }catch(e){}
+}
+
+/* Unlock audio on first user interaction — iOS requires play() inside a gesture */
 function unlockAudio(){
   if(_audioUnlocked)return;
-  const ctx=getAudioCtx();
-  if(!ctx)return;
-  /* Play a silent buffer to unlock audio output on iOS */
+  _initBeeps();
+  if(!_beepShortAudio)return;
+  /* Play + immediately pause both to "prime" them on iOS */
   try{
-    const buf=ctx.createBuffer(1,1,22050);
-    const src=ctx.createBufferSource();
-    src.buffer=buf;
-    src.connect(ctx.destination);
-    src.start(0);
-    _audioUnlocked=true;
+    _beepShortAudio.volume=0;
+    const p1=_beepShortAudio.play();
+    if(p1&&p1.then){
+      p1.then(()=>{
+        _beepShortAudio.pause();
+        _beepShortAudio.currentTime=0;
+        _beepShortAudio.volume=1;
+        _audioUnlocked=true;
+      }).catch(()=>{});
+    }
+    _beepLongAudio.volume=0;
+    const p2=_beepLongAudio.play();
+    if(p2&&p2.then){
+      p2.then(()=>{
+        _beepLongAudio.pause();
+        _beepLongAudio.currentTime=0;
+        _beepLongAudio.volume=1;
+      }).catch(()=>{});
+    }
   }catch(e){}
 }
 
 /* Auto-unlock on first touch/click anywhere */
-document.addEventListener('touchstart',unlockAudio,{once:false,passive:true});
-document.addEventListener('click',unlockAudio,{once:false,passive:true});
+document.addEventListener('touchstart',unlockAudio,{passive:true});
+document.addEventListener('click',unlockAudio,{passive:true});
 
-function beep(freq,durationMs){
+function _playBeep(audio){
+  if(!audio)return;
   try{
-    const ctx=getAudioCtx();
-    if(!ctx)return;
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.frequency.value=freq;
-    osc.type='sine';
-    /* Envelope to avoid clicks on iOS */
-    const now=ctx.currentTime;
-    gain.gain.setValueAtTime(0,now);
-    gain.gain.linearRampToValueAtTime(0.25,now+0.01);
-    gain.gain.setValueAtTime(0.25,now+durationMs/1000-0.02);
-    gain.gain.linearRampToValueAtTime(0,now+durationMs/1000);
-    osc.start(now);
-    osc.stop(now+durationMs/1000);
+    audio.currentTime=0;
+    const p=audio.play();
+    if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
 }
-function beepShort(){beep(880,150);}
-function beepLong(){beep(660,500);}
+function beepShort(){_initBeeps();_playBeep(_beepShortAudio);}
+function beepLong(){_initBeeps();_playBeep(_beepLongAudio);}
 
 /* Per-exercise rest timer */
 let activeRestIdx=null,activeRestInterval=null;
