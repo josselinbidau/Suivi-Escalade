@@ -231,6 +231,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 .heatmap-legend-item{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--text-dim);}
 .heatmap-legend-item .hl-dot{width:8px;height:8px;border-radius:2px;}
 /* Anatomy muscle diagrams */
+/* Help buttons + popover */
+.help-btn{width:20px;height:20px;min-width:20px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);font-size:.7rem;font-weight:700;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
+.help-btn:active{background:var(--accent-bg);color:var(--accent);border-color:var(--accent);}
+.help-popover{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-size:.78rem;color:var(--text);line-height:1.6;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:600;max-width:280px;display:none;}
+.help-popover.show{display:block;animation:fadeUp .2s ease;}
+.help-popover b{font-weight:700;}
+.help-popover-close{position:absolute;top:4px;right:6px;background:none;border:none;color:var(--text-sub);font-size:1rem;cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent;}
+.help-ov{position:fixed;inset:0;z-index:599;background:rgba(0,0,0,.15);display:none;}
+.help-ov.show{display:block;}
+/* Foster load metrics mini-widget */
+.load-stat{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 9px;position:relative;}
+.load-stat .load-hdr{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:6px;}
+.load-stat .load-lbl{font-size:.6rem;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;}
+.load-stat .load-val{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;line-height:1;margin-bottom:3px;}
+.load-stat .load-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:.56rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+.load-badge-ok{background:rgba(80,141,124,.12);color:var(--teal);}
+.load-badge-warn{background:rgba(232,168,56,.18);color:#b07e24;}
+.load-badge-danger{background:rgba(195,32,38,.12);color:var(--red);}
 .anatomy-tabs{display:flex;gap:0;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);margin-bottom:10px;}
 .anatomy-tab{flex:1;padding:9px 4px;min-height:40px;background:none;border:none;color:var(--text-dim);font-size:.73rem;font-weight:700;cursor:pointer;transition:all .18s;}
 .anatomy-tab.sel{background:var(--accent-bg);color:var(--accent);}
@@ -332,6 +350,37 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
       <div class="heatmap-legend-item"><div class="hl-dot" style="background:#e8a838"></div>Grimpe</div>
       <div class="heatmap-legend-item"><div class="hl-dot" style="background:#8b7eb8"></div>Cardio</div>
       <div class="heatmap-legend-item"><div class="hl-dot" style="background:#8a9b93"></div>Repos</div>
+    </div>
+  </div>
+  <!-- Foster load metrics mini-widget -->
+  <div class="card" id="load-widget" style="display:none">
+    <div class="card-hdr">
+      <div class="card-lbl">Charge d'entrainement</div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">7 derniers jours</div>
+    </div>
+    <div class="sg sg3">
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Charge</span><button class="help-btn" onclick="showHelp(event,'charge')">?</button></div>
+        <div class="load-val teal" id="lw-charge">--</div>
+        <div class="load-badge load-badge-ok" id="lw-charge-b">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Monotonie</span><button class="help-btn" onclick="showHelp(event,'monotonie')">?</button></div>
+        <div class="load-val" style="color:#e8a838" id="lw-monotonie">--</div>
+        <div class="load-badge load-badge-ok" id="lw-monotonie-b">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Contrainte</span><button class="help-btn" onclick="showHelp(event,'contrainte')">?</button></div>
+        <div class="load-val teal" id="lw-contrainte">--</div>
+        <div class="load-badge load-badge-ok" id="lw-contrainte-b">--</div>
+      </div>
+    </div>
+    <div class="load-stat" style="margin-top:7px">
+      <div class="load-hdr"><span class="load-lbl">Forme (Fitness)</span><button class="help-btn" onclick="showHelp(event,'forme')">?</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="load-val" id="lw-forme" style="color:#3d8a78">--</div>
+        <div style="font-size:.7rem;font-weight:600" id="lw-forme-trend"></div>
+      </div>
     </div>
   </div>
   <div class="card">
@@ -469,6 +518,44 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <section class="page" id="page-analyse"><div class="app">
   <div class="title">Analyse</div><div class="sub">Resume hebdomadaire -- Recommandations</div>
   <div class="card"><div class="card-hdr"><div class="card-lbl">Resume par semaine</div></div><div id="weekly-sum"></div></div>
+  <!-- Foster: Charge hebdomadaire -->
+  <div class="card">
+    <div class="card-hdr">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="card-lbl">Charge hebdo</div>
+        <button class="help-btn" onclick="showHelp(event,'charge')">?</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
+    </div>
+    <div class="chart-wrap"><canvas id="chargeChart"></canvas></div>
+    <div class="heatmap-legend" style="margin-top:6px">
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#508d7c"></div>OK</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#e8a838"></div>Fatigue</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#c32026"></div>Risque</div>
+    </div>
+  </div>
+  <!-- Foster: Monotonie -->
+  <div class="card">
+    <div class="card-hdr">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="card-lbl">Monotonie</div>
+        <button class="help-btn" onclick="showHelp(event,'monotonie')">?</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
+    </div>
+    <div class="chart-wrap"><canvas id="monotonieChart"></canvas></div>
+  </div>
+  <!-- Foster: Contrainte & Forme -->
+  <div class="card">
+    <div class="card-hdr">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="card-lbl">Forme (Fitness)</div>
+        <button class="help-btn" onclick="showHelp(event,'forme')">?</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">Charge − Contrainte</div>
+    </div>
+    <div class="chart-wrap"><canvas id="formeChart2"></canvas></div>
+  </div>
   <!-- Muscles sollicites -->
   <div class="card">
     <div class="card-hdr">
@@ -747,6 +834,274 @@ function onForme(v){const el=document.getElementById('forme-val');el.textContent
 function onRPE(v){const el=document.getElementById('rpe-val');el.textContent=v;el.style.color=rpeColor(+v);calcFoster();}
 function rpeColor(v){return`hsl(${Math.round((1-Math.min(v,10)/10)*140)},60%,42%)`;}
 function rpeRGB(v){return(!v||v<4)?'80,141,124':v<7?'232,168,56':'195,32,38';}
+
+/* ============================================================
+   FOSTER LOAD METRICS — Charge / Monotonie / Contrainte / Forme
+   ============================================================ */
+const HELP_TEXTS={
+  charge:'<b>Charge = Duree (min) × RPE (1-10)</b><br>Volume d\'entrainement sur 7 jours.<br><br><b style="color:#508d7c">&lt; 6000 U.A.</b> — OK<br><b style="color:#e8a838">6000 → 10000</b> — Fatigue<br><b style="color:#c32026">&gt; 10000</b> — Risque blessure',
+  monotonie:'<b>Monotonie = Charge moyenne / Ecart-type</b><br>Variete de l\'entrainement (sur 7 jours). Plus la valeur est basse, plus l\'entrainement est varie.<br><br><b style="color:#508d7c">&lt; 2</b> — OK<br><b style="color:#e8a838">2 → 2.5</b> — Fatigue<br><b style="color:#c32026">&gt; 2.5</b> — Risque blessure',
+  contrainte:'<b>Contrainte = Charge × Monotonie</b><br>Stress cumule de l\'entrainement.<br><br><b style="color:#508d7c">&lt; 6000 U.A.</b> — OK<br><b style="color:#e8a838">6000 → 10000</b> — Surentrainement<br><b style="color:#c32026">&gt; 10000</b> — Risque blessure',
+  forme:'<b>Forme = Charge − Contrainte</b><br>Capacite de performance actuelle.<br><br><b style="color:#508d7c">Positif</b> — En forme<br><b style="color:#c32026">Negatif</b> — Fatigue accumulee'
+};
+
+function showHelp(ev,key){
+  ev.stopPropagation();
+  let pop=document.getElementById('help-popover');
+  let ov=document.getElementById('help-ov');
+  if(!pop){
+    pop=document.createElement('div');
+    pop.id='help-popover';pop.className='help-popover';
+    document.body.appendChild(pop);
+  }
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='help-ov';ov.className='help-ov';
+    ov.onclick=hideHelp;
+    document.body.appendChild(ov);
+  }
+  pop.innerHTML='<button class="help-popover-close" onclick="hideHelp()">&times;</button>'+HELP_TEXTS[key];
+  const btn=ev.currentTarget;
+  const r=btn.getBoundingClientRect();
+  /* Position below the button, centered, constrained to viewport */
+  pop.style.visibility='hidden';pop.classList.add('show');
+  const pw=pop.offsetWidth,ph=pop.offsetHeight;
+  let left=r.left+r.width/2-pw/2;
+  left=Math.max(10,Math.min(left,window.innerWidth-pw-10));
+  let top=r.bottom+8;
+  if(top+ph>window.innerHeight-10)top=r.top-ph-8;
+  pop.style.left=left+'px';pop.style.top=top+'px';
+  pop.style.visibility='visible';
+  ov.classList.add('show');
+}
+function hideHelp(){
+  const pop=document.getElementById('help-popover');
+  const ov=document.getElementById('help-ov');
+  if(pop)pop.classList.remove('show');
+  if(ov)ov.classList.remove('show');
+}
+
+/* Compute per-session load (Charge Foster) — reuses s.foster field */
+function _sessionLoad(s){return Math.max(0,+s.foster||0);}
+
+/* Compute weekly metrics over the last N weeks (default 12).
+   Returns array of {weekStart, label, charge, monotonie, contrainte, forme, dailyLoads}. */
+function computeWeeklyMetrics(ss,numWeeks){
+  numWeeks=numWeeks||12;
+  const today=new Date();today.setHours(0,0,0,0);
+  /* Find most recent Monday */
+  const dow=today.getDay();
+  const offsetToMonday=dow===0?6:dow-1;
+  const thisMonday=new Date(today);thisMonday.setDate(today.getDate()-offsetToMonday);
+  const weeks=[];
+  for(let w=numWeeks-1;w>=0;w--){
+    const wStart=new Date(thisMonday);wStart.setDate(thisMonday.getDate()-w*7);
+    const wEnd=new Date(wStart);wEnd.setDate(wStart.getDate()+7);
+    /* Daily loads within this week (7 days) */
+    const daily=[0,0,0,0,0,0,0];
+    ss.forEach(s=>{
+      if(!s.date)return;
+      const d=new Date(s.date+'T00:00:00');
+      if(d>=wStart&&d<wEnd){
+        const di=Math.floor((d-wStart)/(1000*60*60*24));
+        if(di>=0&&di<7)daily[di]+=_sessionLoad(s);
+      }
+    });
+    const charge=daily.reduce((a,b)=>a+b,0);
+    /* Monotony: mean / stdDev of daily loads (7 values including rest days = 0) */
+    const mean=charge/7;
+    let sumSq=0;
+    daily.forEach(v=>{sumSq+=(v-mean)*(v-mean);});
+    const stdDev=Math.sqrt(sumSq/7);
+    const monotonie=stdDev>0?mean/stdDev:(mean>0?2.5:0);
+    const contrainte=charge*monotonie;
+    const forme=charge-contrainte;
+    const label='S'+_isoWeekNumber(wStart);
+    weeks.push({weekStart:wStart,label,charge:Math.round(charge),monotonie:+monotonie.toFixed(2),contrainte:Math.round(contrainte),forme:Math.round(forme),dailyLoads:daily});
+  }
+  return weeks;
+}
+
+function _isoWeekNumber(date){
+  const d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));
+  const dow=d.getUTCDay()||7;
+  d.setUTCDate(d.getUTCDate()+4-dow);
+  const yearStart=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil(((d-yearStart)/86400000+1)/7);
+}
+
+function _loadBadge(val,thresholds){
+  if(val<thresholds[0])return{cls:'load-badge-ok',txt:'OK'};
+  if(val<thresholds[1])return{cls:'load-badge-warn',txt:thresholds[2]||'Fatigue'};
+  return{cls:'load-badge-danger',txt:thresholds[3]||'Risque'};
+}
+
+/* Canvas drawing: weekly charge bar chart with threshold zones */
+function drawChargeChart(weeks){
+  const cv=document.getElementById('chargeChart');if(!cv)return;
+  const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
+  const W=cv.parentElement.getBoundingClientRect().width,H=cv.parentElement.offsetHeight||160;
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  const pad={t:8,r:10,b:22,l:40},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
+  const dataMax=Math.max(12000,...weeks.map(w=>w.charge));
+  const max=Math.ceil(dataMax/3000)*3000;
+  /* Zone backgrounds */
+  const y6=pad.t+CH*(1-6000/max);
+  const y10=pad.t+CH*(1-10000/max);
+  ctx.fillStyle='rgba(80,141,124,.08)';ctx.fillRect(pad.l,y6,CW,pad.t+CH-y6);
+  if(y10<y6){ctx.fillStyle='rgba(232,168,56,.12)';ctx.fillRect(pad.l,y10,CW,y6-y10);}
+  if(y10>pad.t){ctx.fillStyle='rgba(195,32,38,.1)';ctx.fillRect(pad.l,pad.t,CW,y10-pad.t);}
+  /* Y labels */
+  ctx.fillStyle='#8a9b93';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const v=max*i/4;const y=pad.t+CH*(1-i/4);
+    ctx.strokeStyle='#e3ece8';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+CW,y);ctx.stroke();
+    ctx.fillText(Math.round(v),pad.l-4,y+3);
+  }
+  /* Bars */
+  const barStep=CW/weeks.length;
+  const barW=Math.max(4,barStep-3);
+  weeks.forEach((w,i)=>{
+    const x=pad.l+i*barStep+1.5;
+    const h=CH*Math.min(w.charge,max)/max;
+    const y=pad.t+CH-h;
+    let color='#508d7c';
+    if(w.charge>10000)color='#c32026';
+    else if(w.charge>6000)color='#e8a838';
+    ctx.fillStyle=color;
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,y,barW,h,3);
+    else ctx.rect(x,y,barW,h);
+    ctx.fill();
+  });
+  /* X labels */
+  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+  weeks.forEach((w,i)=>{if(i%2===0||i===weeks.length-1)ctx.fillText(w.label,pad.l+i*barStep+barW/2+1.5,H-6);});
+}
+
+/* Monotonie line chart with threshold lines */
+function drawMonotonieChart(weeks){
+  const cv=document.getElementById('monotonieChart');if(!cv)return;
+  const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
+  const W=cv.parentElement.getBoundingClientRect().width,H=cv.parentElement.offsetHeight||160;
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  const pad={t:8,r:10,b:22,l:30},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
+  const min=0,max=3.5;
+  /* Grid */
+  ctx.fillStyle='#8a9b93';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';
+  [0,1,2,3].forEach(v=>{
+    const y=pad.t+CH*(1-(v-min)/(max-min));
+    ctx.strokeStyle='#e3ece8';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+CW,y);ctx.stroke();
+    ctx.fillText(v.toFixed(1),pad.l-4,y+3);
+  });
+  /* Threshold dashed lines */
+  [{v:2,c:'#e8a838'},{v:2.5,c:'#c32026'}].forEach(t=>{
+    const y=pad.t+CH*(1-(t.v-min)/(max-min));
+    ctx.strokeStyle=t.c;ctx.lineWidth=1.2;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+CW,y);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  /* Line + area */
+  const vals=weeks.map(w=>w.monotonie||0);
+  const pts=vals.map((v,i)=>({x:pad.l+i*(CW/(vals.length-1||1)),y:pad.t+CH*(1-(Math.min(v,max)-min)/(max-min))}));
+  if(pts.length>1){
+    ctx.beginPath();ctx.moveTo(pts[0].x,H-pad.b);
+    pts.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(pts[pts.length-1].x,H-pad.b);
+    ctx.closePath();ctx.fillStyle='rgba(232,168,56,.12)';ctx.fill();
+    ctx.beginPath();ctx.strokeStyle='#e8a838';ctx.lineWidth=2.5;ctx.lineJoin='round';
+    pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.stroke();
+  }
+  pts.forEach(p=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);
+    ctx.fillStyle='#e8a838';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  });
+  /* X labels */
+  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+  weeks.forEach((w,i)=>{if(i%2===0||i===weeks.length-1)ctx.fillText(w.label,pts[i].x,H-6);});
+}
+
+/* Forme (Fitness) area chart with zero baseline */
+function drawFormeChart(weeks){
+  const cv=document.getElementById('formeChart2');if(!cv)return;
+  const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
+  const W=cv.parentElement.getBoundingClientRect().width,H=cv.parentElement.offsetHeight||160;
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);
+  const pad={t:8,r:10,b:22,l:44},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
+  const vals=weeks.map(w=>w.forme);
+  const maxAbs=Math.max(500,...vals.map(v=>Math.abs(v)));
+  const min=-maxAbs,max=maxAbs;
+  const y0=pad.t+CH*(1-(0-min)/(max-min));
+  /* Grid */
+  ctx.fillStyle='#8a9b93';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';
+  [-maxAbs,-maxAbs/2,0,maxAbs/2,maxAbs].forEach(v=>{
+    const y=pad.t+CH*(1-(v-min)/(max-min));
+    ctx.strokeStyle=v===0?'#8a9b93':'#e3ece8';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+CW,y);ctx.stroke();
+    ctx.fillText(Math.round(v),pad.l-4,y+3);
+  });
+  /* Area above and below zero */
+  const pts=vals.map((v,i)=>({x:pad.l+i*(CW/(vals.length-1||1)),y:pad.t+CH*(1-(v-min)/(max-min)),v}));
+  if(pts.length>1){
+    ctx.save();ctx.beginPath();ctx.rect(pad.l,pad.t,CW,y0-pad.t);ctx.clip();
+    ctx.beginPath();ctx.moveTo(pts[0].x,y0);
+    pts.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(pts[pts.length-1].x,y0);ctx.closePath();
+    ctx.fillStyle='rgba(80,141,124,.25)';ctx.fill();ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(pad.l,y0,CW,pad.t+CH-y0);ctx.clip();
+    ctx.beginPath();ctx.moveTo(pts[0].x,y0);
+    pts.forEach(p=>ctx.lineTo(p.x,p.y));
+    ctx.lineTo(pts[pts.length-1].x,y0);ctx.closePath();
+    ctx.fillStyle='rgba(195,32,38,.2)';ctx.fill();ctx.restore();
+    ctx.beginPath();ctx.strokeStyle='#3d6b5d';ctx.lineWidth=2;ctx.lineJoin='round';
+    pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.stroke();
+  }
+  pts.forEach(p=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);
+    ctx.fillStyle=p.v>=0?'#508d7c':'#c32026';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  });
+  /* X labels */
+  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+  weeks.forEach((w,i)=>{if(i%2===0||i===weeks.length-1)ctx.fillText(w.label,pts[i].x,H-6);});
+}
+
+/* Dashboard mini-widget: fill last-week values + badges */
+function renderLoadWidget(weeks){
+  const last=weeks[weeks.length-1];
+  if(!last)return;
+  const cBadge=_loadBadge(last.charge,[6000,10000,'Fatigue','Risque']);
+  const mBadge=_loadBadge(last.monotonie,[2,2.5,'Fatigue','Risque']);
+  const sBadge=_loadBadge(last.contrainte,[6000,10000,'Surentrain.','Risque']);
+  const formeIsPositive=last.forme>=0;
+  const setIf=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  const setBadge=(id,b)=>{const el=document.getElementById(id);if(el){el.className='load-badge '+b.cls;el.textContent=b.txt;}};
+  setIf('lw-charge',last.charge.toLocaleString('fr-FR'));
+  setBadge('lw-charge-b',cBadge);
+  setIf('lw-monotonie',last.monotonie.toFixed(2));
+  setBadge('lw-monotonie-b',mBadge);
+  setIf('lw-contrainte',last.contrainte.toLocaleString('fr-FR'));
+  setBadge('lw-contrainte-b',sBadge);
+  setIf('lw-forme',(formeIsPositive?'+':'')+last.forme.toLocaleString('fr-FR'));
+  const formeEl=document.getElementById('lw-forme');
+  if(formeEl)formeEl.style.color=formeIsPositive?'#3d8a78':'var(--red)';
+  /* Trend: compare with previous week */
+  const prev=weeks[weeks.length-2];
+  const trendEl=document.getElementById('lw-forme-trend');
+  if(trendEl&&prev){
+    const diff=last.forme-prev.forme;
+    trendEl.textContent=diff>0?'\u2197 en progression':diff<0?'\u2198 en baisse':'\u2192 stable';
+    trendEl.style.color=diff>0?'#3d8a78':diff<0?'var(--red)':'var(--text-dim)';
+  }
+}
 
 /* Type */
 let cType='A';
@@ -1321,6 +1676,15 @@ function renderDash(){
   renderRecent(ss.slice(-6).reverse());
   drawChart('fosterChart',ss.slice(-14).map(s=>s.date),ss.slice(-14).map(s=>s.foster||0),'#508d7c','rgba(80,141,124,.08)',0,null);
   drawChart('formeChart',ss.slice(-10).map(s=>s.date),ss.slice(-10).map(s=>s.forme),'#7cc6b6','rgba(124,198,182,.08)',1,5);
+
+  /* Foster load metrics mini-widget */
+  if(ss.length){
+    const weeks=computeWeeklyMetrics(ss,12);
+    document.getElementById('load-widget').style.display='block';
+    renderLoadWidget(weeks);
+  }else{
+    document.getElementById('load-widget').style.display='none';
+  }
 }
 
 /* AXE4: Animate counter from 0 to target */
@@ -1982,6 +2346,12 @@ function renderAnalyse(){
       </div>`;
     }).join('');
   }
+
+  /* Foster load metrics charts */
+  const weeks=computeWeeklyMetrics(ss,12);
+  drawChargeChart(weeks);
+  drawMonotonieChart(weeks);
+  drawFormeChart(weeks);
 
   // Anatomy muscle diagrams
   renderAnatomy(ss);
