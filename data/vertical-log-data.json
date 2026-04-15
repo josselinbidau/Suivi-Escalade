@@ -53,12 +53,30 @@
       "diffTry": "7",
       "diffDone": "7",
       "climbSub": "Bloc"
+    },
+    {
+      "id": 1776182604759,
+      "date": "2026-04-14",
+      "type": "Cardio",
+      "phase": "P1-S1",
+      "duration": 90,
+      "forme": 2,
+      "rpe": 1,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 90,
+      "pos": "",
+      "neg": "",
+      "volume": null,
+      "diffTry": null,
+      "diffDone": null,
+      "climbSub": null
     }
   ],
   "notes": {},
-  "updated": "2026-04-14T13:14:40.366Z",
+  "updated": "2026-04-15T07:19:20.836Z",
   "meta": {
-    "sessions": 3,
+    "sessions": 4,
     "appVersion": "vl3"
   }
 }
