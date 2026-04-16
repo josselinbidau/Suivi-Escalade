@@ -38,8 +38,8 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .nav-phase{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);padding:3px 9px;border-radius:20px;}
 /* TABS */
 .tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(245,247,246,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(80,141,124,.08);padding-bottom:var(--safe-b);}
-.tab-bar-inner{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);}
-.tab-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 9px;background:none;border:none;cursor:pointer;color:var(--text-sub);transition:color .18s;-webkit-tap-highlight-color:transparent;font-size:.6rem;font-weight:600;letter-spacing:.02em;min-height:48px;}
+.tab-bar-inner{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 8px;background:none;border:none;cursor:pointer;color:var(--text-sub);transition:color .18s;-webkit-tap-highlight-color:transparent;font-size:.55rem;font-weight:600;letter-spacing:.02em;min-height:48px;}
 .tab-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .tab-btn.active{color:var(--accent);}
 .tab-btn.active svg{filter:drop-shadow(0 0 4px rgba(80,141,124,.4));}
@@ -231,6 +231,50 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 .heatmap-legend-item{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--text-dim);}
 .heatmap-legend-item .hl-dot{width:8px;height:8px;border-radius:2px;}
 /* Anatomy muscle diagrams */
+/* Venues page */
+.venue-card{background:var(--surface);border:1px solid rgba(80,141,124,.06);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s;}
+.venue-card:active{transform:scale(.98);}
+.venue-card-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.venue-card-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;flex:1;color:var(--text);}
+.venue-card-type{font-size:.6rem;padding:2px 8px;border-radius:10px;background:var(--accent-bg);color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-family:'DM Mono',monospace;}
+.venue-card-disc{font-size:.72rem;color:var(--text-dim);line-height:1.5;}
+.venue-card-disc b{color:var(--text);font-weight:600;}
+/* Venue editor sheet */
+.discipline-row{border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;background:var(--surface2);}
+.discipline-row-hdr{display:flex;align-items:center;}
+.chk-label{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--text);}
+.chk-label input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--accent);}
+.discipline-row-body{max-height:0;overflow:hidden;transition:max-height .25s ease, margin-top .25s ease;}
+.discipline-row.open .discipline-row-body{max-height:200px;margin-top:8px;}
+.seg-btn.act-salle{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);}
+.seg-btn.act-falaise{background:rgba(232,168,56,.12);border-color:var(--orange);color:#b07e24;}
+/* Venue select in Saisie */
+.venue-select-wrap{position:relative;}
+.venue-search{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:1rem;padding:11px 12px;outline:none;}
+.venue-search:focus{border-color:var(--accent);}
+.venue-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:4px;max-height:220px;overflow-y:auto;z-index:100;box-shadow:0 4px 14px rgba(0,0,0,.08);display:none;}
+.venue-dropdown.show{display:block;}
+.venue-option{padding:10px 12px;cursor:pointer;font-size:.85rem;border-bottom:1px solid var(--border);}
+.venue-option:last-child{border-bottom:none;}
+.venue-option:active{background:var(--accent-bg);}
+.venue-option-meta{font-size:.68rem;color:var(--text-dim);margin-top:2px;}
+.venue-selected{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--accent-bg);border:1px solid var(--accent);border-radius:var(--radius-sm);font-size:.87rem;font-weight:600;color:var(--accent);}
+.venue-selected-clear{background:none;border:none;color:var(--accent);cursor:pointer;padding:4px 8px;font-size:1rem;}
+/* Route cards in Saisie */
+.route-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;}
+.route-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.route-card-lbl{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-sub);}
+.route-card-del{background:none;border:none;color:var(--text-sub);cursor:pointer;padding:4px 8px;font-size:.9rem;min-width:32px;min-height:32px;}
+.route-card-del:active{color:var(--red);}
+.route-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.route-grid .fg{margin-bottom:0;}
+.route-rpe-row{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.route-rpe-lbl{font-size:.7rem;font-weight:600;color:var(--text-dim);flex-shrink:0;min-width:36px;}
+.route-rpe-num{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;min-width:22px;text-align:right;}
+.route-summary{background:linear-gradient(135deg,var(--surface),var(--accent-bg));border:1px solid rgba(80,141,124,.25);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;display:flex;justify-content:space-between;}
+.route-summary-item{text-align:center;flex:1;}
+.route-summary-val{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--accent);}
+.route-summary-lbl{font-size:.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
 /* Help buttons + popover */
 .help-btn{width:20px;height:20px;min-width:20px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);color:var(--text-dim);font-size:.7rem;font-weight:700;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
 .help-btn:active{background:var(--accent-bg);color:var(--accent);border-color:var(--accent);}
@@ -436,6 +480,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
     <div class="sltrack"><span>1 Leger</span><span>5 Modere</span><span>10 Max</span></div>
   </div>
   <div class="card" id="grimpe-sec" style="display:none">
+    <!-- Venue selector -->
+    <div class="fg">
+      <label class="fl">Lieu</label>
+      <div class="venue-select-wrap">
+        <div id="venue-selected-display" style="display:none"></div>
+        <input type="text" class="venue-search" id="venue-search" placeholder="Selectionner une salle / falaise..." oninput="onVenueSearchInput()" onfocus="onVenueSearchFocus()">
+        <div class="venue-dropdown" id="venue-dropdown"></div>
+      </div>
+    </div>
+
+    <!-- Discipline selector -->
     <div class="fl" style="margin-bottom:6px">Type de grimpe</div>
     <div class="climb-sub" id="climb-sub-seg">
       <button class="climb-sub-btn sel" data-csub="Bloc" onclick="selClimbSub('Bloc')">
@@ -451,9 +506,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
         Falaise
       </button>
     </div>
-    <div class="fg"><label class="fl" id="vol-label">Blocs realises</label><input class="fi" type="number" id="log-vol" placeholder="12" inputmode="numeric"></div>
-    <div class="fg"><label class="fl">Diff. max tentee</label><input class="fi" type="text" id="log-dtry" placeholder="7A"></div>
-    <div class="fg"><label class="fl">Diff. max reussie</label><input class="fi" type="text" id="log-ddone" placeholder="6C+"></div>
+
+    <!-- Summary bar -->
+    <div class="route-summary" id="routes-summary">
+      <div class="route-summary-item"><div class="route-summary-val" id="rs-routes">0</div><div class="route-summary-lbl">Voies</div></div>
+      <div class="route-summary-item"><div class="route-summary-val" id="rs-height">0 m</div><div class="route-summary-lbl">Hauteur</div></div>
+      <div class="route-summary-item"><div class="route-summary-val" id="rs-rpe">--</div><div class="route-summary-lbl">RPE moy.</div></div>
+    </div>
+
+    <!-- Dynamic routes list -->
+    <div id="routes-container"></div>
+    <button class="add-serie-btn" id="add-route-btn" onclick="addRoute()">+ Ajouter une voie</button>
   </div>
   <div class="card" id="foster-prev" style="display:none">
     <div class="card-hdr">
@@ -512,6 +575,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <section class="page" id="page-history"><div class="app">
   <div class="title">Historique</div><div class="sub">Toucher pour modifier ou supprimer</div>
   <div class="card"><div id="hist-list"></div></div>
+</div></section>
+
+<!-- SALLES / FALAISES -->
+<section class="page" id="page-venues"><div class="app">
+  <div class="title">Salles & falaises</div>
+  <div class="sub">Gerer vos lieux de grimpe</div>
+  <button class="btn btn-primary" onclick="showVenueEditor()" style="margin-bottom:12px">
+    <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Ajouter un lieu
+  </button>
+  <div id="venues-list"></div>
 </div></section>
 
 <!-- ANALYSE -->
@@ -634,6 +708,84 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
   </div>
 </div>
 
+<!-- VENUE EDITOR SHEET -->
+<div class="sheet-ov" id="venue-sheet">
+  <div class="sheet">
+    <div style="padding:14px 16px 0"><div class="sh-handle"></div>
+      <div class="sh-title" id="ven-title">Nouveau lieu</div>
+      <div class="sh-sub">Nom, type et disciplines pratiquees</div>
+    </div>
+    <div class="sh-body" style="margin-top:8px">
+      <div class="fg"><label class="fl">Nom</label><input class="fi" type="text" id="ven-name" placeholder="Ex: Climbing District"></div>
+      <div class="fg">
+        <label class="fl">Type</label>
+        <div class="seg" id="ven-type-seg">
+          <button type="button" class="seg-btn" data-vtype="salle" onclick="selVenueType('salle')">Salle</button>
+          <button type="button" class="seg-btn" data-vtype="falaise" onclick="selVenueType('falaise')">Falaise</button>
+        </div>
+      </div>
+      <div class="fl" style="margin:12px 0 6px">Disciplines pratiquees</div>
+      <div class="discipline-row" data-disc="bloc">
+        <div class="discipline-row-hdr">
+          <label class="chk-label"><input type="checkbox" id="ven-d-bloc" onchange="onVenDiscToggle('bloc')"> Bloc</label>
+        </div>
+        <div class="discipline-row-body" id="ven-d-bloc-body">
+          <div style="display:flex;gap:8px">
+            <div class="fg" style="flex:1"><label class="fl">Hauteur (m)</label><input class="fi" type="number" step="0.1" min="0" id="ven-d-bloc-h" placeholder="4.5"></div>
+            <div class="fg" style="flex:1.3"><label class="fl">Cotation</label>
+              <select class="fs" id="ven-d-bloc-sys">
+                <option value="french-bloc">Francais (bloc)</option>
+                <option value="french-voie">Francais (voie)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="discipline-row" data-disc="voie">
+        <div class="discipline-row-hdr">
+          <label class="chk-label"><input type="checkbox" id="ven-d-voie" onchange="onVenDiscToggle('voie')"> Voie</label>
+        </div>
+        <div class="discipline-row-body" id="ven-d-voie-body">
+          <div style="display:flex;gap:8px">
+            <div class="fg" style="flex:1"><label class="fl">Hauteur (m)</label><input class="fi" type="number" step="0.1" min="0" id="ven-d-voie-h" placeholder="15"></div>
+            <div class="fg" style="flex:1.3"><label class="fl">Cotation</label>
+              <select class="fs" id="ven-d-voie-sys">
+                <option value="french-voie">Francais (voie)</option>
+                <option value="french-bloc">Francais (bloc)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="discipline-row" data-disc="falaise">
+        <div class="discipline-row-hdr">
+          <label class="chk-label"><input type="checkbox" id="ven-d-falaise" onchange="onVenDiscToggle('falaise')"> Falaise</label>
+        </div>
+        <div class="discipline-row-body" id="ven-d-falaise-body">
+          <div style="display:flex;gap:8px">
+            <div class="fg" style="flex:1"><label class="fl">Hauteur (m)</label><input class="fi" type="number" step="0.1" min="0" id="ven-d-falaise-h" placeholder="25"></div>
+            <div class="fg" style="flex:1.3"><label class="fl">Cotation</label>
+              <select class="fs" id="ven-d-falaise-sys">
+                <option value="french-voie">Francais (voie)</option>
+                <option value="french-bloc">Francais (bloc)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sh-actions">
+      <button class="btn btn-outline" onclick="closeVenueEditor()">Annuler</button>
+      <button class="btn btn-danger" id="ven-del-btn" style="display:none" onclick="deleteVenueFromEditor()">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>Supprimer
+      </button>
+      <button class="btn btn-primary" onclick="saveVenue()">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5"><path d="M5 13l4 4L19 7"/></svg>Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- SYNC SHEET -->
 <div class="sheet-ov" id="import-sheet">
   <div class="sheet">
@@ -697,6 +849,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
   <button class="tab-btn active" onclick="goTo('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</button>
   <button class="tab-btn" onclick="goTo('log',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Seance</button>
   <button class="tab-btn" onclick="goTo('exercises',this)"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Exercices</button>
+  <button class="tab-btn" onclick="goTo('venues',this)"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Salles</button>
   <button class="tab-btn" onclick="goTo('history',this)"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Historique</button>
   <button class="tab-btn" onclick="goTo('analyse',this)"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Analyse</button>
 </div></nav>
@@ -766,7 +919,27 @@ const ALL_EX=[...EMA.map(e=>({...e,sess:'A'})),...EMB.map(e=>({...e,sess:'B'}))]
 
 const SEMS=(()=>{const s=[];for(const[p,w]of[[1,4],[2,8],[3,10],[4,8]]){let n=1;for(let i=1;i<=w;i++)s.push(i%4===0?`P${p}-Deload`:`P${p}-S${n++}`);}return s;})();
 
-/* AXE2: Climbing grades for heatmap */
+/* Climbing grade systems */
+const GRADE_SYSTEMS={
+  'french-voie':['3a','3b','3c','4a','4b','4c','5a','5b','5c','6a','6a+','6b','6b+','6c','6c+','7a','7a+','7b','7b+','7c','7c+','8a','8a+','8b','8b+','8c','8c+','9a','9a+','9b','9b+','9c'],
+  'french-bloc':['3','4a','4b','4c','5a','5b','5c','6a','6a+','6b','6b+','6c','6c+','7a','7a+','7b','7b+','7c','7c+','8a','8a+','8b','8b+','8c']
+};
+const GRADE_SYSTEM_LABELS={'french-voie':'Francais (voie)','french-bloc':'Francais (bloc)'};
+
+/* Send types per discipline */
+const SEND_TYPES_BLOC=[
+  {v:'a-vue',lbl:'A vue'},{v:'flash',lbl:'Flash'},
+  {v:'apres-travail',lbl:'Apres travail'},{v:'repetition',lbl:'Repetition'},
+  {v:'travail',lbl:'Travail'},{v:'echec',lbl:'Echec'}
+];
+const SEND_TYPES_VOIE=[
+  {v:'a-vue',lbl:'A vue'},{v:'flash',lbl:'Flash'},
+  {v:'apres-travail',lbl:'Apres travail'},{v:'tete-repos',lbl:'En tete avec repos'},
+  {v:'repetition',lbl:'Repetition'},{v:'travail',lbl:'Travail'},{v:'echec',lbl:'Echec'}
+];
+const CLIMB_PERCENTAGES=[25,50,75,100];
+
+/* Legacy GRADES array kept for backwards compatibility with old sessions */
 const GRADES=['5A','5B','5C','6A','6A+','6B','6B+','6C','6C+','7A','7A+','7B','7B+','7C','8A'];
 
 const DB={
@@ -774,10 +947,12 @@ const DB={
   set sessions(v){localStorage.setItem('vl3_s',JSON.stringify(v));},
   get notes(){try{return JSON.parse(localStorage.getItem('vl3_n')||'{}');}catch{return{};}},
   set notes(v){localStorage.setItem('vl3_n',JSON.stringify(v));},
+  get venues(){try{return JSON.parse(localStorage.getItem('vl3_v')||'[]');}catch{return[];}},
+  set venues(v){localStorage.setItem('vl3_v',JSON.stringify(v));},
 };
 
 /* AXE4: Page order for slide direction */
-const PAGE_ORDER=['home','log','exercises','history','analyse'];
+const PAGE_ORDER=['home','log','exercises','venues','history','analyse'];
 let currentPage='home';
 
 /* Navigation — AXE4: slide transitions */
@@ -787,7 +962,7 @@ function goTo(p,btn){
   const oldPage=document.getElementById('page-'+currentPage);
   const newPage=document.getElementById('page-'+p);
   if(currentPage===p){
-    ({home:renderDash,exercises:renderExPicker,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
+    ({home:renderDash,exercises:renderExPicker,venues:renderVenues,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
     return;
   }
   document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
@@ -805,7 +980,7 @@ function goTo(p,btn){
   currentPage=p;
   // Show/hide FAB
   document.getElementById('fab-quick').style.display=p==='log'?'flex':'none';
-  ({home:renderDash,exercises:renderExPicker,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
+  ({home:renderDash,exercises:renderExPicker,venues:renderVenues,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
 }
 
 /* Init */
@@ -819,6 +994,8 @@ function init(){
   });
   document.getElementById('sess-sheet').addEventListener('click',e=>{if(e.target.id==='sess-sheet')closeSheet();});
   document.getElementById('import-sheet').addEventListener('click',e=>{if(e.target.id==='import-sheet')closeImport();});
+  const vs=document.getElementById('venue-sheet');
+  if(vs)vs.addEventListener('click',e=>{if(e.target.id==='venue-sheet')closeVenueEditor();});
   selType('A');
   updateNavPhase();
   updateSyncBanner();
@@ -1113,6 +1290,10 @@ function selType(t){
   document.getElementById('rpe-glob').style.display=['C','Cardio'].includes(t)?'block':'none';
   document.getElementById('grimpe-sec').style.display=t==='C'?'block':'none';
   if(['A','B'].includes(t))buildAccordion(t);
+  if(t==='C'){
+    updateVenueDisplay();
+    renderRoutes();
+  }
 }
 
 /* Quick climb shortcut */
@@ -1126,16 +1307,210 @@ function quickClimb(){
 
 /* Climbing sub-type (Bloc/Voie/Falaise) */
 let cClimbSub='Bloc';
+let cVenueId=null;
+let cRoutes=[];  /* Routes being entered in Saisie */
+
 function selClimbSub(sub){
   cClimbSub=sub;
   document.querySelectorAll('.climb-sub-btn').forEach(b=>{
     b.classList.toggle('sel',b.dataset.csub===sub);
   });
-  const volLabel=document.getElementById('vol-label');
-  if(sub==='Bloc')volLabel.textContent='Blocs realises';
-  else if(sub==='Voie')volLabel.textContent='Voies realisees';
-  else volLabel.textContent='Longueurs realisees';
+  /* Reset routes when changing discipline */
+  cRoutes=[];
+  renderRoutes();
 }
+
+/* ============================================================
+   CLIMBING ROUTES — venue + routes entry
+   ============================================================ */
+function refreshVenueSelect(){
+  /* Clear selection if venue was deleted */
+  if(cVenueId&&!getVenueById(cVenueId)){
+    cVenueId=null;
+    updateVenueDisplay();
+  }
+}
+
+function onVenueSearchFocus(){
+  renderVenueDropdown('');
+  document.getElementById('venue-dropdown').classList.add('show');
+}
+function onVenueSearchInput(){
+  const q=document.getElementById('venue-search').value.trim().toLowerCase();
+  renderVenueDropdown(q);
+  document.getElementById('venue-dropdown').classList.add('show');
+}
+function renderVenueDropdown(filter){
+  const dd=document.getElementById('venue-dropdown');
+  const venues=DB.venues.filter(v=>!filter||v.name.toLowerCase().includes(filter));
+  if(!venues.length){
+    dd.innerHTML='<div class="venue-option" style="color:var(--text-sub);cursor:default">Aucun lieu. <a onclick="goTo(\'venues\')" style="color:var(--accent);cursor:pointer;text-decoration:underline">Ajouter un lieu</a></div>';
+    return;
+  }
+  dd.innerHTML=venues.map(v=>{
+    const discs=['bloc','voie','falaise'].filter(k=>v.disciplines&&v.disciplines[k]&&v.disciplines[k].enabled).map(k=>k.charAt(0).toUpperCase()+k.slice(1)).join(', ');
+    return`<div class="venue-option" onclick="selectVenue(${v.id})">
+      <div style="font-weight:600">${_escHtml(v.name)}</div>
+      <div class="venue-option-meta">${v.type==='falaise'?'Falaise':'Salle'} — ${discs||'Aucune discipline'}</div>
+    </div>`;
+  }).join('');
+}
+function selectVenue(id){
+  cVenueId=id;
+  document.getElementById('venue-dropdown').classList.remove('show');
+  updateVenueDisplay();
+  /* Auto-select first enabled discipline if current is not available */
+  const v=getVenueById(id);
+  if(v&&v.disciplines){
+    const currentKey=cClimbSub.toLowerCase();
+    if(!(v.disciplines[currentKey]&&v.disciplines[currentKey].enabled)){
+      for(const k of ['bloc','voie','falaise']){
+        if(v.disciplines[k]&&v.disciplines[k].enabled){
+          selClimbSub(k.charAt(0).toUpperCase()+k.slice(1));
+          break;
+        }
+      }
+    }
+    /* Update discipline buttons: disable those not available */
+    document.querySelectorAll('.climb-sub-btn').forEach(b=>{
+      const k=b.dataset.csub.toLowerCase();
+      const disabled=!(v.disciplines[k]&&v.disciplines[k].enabled);
+      b.disabled=disabled;
+      b.style.opacity=disabled?'.35':'1';
+    });
+  }
+  cRoutes=[];
+  renderRoutes();
+}
+function clearVenueSelection(){
+  cVenueId=null;
+  cRoutes=[];
+  updateVenueDisplay();
+  renderRoutes();
+  document.querySelectorAll('.climb-sub-btn').forEach(b=>{b.disabled=false;b.style.opacity='1';});
+}
+function updateVenueDisplay(){
+  const disp=document.getElementById('venue-selected-display');
+  const search=document.getElementById('venue-search');
+  if(!disp||!search)return;
+  if(cVenueId){
+    const v=getVenueById(cVenueId);
+    if(v){
+      disp.innerHTML=`<div class="venue-selected">
+        <div><div style="font-weight:700">${_escHtml(v.name)}</div><div style="font-size:.7rem;font-weight:500;opacity:.85">${v.type==='falaise'?'Falaise':'Salle'}</div></div>
+        <button type="button" class="venue-selected-clear" onclick="clearVenueSelection()" title="Changer">&times;</button>
+      </div>`;
+      disp.style.display='block';
+      search.style.display='none';
+      return;
+    }
+  }
+  disp.style.display='none';
+  search.style.display='block';
+  search.value='';
+}
+
+/* Routes management */
+function _getCurrentDiscipline(){
+  const v=getVenueById(cVenueId);
+  if(!v)return null;
+  const k=cClimbSub.toLowerCase();
+  const d=v.disciplines&&v.disciplines[k];
+  return(d&&d.enabled)?d:null;
+}
+
+function addRoute(){
+  if(!cVenueId){toast('Selectionnez un lieu');return;}
+  const disc=_getCurrentDiscipline();
+  if(!disc){toast('Discipline non disponible sur ce lieu');return;}
+  const grades=gradesFor(disc.gradeSystem);
+  cRoutes.push({grade:grades[Math.min(5,grades.length-1)],sendType:cClimbSub==='Bloc'?'flash':'a-vue',attempts:2,rests:1,percentage:100,rpe:6});
+  renderRoutes();
+}
+function removeRoute(idx){
+  cRoutes.splice(idx,1);
+  renderRoutes();
+}
+function updateRoute(idx,field,val){
+  if(!cRoutes[idx])return;
+  cRoutes[idx][field]=val;
+  /* Re-render only if sendType changed (shows/hides attempts/rests) */
+  if(field==='sendType')renderRoutes();
+  else updateRoutesSummary();
+}
+
+function renderRoutes(){
+  const cont=document.getElementById('routes-container');
+  if(!cont)return;
+  const disc=_getCurrentDiscipline();
+  const addBtn=document.getElementById('add-route-btn');
+  if(!disc){
+    cont.innerHTML='';
+    if(addBtn)addBtn.style.display='none';
+    updateRoutesSummary();
+    return;
+  }
+  if(addBtn)addBtn.style.display='block';
+  const grades=gradesFor(disc.gradeSystem);
+  const sendTypes=cClimbSub==='Bloc'?SEND_TYPES_BLOC:SEND_TYPES_VOIE;
+  cont.innerHTML=cRoutes.map((r,i)=>{
+    const gradeOpts=grades.map(g=>`<option value="${g}"${g===r.grade?' selected':''}>${g}</option>`).join('');
+    const stOpts=sendTypes.map(t=>`<option value="${t.v}"${t.v===r.sendType?' selected':''}>${t.lbl}</option>`).join('');
+    const pctOpts=CLIMB_PERCENTAGES.map(p=>`<option value="${p}"${p===r.percentage?' selected':''}>${p} %</option>`).join('');
+    let extraInput='';
+    if(r.sendType==='apres-travail'){
+      extraInput=`<div class="fg" style="margin-top:8px"><label class="fl">Nombre d'essais</label><input class="fi" type="number" min="1" value="${r.attempts||2}" oninput="updateRoute(${i},'attempts',+this.value)"></div>`;
+    }else if(r.sendType==='tete-repos'){
+      extraInput=`<div class="fg" style="margin-top:8px"><label class="fl">Nombre de pauses</label><input class="fi" type="number" min="1" value="${r.rests||1}" oninput="updateRoute(${i},'rests',+this.value)"></div>`;
+    }
+    return`<div class="route-card">
+      <div class="route-card-hdr">
+        <div class="route-card-lbl">Voie ${i+1}</div>
+        <button class="route-card-del" onclick="removeRoute(${i})" title="Supprimer">&#10005;</button>
+      </div>
+      <div class="route-grid">
+        <div class="fg"><label class="fl">Grade</label><select class="fs" onchange="updateRoute(${i},'grade',this.value)">${gradeOpts}</select></div>
+        <div class="fg"><label class="fl">Croix</label><select class="fs" onchange="updateRoute(${i},'sendType',this.value)">${stOpts}</select></div>
+        <div class="fg"><label class="fl">Ascension</label><select class="fs" onchange="updateRoute(${i},'percentage',+this.value)">${pctOpts}</select></div>
+        <div class="fg">
+          <label class="fl">RPE ${r.rpe}</label>
+          <input type="range" min="1" max="10" step="1" value="${r.rpe}" oninput="updateRoute(${i},'rpe',+this.value);this.parentNode.querySelector('label').textContent='RPE '+this.value">
+        </div>
+      </div>
+      ${extraInput}
+    </div>`;
+  }).join('');
+  updateRoutesSummary();
+}
+
+function updateRoutesSummary(){
+  const disc=_getCurrentDiscipline();
+  const count=cRoutes.length;
+  const h=disc?cRoutes.reduce((sum,r)=>sum+(disc.height*(r.percentage||0)/100),0):0;
+  const rpeVals=cRoutes.filter(r=>r.rpe>0).map(r=>r.rpe);
+  const avgRpe=rpeVals.length?(rpeVals.reduce((a,b)=>a+b,0)/rpeVals.length):0;
+  const setIf=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  setIf('rs-routes',count);
+  setIf('rs-height',h.toFixed(1)+' m');
+  setIf('rs-rpe',avgRpe>0?avgRpe.toFixed(1):'--');
+  /* Also update global RPE slider for Foster calc */
+  if(avgRpe>0){
+    const sl=document.getElementById('rpe-sl');
+    const val=document.getElementById('rpe-val');
+    if(sl){sl.value=Math.round(avgRpe);}
+    if(val){val.textContent=Math.round(avgRpe);val.style.color=rpeColor(avgRpe);}
+    calcFoster();
+  }
+}
+
+/* Hide venue dropdown when clicking outside */
+document.addEventListener('click',e=>{
+  const wrap=e.target.closest('.venue-select-wrap');
+  if(!wrap){
+    const dd=document.getElementById('venue-dropdown');
+    if(dd)dd.classList.remove('show');
+  }
+});
 
 
 /* Previous data */
@@ -1562,25 +1937,57 @@ function startAutoChain(idx,exName,restDuration){
 }
 
 /* AXE2: Normalize grade for comparison */
-function gradeToNum(g){
+function gradeToNum(g,system){
   if(!g)return-1;
-  const s=g.toString().toUpperCase().replace(/\s/g,'');
-  const idx=GRADES.indexOf(s);
-  if(idx>=0)return idx;
-  // Try partial match
+  const raw=g.toString().replace(/\s/g,'');
+  /* Try modern grade systems first */
+  if(system&&GRADE_SYSTEMS[system]){
+    const idx=GRADE_SYSTEMS[system].indexOf(raw.toLowerCase());
+    if(idx>=0)return idx;
+  }
+  /* Try both french systems */
+  for(const sys of ['french-voie','french-bloc']){
+    const idx=GRADE_SYSTEMS[sys].indexOf(raw.toLowerCase());
+    if(idx>=0)return idx;
+  }
+  /* Legacy uppercase GRADES */
+  const up=raw.toUpperCase();
+  const legacyIdx=GRADES.indexOf(up);
+  if(legacyIdx>=0)return legacyIdx;
   for(let i=GRADES.length-1;i>=0;i--){
-    if(s.startsWith(GRADES[i].replace('+','')))return i;
+    if(up.startsWith(GRADES[i].replace('+','')))return i;
   }
   return-1;
 }
+/* Get grades array for a given system (with fallback) */
+function gradesFor(system){return GRADE_SYSTEMS[system]||GRADE_SYSTEMS['french-voie'];}
+/* Venue helpers */
+function getVenueById(id){return DB.venues.find(v=>String(v.id)===String(id))||null;}
 
 /* AXE2: Check for PR */
+/* Returns the max validated grade of a session (from routes or legacy diffDone) */
+function _getSessionMaxGrade(s){
+  if(!s||s.type!=='C')return null;
+  const successful=['a-vue','flash','apres-travail','repetition','tete-repos'];
+  if(Array.isArray(s.routes)&&s.routes.length){
+    let best=null,bestNum=-1;
+    s.routes.forEach(r=>{
+      if(!successful.includes(r.sendType))return;
+      const n=gradeToNum(r.grade);
+      if(n>bestNum){bestNum=n;best=r.grade;}
+    });
+    return best;
+  }
+  return s.diffDone||null;
+}
 function checkPR(newSession){
-  if(newSession.type!=='C'||!newSession.diffDone)return false;
-  const newGrade=gradeToNum(newSession.diffDone);
+  if(newSession.type!=='C')return false;
+  const newGradeStr=_getSessionMaxGrade(newSession);
+  if(!newGradeStr)return false;
+  const newGrade=gradeToNum(newGradeStr);
   if(newGrade<0)return false;
-  const prevMax=DB.sessions.filter(s=>s.type==='C'&&s.diffDone).reduce((max,s)=>{
-    const g=gradeToNum(s.diffDone);return g>max?g:max;
+  const prevMax=DB.sessions.filter(s=>s.type==='C').reduce((max,s)=>{
+    const g=gradeToNum(_getSessionMaxGrade(s));return g>max?g:max;
   },-1);
   return newGrade>prevMax;
 }
@@ -1606,12 +2013,27 @@ function saveSession(){
       }
     });
   }else{rpe=+document.getElementById('rpe-sl').value||0;}
+  /* Climbing session: validate venue + compute metrics from routes */
+  let venueId=null,routes=null,totalHeight=0;
+  if(cType==='C'){
+    if(!cVenueId){toast('Selectionnez un lieu');return;}
+    if(!cRoutes.length){toast('Ajoutez au moins une voie');return;}
+    const venue=getVenueById(cVenueId);
+    const disc=venue&&venue.disciplines&&venue.disciplines[cClimbSub.toLowerCase()];
+    if(!disc||!disc.enabled){toast('Discipline indisponible sur ce lieu');return;}
+    venueId=cVenueId;
+    routes=JSON.parse(JSON.stringify(cRoutes));
+    totalHeight=routes.reduce((sum,r)=>sum+(disc.height*(r.percentage||0)/100),0);
+    /* Compute avg RPE from routes */
+    const rpeVals=routes.filter(r=>r.rpe>0).map(r=>r.rpe);
+    if(rpeVals.length)rpe=+(rpeVals.reduce((a,b)=>a+b,0)/rpeVals.length).toFixed(1);
+  }
   const foster=Math.round(dur*rpe);
   const s={id:Date.now(),date,type:cType,phase,duration:dur,forme,rpe,rpeByEx,exData,foster,
     pos:document.getElementById('log-pos').value.trim(),neg:document.getElementById('log-neg').value.trim(),
-    volume:cType==='C'?document.getElementById('log-vol').value:null,
-    diffTry:cType==='C'?document.getElementById('log-dtry').value:null,
-    diffDone:cType==='C'?document.getElementById('log-ddone').value:null,
+    venueId:venueId,
+    routes:routes,
+    totalHeight:cType==='C'?+totalHeight.toFixed(1):null,
     climbSub:cType==='C'?cClimbSub:null,
   };
   // AXE2: Check PR before saving
@@ -1622,9 +2044,15 @@ function saveSession(){
   document.getElementById('foster-prev').style.display='none';
   if(['A','B'].includes(cType))buildAccordion(cType);
   else{document.getElementById('rpe-sl').value=6;onRPE(6);}
+  /* Reset climbing state */
+  if(cType==='C'){
+    cRoutes=[];
+    renderRoutes();
+  }
   updateNavPhase();
-  if(isPR){
-    toastPR('NOUVEAU PR ! '+s.diffDone+' valide !');
+  const prMsg=_getSessionMaxGrade(s);
+  if(isPR&&prMsg){
+    toastPR('NOUVEAU PR ! '+prMsg+' valide !');
   }else{
     toast('Seance enregistree !');
   }
@@ -1856,18 +2284,28 @@ function renderRecent(ss){
     </div>`;
     return;
   }
-  el.innerHTML=ss.map(s=>`
-    <div class="si-item" onclick="openSheet('${s.id}')">
+  el.innerHTML=ss.map(s=>{
+    let metaLine='';
+    if(s.type==='C'&&Array.isArray(s.routes)&&s.routes.length){
+      const v=s.venueId?getVenueById(s.venueId):null;
+      const vName=v?v.name:'Lieu inconnu';
+      const best=_getSessionMaxGrade(s)||'--';
+      metaLine=`${_escHtml(vName)} -- ${s.routes.length} voies -- max ${best}`;
+    }else{
+      metaLine=`${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}`;
+    }
+    return`<div class="si-item" onclick="openSheet('${s.id}')">
       <div class="si-dot" style="background:${TC[s.type]||'#8a9b93'}"></div>
       <div class="si-info">
         <div class="si-type">${sessLabel(s)}</div>
-        <div class="si-meta">${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}</div>
+        <div class="si-meta">${metaLine}</div>
       </div>
       <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
-        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?s.rpe.toFixed(1):'--'}</div>
+        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?(+s.rpe).toFixed(1):'--'}</div>
         <div class="si-chev">&rsaquo;</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 /* History */
@@ -1885,18 +2323,29 @@ function renderHist(){
     </div>`;
     return;
   }
-  el.innerHTML=ss.map(s=>`
-    <div class="si-item" onclick="openSheet('${s.id}')">
+  el.innerHTML=ss.map(s=>{
+    /* For climbing: show venue name + route count + best grade */
+    let metaLine='';
+    if(s.type==='C'&&Array.isArray(s.routes)&&s.routes.length){
+      const v=s.venueId?getVenueById(s.venueId):null;
+      const vName=v?v.name:'Lieu inconnu';
+      const best=_getSessionMaxGrade(s)||'--';
+      metaLine=`${_escHtml(vName)} -- ${s.routes.length} voies -- max ${best}`;
+    }else{
+      metaLine=`${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}`;
+    }
+    return`<div class="si-item" onclick="openSheet('${s.id}')">
       <div class="si-dot" style="background:${TC[s.type]||'#8a9b93'}"></div>
       <div class="si-info">
         <div class="si-type">${TS[s.type]||s.type}</div>
-        <div class="si-meta">${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}</div>
+        <div class="si-meta">${metaLine}</div>
       </div>
       <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
-        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?s.rpe.toFixed(1):'--'}</div>
+        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?(+s.rpe).toFixed(1):'--'}</div>
         <div class="si-chev">&rsaquo;</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 /* Sheet -- detail + edit */
@@ -1907,12 +2356,15 @@ function openSheet(id){
   shId=id;
   document.getElementById('sh-title').textContent=sessLabel(s);
   document.getElementById('sh-sub').textContent=`${fmtDate(s.date)} -- ${s.phase} -- ${s.duration} min`;
+  const venue=s.venueId?getVenueById(s.venueId):null;
   const rows=[
     ['Date',fmtDate(s.date)],['Type',TS[s.type]||s.type],['Phase',s.phase],
     ['Duree',s.duration+' min'],['Forme','\u2B50'.repeat(s.forme||1)],
-    ['RPE moyen',s.rpe?s.rpe.toFixed(1)+' / 10':'--'],
+    ['RPE moyen',s.rpe?(+s.rpe).toFixed(1)+' / 10':'--'],
     ['Charge Foster',s.foster?s.foster+' UA':'--'],
     s.climbSub?['Type grimpe',s.climbSub]:null,
+    venue?['Lieu',venue.name]:null,
+    (s.type==='C'&&s.totalHeight)?['Hauteur grimpee',s.totalHeight+' m']:null,
     s.diffDone?['Diff. reussie',s.diffDone]:null,
     s.diffTry?['Diff. tentee',s.diffTry]:null,
     s.volume?['Volume',s.volume+' '+(s.climbSub==='Voie'?'voies':s.climbSub==='Falaise'?'longueurs':'blocs')]:null,
@@ -1932,8 +2384,28 @@ function openSheet(id){
       exHtml+=`<div class="sh-row"><div class="sh-lbl">${n}</div><div class="sh-val">${lines}</div></div>`;
     });
   }
+  /* Routes detail for climbing */
+  let routesHtml='';
+  if(s.type==='C'&&Array.isArray(s.routes)&&s.routes.length){
+    const allSendTypes=[...SEND_TYPES_BLOC,...SEND_TYPES_VOIE];
+    const stLabelOf=v=>{const t=allSendTypes.find(x=>x.v===v);return t?t.lbl:v;};
+    routesHtml='<div class="sh-row" style="flex-direction:column;align-items:stretch"><div class="sh-lbl" style="margin-bottom:6px">Voies realisees</div>';
+    s.routes.forEach((r,i)=>{
+      let extra='';
+      if(r.sendType==='apres-travail'&&r.attempts)extra=' ('+r.attempts+' essais)';
+      else if(r.sendType==='tete-repos'&&r.rests)extra=' ('+r.rests+' pauses)';
+      routesHtml+=`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:.78rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <b style="font-family:'Syne',sans-serif;font-size:.95rem;color:var(--accent)">${i+1}. ${r.grade}</b>
+          <span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--text-dim)">RPE ${r.rpe||'-'}</span>
+        </div>
+        <div style="color:var(--text-dim);font-size:.72rem">${stLabelOf(r.sendType)}${extra} -- ${r.percentage||0}%</div>
+      </div>`;
+    });
+    routesHtml+='</div>';
+  }
   document.getElementById('sh-view-detail').innerHTML=
-    rows.map(([l,v])=>`<div class="sh-row"><div class="sh-lbl">${l}</div><div class="sh-val">${v}</div></div>`).join('')+exHtml;
+    rows.map(([l,v])=>`<div class="sh-row"><div class="sh-lbl">${l}</div><div class="sh-val">${v}</div></div>`).join('')+routesHtml+exHtml;
   document.getElementById('ed-date').value=s.date;
   document.getElementById('ed-type').value=s.type;
   document.getElementById('ed-phase').value=s.phase;
@@ -2091,8 +2563,8 @@ async function ghPush(){
   if(!token){toast('Configurez votre token GitHub');return;}
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Envoi vers GitHub...';statusEl.style.color='var(--accent)';
-  const payload={sessions:DB.sessions,notes:DB.notes,updated:new Date().toISOString(),
-    meta:{sessions:DB.sessions.length,appVersion:'vl3'}};
+  const payload={sessions:DB.sessions,notes:DB.notes,venues:DB.venues,updated:new Date().toISOString(),
+    meta:{sessions:DB.sessions.length,venues:DB.venues.length,appVersion:'vl3'}};
   try{
     /* Recuperer le SHA du fichier existant (si il existe) */
     let sha=null;
@@ -2156,6 +2628,13 @@ async function ghPull(){
     const newOnes=cloudData.sessions.filter(s=>!existingIds.has(String(s.id)));
     DB.sessions=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(cloudData.notes)DB.notes={...DB.notes,...cloudData.notes};
+    /* Merge venues by id */
+    if(cloudData.venues&&Array.isArray(cloudData.venues)){
+      const existingVenues=DB.venues;
+      const existingVIds=new Set(existingVenues.map(v=>String(v.id)));
+      const newVenues=cloudData.venues.filter(v=>!existingVIds.has(String(v.id)));
+      DB.venues=[...existingVenues,...newVenues];
+    }
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
     statusEl.textContent=newOnes.length+' nouvelle(s) seance(s). Total: '+DB.sessions.length;statusEl.style.color='var(--green)';
@@ -2188,7 +2667,7 @@ function showManualImport(){
   sec.style.display=sec.style.display==='none'?'block':'none';
 }
 function copyExport(){
-  const json=JSON.stringify({sessions:DB.sessions,notes:DB.notes,exported:new Date().toISOString()},null,0);
+  const json=JSON.stringify({sessions:DB.sessions,notes:DB.notes,venues:DB.venues,exported:new Date().toISOString()},null,0);
   try{navigator.clipboard.writeText(json).then(()=>toast('JSON copie !'));}
   catch{toast('Erreur de copie');}
 }
@@ -2203,6 +2682,11 @@ function doImport(){
     const newOnes=data.sessions.filter(s=>!existingIds.has(String(s.id)));
     DB.sessions=[...existing,...newOnes].sort((a,b)=>new Date(a.date)-new Date(b.date));
     if(data.notes)DB.notes={...DB.notes,...data.notes};
+    if(data.venues&&Array.isArray(data.venues)){
+      const existingV=DB.venues;
+      const existingVIds=new Set(existingV.map(v=>String(v.id)));
+      DB.venues=[...existingV,...data.venues.filter(v=>!existingVIds.has(String(v.id)))];
+    }
     closeImport();renderDash();renderHist();
     toast(newOnes.length+' seance(s) importee(s)');
   }catch{toast('JSON invalide');}
@@ -2260,52 +2744,55 @@ function selExercise(name,sess){
 
 /* AXE2: Bloc heatmap */
 function renderBlocHeatmap(){
-  const grimpe=DB.sessions.filter(s=>s.type==='C').slice(-8);
+  const grimpeBloc=DB.sessions.filter(s=>s.type==='C'&&(s.climbSub==='Bloc'||!s.climbSub)).slice(-8);
   const card=document.getElementById('bloc-heatmap-card');
   const grid=document.getElementById('bloc-heatmap-grid');
-  if(grimpe.length<2){card.style.display='none';return;}
+  if(grimpeBloc.length<2){card.style.display='none';return;}
   card.style.display='block';
 
-  // Find grade range from sessions
-  const allGrades=new Set();
-  grimpe.forEach(s=>{
-    if(s.diffDone)allGrades.add(s.diffDone.toUpperCase().replace(/\s/g,''));
-    if(s.diffTry)allGrades.add(s.diffTry.toUpperCase().replace(/\s/g,''));
+  /* Compute for each session: max done grade, max tried grade (from routes or legacy) */
+  const successful=['a-vue','flash','apres-travail','repetition','tete-repos'];
+  const sessGrades=grimpeBloc.map(s=>{
+    let doneNum=-1,tryNum=-1;
+    if(Array.isArray(s.routes)&&s.routes.length){
+      s.routes.forEach(r=>{
+        const n=gradeToNum(r.grade);
+        if(n>tryNum)tryNum=n;
+        if(successful.includes(r.sendType)&&n>doneNum)doneNum=n;
+      });
+    }else{
+      doneNum=gradeToNum(s.diffDone);
+      tryNum=gradeToNum(s.diffTry);
+    }
+    return{s,doneNum,tryNum};
   });
-  // Filter GRADES to only those in range
-  const gradeNums=[...allGrades].map(g=>gradeToNum(g)).filter(n=>n>=0);
+  const gradeNums=sessGrades.flatMap(x=>[x.doneNum,x.tryNum]).filter(n=>n>=0);
   if(!gradeNums.length){card.style.display='none';return;}
+
+  /* Use french-bloc grade system as reference */
+  const refGrades=GRADE_SYSTEMS['french-bloc'];
   const minG=Math.max(0,Math.min(...gradeNums)-1);
-  const maxG=Math.min(GRADES.length-1,Math.max(...gradeNums)+1);
-  const displayGrades=GRADES.slice(minG,maxG+1);
+  const maxG=Math.min(refGrades.length-1,Math.max(...gradeNums)+1);
+  const displayGrades=refGrades.slice(minG,maxG+1);
 
-  // Build HTML grid
   let html='';
-  // Header row
   html+='<div class="bh-label"></div>';
-  grimpe.forEach(s=>{html+=`<div class="bh-header">${s.date.slice(5)}</div>`;});
+  sessGrades.forEach(x=>{html+=`<div class="bh-header">${x.s.date.slice(5)}</div>`;});
 
-  // Grade rows
   displayGrades.slice().reverse().forEach(grade=>{
-    const gNum=GRADES.indexOf(grade);
+    const gNum=refGrades.indexOf(grade);
     html+=`<div class="bh-label">${grade}</div>`;
-    grimpe.forEach(s=>{
-      const doneNum=gradeToNum(s.diffDone);
-      const tryNum=gradeToNum(s.diffTry);
+    sessGrades.forEach(x=>{
       let color='var(--surface2)';
       let label='';
-      if(doneNum>=gNum){
-        color='#508d7c';label='\u2713';  // green = validated this grade or above
-      }else if(tryNum>=gNum&&doneNum<gNum){
-        color='#e8a838';label='\u00B7';  // orange = attempted but not validated
-      }else if(doneNum===gNum-1){
-        color='#c32026';label='';  // red = just below max
-      }
+      if(x.doneNum>=gNum){color='#508d7c';label='\u2713';}
+      else if(x.tryNum>=gNum&&x.doneNum<gNum){color='#e8a838';label='\u00B7';}
+      else if(x.doneNum===gNum-1){color='#c32026';}
       html+=`<div class="bh-cell" style="background:${color}">${label}</div>`;
     });
   });
 
-  grid.innerHTML=`<div class="bloc-heatmap" style="grid-template-columns:auto repeat(${grimpe.length},1fr)">${html}</div>`;
+  grid.innerHTML=`<div class="bloc-heatmap" style="grid-template-columns:auto repeat(${sessGrades.length},1fr)">${html}</div>`;
 }
 
 /* Analyse */
@@ -2433,6 +2920,124 @@ const _SVG_BACK="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb
 /* Which muscles are visible on front vs back view */
 const FRONT_MUSCLES=['trapezius','deltoid-ant','pectorals','serratus','biceps','forearm-flexors','rectus-abdominis','obliques','quadriceps','adductors','tibialis'];
 const BACK_MUSCLES=['trapezius','posterior-deltoid','rotator-cuff','rhomboids','latissimus','erector-spinae','serratus','triceps','forearm-extensors','gluteus','hamstrings','calves'];
+
+/* ============================================================
+   VENUES — Salles & Falaises
+   ============================================================ */
+let _currentVenueId=null;
+let _currentVenueType='salle';
+
+function renderVenues(){
+  const el=document.getElementById('venues-list');
+  if(!el)return;
+  const vs=DB.venues;
+  if(!vs.length){
+    el.innerHTML=`<div class="empty" style="background:var(--surface);border:1px solid rgba(80,141,124,.06);border-radius:var(--radius-sm);padding:30px 16px">
+      <div class="empty-icon"><svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <path d="M46 20c0 14-18 26-18 26S10 34 10 20a18 18 0 0136 0z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(80,141,124,.06)"/>
+        <circle cx="28" cy="20" r="6" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+      </svg></div>
+      <div class="empty-text">Aucun lieu enregistre.<br>Ajoutez votre premiere salle ou falaise.</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML=vs.map(v=>{
+    const d=v.disciplines||{};
+    const parts=[];
+    ['bloc','voie','falaise'].forEach(k=>{
+      if(d[k]&&d[k].enabled){
+        parts.push('<b>'+k.charAt(0).toUpperCase()+k.slice(1)+'</b> '+(d[k].height||'?')+'m — '+GRADE_SYSTEM_LABELS[d[k].gradeSystem]);
+      }
+    });
+    const typeLabel=v.type==='falaise'?'Falaise':'Salle';
+    return`<div class="venue-card" onclick="showVenueEditor(${v.id})">
+      <div class="venue-card-hdr">
+        <div class="venue-card-name">${_escHtml(v.name)}</div>
+        <div class="venue-card-type">${typeLabel}</div>
+      </div>
+      <div class="venue-card-disc">${parts.length?parts.join('<br>'):'<i>Aucune discipline</i>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function _escHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function showVenueEditor(id){
+  _currentVenueId=id||null;
+  const v=id?getVenueById(id):null;
+  document.getElementById('ven-title').textContent=v?'Modifier le lieu':'Nouveau lieu';
+  document.getElementById('ven-name').value=v?v.name:'';
+  selVenueType((v&&v.type)||'salle');
+  ['bloc','voie','falaise'].forEach(k=>{
+    const d=v&&v.disciplines&&v.disciplines[k];
+    const enabled=!!(d&&d.enabled);
+    document.getElementById('ven-d-'+k).checked=enabled;
+    document.getElementById('ven-d-'+k+'-h').value=d?d.height||'':'';
+    document.getElementById('ven-d-'+k+'-sys').value=d?d.gradeSystem:k==='bloc'?'french-bloc':'french-voie';
+    const row=document.querySelector('.discipline-row[data-disc="'+k+'"]');
+    if(row)row.classList.toggle('open',enabled);
+  });
+  document.getElementById('ven-del-btn').style.display=v?'flex':'none';
+  document.getElementById('venue-sheet').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeVenueEditor(){
+  document.getElementById('venue-sheet').classList.remove('show');
+  document.body.style.overflow='';
+  _currentVenueId=null;
+}
+function selVenueType(t){
+  _currentVenueType=t;
+  document.querySelectorAll('#ven-type-seg .seg-btn').forEach(b=>{
+    b.className='seg-btn';
+    if(b.dataset.vtype===t)b.classList.add('act-'+t);
+  });
+}
+function onVenDiscToggle(k){
+  const enabled=document.getElementById('ven-d-'+k).checked;
+  const row=document.querySelector('.discipline-row[data-disc="'+k+'"]');
+  if(row)row.classList.toggle('open',enabled);
+}
+
+function saveVenue(){
+  const name=document.getElementById('ven-name').value.trim();
+  if(!name){toast('Entrez un nom');return;}
+  const disciplines={};
+  ['bloc','voie','falaise'].forEach(k=>{
+    const enabled=document.getElementById('ven-d-'+k).checked;
+    if(enabled){
+      const h=parseFloat(document.getElementById('ven-d-'+k+'-h').value)||0;
+      const sys=document.getElementById('ven-d-'+k+'-sys').value;
+      disciplines[k]={enabled:true,height:h,gradeSystem:sys};
+    }else{
+      disciplines[k]={enabled:false,height:0,gradeSystem:k==='bloc'?'french-bloc':'french-voie'};
+    }
+  });
+  const anyEnabled=Object.values(disciplines).some(d=>d.enabled);
+  if(!anyEnabled){toast('Activez au moins une discipline');return;}
+  const venues=DB.venues;
+  if(_currentVenueId){
+    const idx=venues.findIndex(x=>String(x.id)===String(_currentVenueId));
+    if(idx>=0)venues[idx]={...venues[idx],name,type:_currentVenueType,disciplines};
+  }else{
+    venues.push({id:Date.now(),name,type:_currentVenueType,disciplines,createdAt:Date.now()});
+  }
+  DB.venues=venues;
+  closeVenueEditor();
+  renderVenues();
+  /* Refresh venue selector in Saisie if visible */
+  if(typeof refreshVenueSelect==='function')refreshVenueSelect();
+  toast('Lieu enregistre');
+}
+function deleteVenueFromEditor(){
+  if(!_currentVenueId)return;
+  if(!confirm('Supprimer ce lieu ?'))return;
+  DB.venues=DB.venues.filter(v=>String(v.id)!==String(_currentVenueId));
+  closeVenueEditor();
+  renderVenues();
+  if(typeof refreshVenueSelect==='function')refreshVenueSelect();
+  toast('Lieu supprime');
+}
 
 /* Render anatomy diagrams */
 function renderAnatomy(ss){
