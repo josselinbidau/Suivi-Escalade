@@ -1,42 +1,6 @@
 {
   "sessions": [
     {
-      "id": 1775417212343,
-      "date": "2026-04-05",
-      "type": "C",
-      "phase": "P1-S1",
-      "duration": 180,
-      "forme": 4,
-      "rpe": 6,
-      "rpeByEx": {},
-      "exData": {},
-      "foster": 1080,
-      "pos": "Bonne sensation et engagement",
-      "neg": "Aller dans le plus dur",
-      "volume": "5",
-      "diffTry": "6a",
-      "diffDone": "6a",
-      "climbSub": "Falaise"
-    },
-    {
-      "id": 1776010142042,
-      "date": "2026-04-12",
-      "type": "C",
-      "phase": "P1-S1",
-      "duration": 90,
-      "forme": 3,
-      "rpe": 5,
-      "rpeByEx": {},
-      "exData": {},
-      "foster": 450,
-      "pos": "",
-      "neg": "",
-      "volume": "9",
-      "diffTry": "7",
-      "diffDone": "7",
-      "climbSub": "Bloc"
-    },
-    {
       "id": 1776182604759,
       "date": "2026-04-14",
       "type": "Cardio",
@@ -233,7 +197,7 @@
     },
     {
       "id": 1776326626906,
-      "date": "2026-04-16",
+      "date": "2026-04-12",
       "type": "C",
       "phase": "P1-S1",
       "duration": 90,
@@ -312,7 +276,9 @@
         }
       ],
       "totalHeight": 36,
-      "climbSub": "Bloc"
+      "climbSub": "Bloc",
+      "diffDone": "",
+      "volume": ""
     }
   ],
   "notes": {},
@@ -420,9 +386,9 @@
       "createdAt": 1776326449282
     }
   ],
-  "updated": "2026-04-16T08:06:17.499Z",
+  "updated": "2026-04-16T08:08:29.527Z",
   "meta": {
-    "sessions": 7,
+    "sessions": 5,
     "venues": 4,
     "appVersion": "vl3"
   }
