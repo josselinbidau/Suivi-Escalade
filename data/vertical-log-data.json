@@ -230,13 +230,96 @@
       ],
       "totalHeight": 75,
       "climbSub": "Voie"
+    },
+    {
+      "id": 1776326626906,
+      "date": "2026-04-16",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 90,
+      "forme": 3,
+      "rpe": 3.9,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 351,
+      "pos": "",
+      "neg": "",
+      "venueId": 1776326449282,
+      "routes": [
+        {
+          "grade": "4",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "4",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "5",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "5",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "6",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 4
+        },
+        {
+          "grade": "6",
+          "sendType": "apres-travail",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 5
+        },
+        {
+          "grade": "6",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 5
+        },
+        {
+          "grade": "7",
+          "sendType": "apres-travail",
+          "attempts": 3,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 7
+        }
+      ],
+      "totalHeight": 36,
+      "climbSub": "Bloc"
     }
   ],
   "notes": {},
   "venues": [
     {
       "id": 1776325585443,
-      "name": "Climb Up Chambéry",
+      "name": "Climb Up Chambery",
       "type": "salle",
       "disciplines": {
         "bloc": {
@@ -259,7 +342,7 @@
     },
     {
       "id": 1776325902588,
-      "name": "Baie de grésine",
+      "name": "Baie de gresine",
       "type": "falaise",
       "disciplines": {
         "bloc": {
@@ -302,12 +385,45 @@
         }
       },
       "createdAt": 1776326110076
+    },
+    {
+      "id": 1776326449282,
+      "name": "La Zipette",
+      "type": "salle",
+      "disciplines": {
+        "bloc": {
+          "enabled": true,
+          "height": 4.5,
+          "gradeSystem": "custom",
+          "customGrades": [
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
+        },
+        "voie": {
+          "enabled": false,
+          "height": 0,
+          "gradeSystem": "french-voie"
+        },
+        "falaise": {
+          "enabled": false,
+          "height": 0,
+          "gradeSystem": "french-voie"
+        }
+      },
+      "createdAt": 1776326449282
     }
   ],
-  "updated": "2026-04-16T07:57:28.541Z",
+  "updated": "2026-04-16T08:06:17.499Z",
   "meta": {
-    "sessions": 6,
-    "venues": 3,
+    "sessions": 7,
+    "venues": 4,
     "appVersion": "vl3"
   }
 }
