@@ -2294,11 +2294,14 @@ function drawHeatmap(ss){
 
   const today=new Date();today.setHours(0,0,0,0);
   const todayKey=_localDateKey(today);
-  /* Find the Monday of 12 weeks ago */
-  const startDate=new Date(today);
-  startDate.setDate(startDate.getDate()-83);
-  const dow=startDate.getDay();
-  startDate.setDate(startDate.getDate()-(dow===0?6:dow-1));
+  /* Find Monday of CURRENT week, then go back 11 weeks.
+     Grid ends Sunday of current week so today is always in the last column. */
+  const dow=today.getDay();
+  const offsetToMonday=dow===0?6:dow-1;
+  const thisMonday=new Date(today);
+  thisMonday.setDate(today.getDate()-offsetToMonday);
+  const startDate=new Date(thisMonday);
+  startDate.setDate(thisMonday.getDate()-11*7);
 
   const dayLabels=['L','M','M','J','V','S','D'];
 
