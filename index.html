@@ -2259,51 +2259,64 @@ if(typeof CanvasRenderingContext2D!=='undefined'&&!CanvasRenderingContext2D.prot
 }
 
 /* AXE3: Calendar heatmap (12 weeks) */
+/* Local date formatter (avoids UTC offset issues with toISOString) */
+function _localDateKey(d){
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const dd=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+dd;
+}
+
 function drawHeatmap(ss){
   const cv=document.getElementById('heatmapCanvas');if(!cv)return;
   const ctx=cv.getContext('2d');
   const dpr=window.devicePixelRatio||1;
   const W=cv.parentElement.getBoundingClientRect().width;
-  const cellSize=Math.floor((W-30)/12);
+  const labelW=22;       /* left column for day initials */
+  const rightPad=4;
+  const topPad=4;
+  const bottomH=18;      /* space below grid for week labels */
   const gap=2;
-  const H=7*(cellSize+gap)+20;
+  const cellSize=Math.floor((W-labelW-rightPad-11*gap)/12);
+  const H=topPad+7*(cellSize+gap)-gap+bottomH;
   cv.width=W*dpr;cv.height=H*dpr;
   cv.style.width=W+'px';cv.style.height=H+'px';
   ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,W,H);
 
-  // Build date->types map (array of unique types per day)
+  /* Build date->types map (keyed on local date) */
   const dateMap={};
   ss.forEach(s=>{
+    if(!s.date)return;
     if(!dateMap[s.date])dateMap[s.date]=[];
     if(!dateMap[s.date].includes(s.type))dateMap[s.date].push(s.type);
   });
 
-  const today=new Date();
-  // Find the Monday of 12 weeks ago
+  const today=new Date();today.setHours(0,0,0,0);
+  const todayKey=_localDateKey(today);
+  /* Find the Monday of 12 weeks ago */
   const startDate=new Date(today);
-  startDate.setDate(startDate.getDate()-83); // 12 weeks = 84 days
-  // Adjust to Monday
+  startDate.setDate(startDate.getDate()-83);
   const dow=startDate.getDay();
   startDate.setDate(startDate.getDate()-(dow===0?6:dow-1));
 
   const dayLabels=['L','M','M','J','V','S','D'];
-  const labelW=18;
 
-  // Draw day labels
-  ctx.fillStyle='#8a9b93';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='left';
+  /* Draw day initials on Y-axis (all 7) */
+  ctx.fillStyle='#8a9b93';ctx.font="9px 'DM Mono',monospace";
+  ctx.textAlign='center';ctx.textBaseline='middle';
   for(let d=0;d<7;d++){
-    if(d%2===0)ctx.fillText(dayLabels[d],0,16+d*(cellSize+gap)+cellSize/2+3);
+    ctx.fillText(dayLabels[d],labelW/2,topPad+d*(cellSize+gap)+cellSize/2);
   }
 
-  // Draw cells
+  /* Draw cells */
   for(let w=0;w<12;w++){
     for(let d=0;d<7;d++){
       const date=new Date(startDate);
-      date.setDate(date.getDate()+w*7+d);
-      const ds=date.toISOString().split('T')[0];
+      date.setDate(startDate.getDate()+w*7+d);
+      const ds=_localDateKey(date);
       const x=labelW+w*(cellSize+gap);
-      const y=16+d*(cellSize+gap);
+      const y=topPad+d*(cellSize+gap);
 
       const types=dateMap[ds];
       if(types&&types.length){
@@ -2326,12 +2339,25 @@ function drawHeatmap(ss){
       }
       ctx.globalAlpha=1;
 
-      // Highlight today
-      if(ds===today.toISOString().split('T')[0]){
-        ctx.strokeStyle='#5a6b63';ctx.lineWidth=1;
+      /* Highlight today */
+      if(ds===todayKey){
+        ctx.strokeStyle='#5a6b63';ctx.lineWidth=1.5;
         ctx.beginPath();ctx.roundRect(x,y,cellSize,cellSize,2);ctx.stroke();
       }
     }
+  }
+
+  /* Draw week numbers on X-axis (below the grid) */
+  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";
+  ctx.textAlign='center';ctx.textBaseline='top';
+  const yLabel=topPad+7*(cellSize+gap)-gap+4;
+  for(let w=0;w<12;w++){
+    const weekStart=new Date(startDate);
+    weekStart.setDate(startDate.getDate()+w*7);
+    const wn=_isoWeekNumber(weekStart);
+    const x=labelW+w*(cellSize+gap)+cellSize/2;
+    /* Every 2nd week + always show last */
+    if(w%2===0||w===11)ctx.fillText('S'+wn,x,yLabel);
   }
 }
 
