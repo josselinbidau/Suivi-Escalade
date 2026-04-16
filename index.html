@@ -1522,17 +1522,17 @@ function updateRoutesSummary(){
   const count=cRoutes.length;
   const h=disc?cRoutes.reduce((sum,r)=>sum+(disc.height*(r.percentage||0)/100),0):0;
   const rpeVals=cRoutes.filter(r=>r.rpe>0).map(r=>r.rpe);
-  const avgRpe=rpeVals.length?(rpeVals.reduce((a,b)=>a+b,0)/rpeVals.length):0;
+  const avgRpe=rpeVals.length?Math.ceil(rpeVals.reduce((a,b)=>a+b,0)/rpeVals.length):0;
   const setIf=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   setIf('rs-routes',count);
   setIf('rs-height',h.toFixed(1)+' m');
-  setIf('rs-rpe',avgRpe>0?avgRpe.toFixed(1):'--');
+  setIf('rs-rpe',avgRpe>0?avgRpe:'--');
   /* Also update global RPE slider for Foster calc */
   if(avgRpe>0){
     const sl=document.getElementById('rpe-sl');
     const val=document.getElementById('rpe-val');
-    if(sl){sl.value=Math.round(avgRpe);}
-    if(val){val.textContent=Math.round(avgRpe);val.style.color=rpeColor(avgRpe);}
+    if(sl){sl.value=avgRpe;}
+    if(val){val.textContent=avgRpe;val.style.color=rpeColor(avgRpe);}
     calcFoster();
   }
 }
@@ -1696,9 +1696,10 @@ function calcAvgRPE(){
   const inp=[...document.querySelectorAll('.ex-rpe-inp')].filter(i=>+i.value>0);
   if(!inp.length){document.getElementById('rpe-avg').textContent='--';return 0;}
   const avg=inp.reduce((s,i)=>s+(+i.value),0)/inp.length;
+  const rounded=Math.ceil(avg);
   const el=document.getElementById('rpe-avg');
-  el.textContent=avg.toFixed(1);el.style.color=rpeColor(Math.round(avg));
-  return Math.round(avg*10)/10;
+  el.textContent=rounded;el.style.color=rpeColor(rounded);
+  return rounded;
 }
 
 function calcFoster(){
@@ -2019,15 +2020,27 @@ function parseCustomGrades(str){
 function getVenueById(id){return DB.venues.find(v=>String(v.id)===String(id))||null;}
 
 /* AXE2: Check for PR */
-/* Returns the max validated grade of a session (from routes or legacy diffDone) */
+/* Returns the max validated grade of a session (from routes or legacy diffDone).
+   Uses the venue's grade ordering when available (critical for custom systems). */
 function _getSessionMaxGrade(s){
   if(!s||s.type!=='C')return null;
   const successful=['a-vue','flash','apres-travail','repetition','tete-repos'];
   if(Array.isArray(s.routes)&&s.routes.length){
+    /* Find grade ordering from session's venue */
+    let gradeOrder=null;
+    if(s.venueId){
+      const v=getVenueById(s.venueId);
+      if(v&&v.disciplines){
+        const disc=v.disciplines[(s.climbSub||'').toLowerCase()];
+        if(disc)gradeOrder=gradesFor(disc.gradeSystem,disc.customGrades);
+      }
+    }
     let best=null,bestNum=-1;
     s.routes.forEach(r=>{
       if(!successful.includes(r.sendType))return;
-      const n=gradeToNum(r.grade);
+      let n=-1;
+      if(gradeOrder)n=gradeOrder.indexOf(r.grade);
+      if(n<0)n=gradeToNum(r.grade,gradeOrder);
       if(n>bestNum){bestNum=n;best=r.grade;}
     });
     return best;
@@ -2078,9 +2091,9 @@ function saveSession(){
     venueId=cVenueId;
     routes=JSON.parse(JSON.stringify(cRoutes));
     totalHeight=routes.reduce((sum,r)=>sum+(disc.height*(r.percentage||0)/100),0);
-    /* Compute avg RPE from routes */
+    /* Compute avg RPE from routes, rounded UP to next integer */
     const rpeVals=routes.filter(r=>r.rpe>0).map(r=>r.rpe);
-    if(rpeVals.length)rpe=+(rpeVals.reduce((a,b)=>a+b,0)/rpeVals.length).toFixed(1);
+    if(rpeVals.length)rpe=Math.ceil(rpeVals.reduce((a,b)=>a+b,0)/rpeVals.length);
   }
   const foster=Math.round(dur*rpe);
   const s={id:Date.now(),date,type:cType,phase,duration:dur,forme,rpe,rpeByEx,exData,foster,
@@ -2132,7 +2145,7 @@ function renderDash(){
   const formeStr=last?'\u2B50'.repeat(last.forme||1):'--';
   document.getElementById('s-forme').textContent=formeStr;
   if(last?.rpe){
-    animateCounter('s-rpe',last.rpe,1);
+    animateCounter('s-rpe',Math.ceil(+last.rpe),0);
   }else{
     document.getElementById('s-rpe').textContent='--';
   }
@@ -2339,23 +2352,21 @@ function renderRecent(ss){
     return;
   }
   el.innerHTML=ss.map(s=>{
-    let metaLine='';
+    const baseMeta=`${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}`;
+    let climbMeta='';
     if(s.type==='C'&&Array.isArray(s.routes)&&s.routes.length){
-      const v=s.venueId?getVenueById(s.venueId):null;
-      const vName=v?v.name:'Lieu inconnu';
       const best=_getSessionMaxGrade(s)||'--';
-      metaLine=`${_escHtml(vName)} -- ${s.routes.length} voies -- max ${best}`;
-    }else{
-      metaLine=`${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}`;
+      climbMeta=`<div class="si-meta">${s.routes.length} voies -- max ${_escHtml(best)}</div>`;
     }
     return`<div class="si-item" onclick="openSheet('${s.id}')">
       <div class="si-dot" style="background:${TC[s.type]||'#8a9b93'}"></div>
       <div class="si-info">
         <div class="si-type">${sessLabel(s)}</div>
-        <div class="si-meta">${metaLine}</div>
+        <div class="si-meta">${baseMeta}</div>
+        ${climbMeta}
       </div>
       <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
-        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?(+s.rpe).toFixed(1):'--'}</div>
+        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?Math.ceil(+s.rpe):'--'}</div>
         <div class="si-chev">&rsaquo;</div>
       </div>
     </div>`;
@@ -2378,24 +2389,21 @@ function renderHist(){
     return;
   }
   el.innerHTML=ss.map(s=>{
-    /* For climbing: show venue name + route count + best grade */
-    let metaLine='';
+    const baseMeta=`${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}`;
+    let climbMeta='';
     if(s.type==='C'&&Array.isArray(s.routes)&&s.routes.length){
-      const v=s.venueId?getVenueById(s.venueId):null;
-      const vName=v?v.name:'Lieu inconnu';
       const best=_getSessionMaxGrade(s)||'--';
-      metaLine=`${_escHtml(vName)} -- ${s.routes.length} voies -- max ${best}`;
-    }else{
-      metaLine=`${fmtDate(s.date)} -- ${s.duration}min -- ${s.phase}${s.foster?' -- Foster '+s.foster:''}`;
+      climbMeta=`<div class="si-meta">${s.routes.length} voies -- max ${_escHtml(best)}</div>`;
     }
     return`<div class="si-item" onclick="openSheet('${s.id}')">
       <div class="si-dot" style="background:${TC[s.type]||'#8a9b93'}"></div>
       <div class="si-info">
         <div class="si-type">${TS[s.type]||s.type}</div>
-        <div class="si-meta">${metaLine}</div>
+        <div class="si-meta">${baseMeta}</div>
+        ${climbMeta}
       </div>
       <div style="display:flex;align-items:center;gap:5px;flex-shrink:0">
-        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?(+s.rpe).toFixed(1):'--'}</div>
+        <div class="si-rpe" style="background:rgba(${rpeRGB(s.rpe)},.15);color:${rpeColor(s.rpe||0)}">${s.rpe?Math.ceil(+s.rpe):'--'}</div>
         <div class="si-chev">&rsaquo;</div>
       </div>
     </div>`;
@@ -2414,7 +2422,7 @@ function openSheet(id){
   const rows=[
     ['Date',fmtDate(s.date)],['Type',TS[s.type]||s.type],['Phase',s.phase],
     ['Duree',s.duration+' min'],['Forme','\u2B50'.repeat(s.forme||1)],
-    ['RPE moyen',s.rpe?(+s.rpe).toFixed(1)+' / 10':'--'],
+    ['RPE moyen',s.rpe?Math.ceil(+s.rpe)+' / 10':'--'],
     ['Charge Foster',s.foster?s.foster+' UA':'--'],
     s.climbSub?['Type grimpe',s.climbSub]:null,
     venue?['Lieu',venue.name]:null,
