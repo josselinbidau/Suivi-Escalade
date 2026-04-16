@@ -733,11 +733,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
           <div style="display:flex;gap:8px">
             <div class="fg" style="flex:1"><label class="fl">Hauteur (m)</label><input class="fi" type="number" step="0.1" min="0" id="ven-d-bloc-h" placeholder="4.5"></div>
             <div class="fg" style="flex:1.3"><label class="fl">Cotation</label>
-              <select class="fs" id="ven-d-bloc-sys">
+              <select class="fs" id="ven-d-bloc-sys" onchange="onVenSysChange('bloc')">
                 <option value="french-bloc">Francais (bloc)</option>
                 <option value="french-voie">Francais (voie)</option>
+                <option value="yds">YDS (5.xx)</option>
+                <option value="hueco">Hueco (V-scale)</option>
+                <option value="alpine">Alpine (F/PD/AD/...)</option>
+                <option value="custom">Personnalise</option>
               </select>
             </div>
+          </div>
+          <div class="fg ven-custom-row" id="ven-d-bloc-custom-row" style="display:none;margin-top:8px">
+            <label class="fl">Grades personnalises (un par ligne ou separes par virgules)</label>
+            <textarea class="fi" id="ven-d-bloc-custom" rows="3" style="resize:vertical;font-family:'DM Mono',monospace" placeholder="V1, V2, V3..."></textarea>
           </div>
         </div>
       </div>
@@ -749,11 +757,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
           <div style="display:flex;gap:8px">
             <div class="fg" style="flex:1"><label class="fl">Hauteur (m)</label><input class="fi" type="number" step="0.1" min="0" id="ven-d-voie-h" placeholder="15"></div>
             <div class="fg" style="flex:1.3"><label class="fl">Cotation</label>
-              <select class="fs" id="ven-d-voie-sys">
+              <select class="fs" id="ven-d-voie-sys" onchange="onVenSysChange('voie')">
                 <option value="french-voie">Francais (voie)</option>
                 <option value="french-bloc">Francais (bloc)</option>
+                <option value="yds">YDS (5.xx)</option>
+                <option value="hueco">Hueco (V-scale)</option>
+                <option value="alpine">Alpine (F/PD/AD/...)</option>
+                <option value="custom">Personnalise</option>
               </select>
             </div>
+          </div>
+          <div class="fg ven-custom-row" id="ven-d-voie-custom-row" style="display:none;margin-top:8px">
+            <label class="fl">Grades personnalises (un par ligne ou separes par virgules)</label>
+            <textarea class="fi" id="ven-d-voie-custom" rows="3" style="resize:vertical;font-family:'DM Mono',monospace" placeholder="Vert, Bleu, Rouge..."></textarea>
           </div>
         </div>
       </div>
@@ -765,11 +781,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
           <div style="display:flex;gap:8px">
             <div class="fg" style="flex:1"><label class="fl">Hauteur (m)</label><input class="fi" type="number" step="0.1" min="0" id="ven-d-falaise-h" placeholder="25"></div>
             <div class="fg" style="flex:1.3"><label class="fl">Cotation</label>
-              <select class="fs" id="ven-d-falaise-sys">
+              <select class="fs" id="ven-d-falaise-sys" onchange="onVenSysChange('falaise')">
                 <option value="french-voie">Francais (voie)</option>
                 <option value="french-bloc">Francais (bloc)</option>
+                <option value="yds">YDS (5.xx)</option>
+                <option value="hueco">Hueco (V-scale)</option>
+                <option value="alpine">Alpine (F/PD/AD/...)</option>
+                <option value="custom">Personnalise</option>
               </select>
             </div>
+          </div>
+          <div class="fg ven-custom-row" id="ven-d-falaise-custom-row" style="display:none;margin-top:8px">
+            <label class="fl">Grades personnalises (un par ligne ou separes par virgules)</label>
+            <textarea class="fi" id="ven-d-falaise-custom" rows="3" style="resize:vertical;font-family:'DM Mono',monospace" placeholder="5a, 5b, 6a..."></textarea>
           </div>
         </div>
       </div>
@@ -922,9 +946,19 @@ const SEMS=(()=>{const s=[];for(const[p,w]of[[1,4],[2,8],[3,10],[4,8]]){let n=1;
 /* Climbing grade systems */
 const GRADE_SYSTEMS={
   'french-voie':['3a','3b','3c','4a','4b','4c','5a','5b','5c','6a','6a+','6b','6b+','6c','6c+','7a','7a+','7b','7b+','7c','7c+','8a','8a+','8b','8b+','8c','8c+','9a','9a+','9b','9b+','9c'],
-  'french-bloc':['3','4a','4b','4c','5a','5b','5c','6a','6a+','6b','6b+','6c','6c+','7a','7a+','7b','7b+','7c','7c+','8a','8a+','8b','8b+','8c']
+  'french-bloc':['3','4a','4b','4c','5a','5b','5c','6a','6a+','6b','6b+','6c','6c+','7a','7a+','7b','7b+','7c','7c+','8a','8a+','8b','8b+','8c'],
+  'yds':['5.5','5.6','5.7','5.8','5.9','5.10a','5.10b','5.10c','5.10d','5.11a','5.11b','5.11c','5.11d','5.12a','5.12b','5.12c','5.12d','5.13a','5.13b','5.13c','5.13d','5.14a','5.14b','5.14c','5.14d','5.15a','5.15b','5.15c'],
+  'hueco':['VB','V0','V1','V2','V3','V4','V5','V6','V7','V8','V9','V10','V11','V12','V13','V14','V15','V16','V17'],
+  'alpine':['F','F+','PD-','PD','PD+','AD-','AD','AD+','D-','D','D+','TD-','TD','TD+','ED1','ED2','ED3','ED4','ED5','ED6','ED7']
 };
-const GRADE_SYSTEM_LABELS={'french-voie':'Francais (voie)','french-bloc':'Francais (bloc)'};
+const GRADE_SYSTEM_LABELS={
+  'french-voie':'Francais (voie)',
+  'french-bloc':'Francais (bloc)',
+  'yds':'YDS (5.xx)',
+  'hueco':'Hueco (V-scale)',
+  'alpine':'Alpine (F/PD/AD/...)',
+  'custom':'Personnalise'
+};
 
 /* Send types per discipline */
 const SEND_TYPES_BLOC=[
@@ -1423,7 +1457,7 @@ function addRoute(){
   if(!cVenueId){toast('Selectionnez un lieu');return;}
   const disc=_getCurrentDiscipline();
   if(!disc){toast('Discipline non disponible sur ce lieu');return;}
-  const grades=gradesFor(disc.gradeSystem);
+  const grades=gradesFor(disc.gradeSystem,disc.customGrades);
   cRoutes.push({grade:grades[Math.min(5,grades.length-1)],sendType:cClimbSub==='Bloc'?'flash':'a-vue',attempts:2,rests:1,percentage:100,rpe:6});
   renderRoutes();
 }
@@ -1451,7 +1485,7 @@ function renderRoutes(){
     return;
   }
   if(addBtn)addBtn.style.display='block';
-  const grades=gradesFor(disc.gradeSystem);
+  const grades=gradesFor(disc.gradeSystem,disc.customGrades);
   const sendTypes=cClimbSub==='Bloc'?SEND_TYPES_BLOC:SEND_TYPES_VOIE;
   cont.innerHTML=cRoutes.map((r,i)=>{
     const gradeOpts=grades.map(g=>`<option value="${g}"${g===r.grade?' selected':''}>${g}</option>`).join('');
@@ -1937,18 +1971,26 @@ function startAutoChain(idx,exName,restDuration){
 }
 
 /* AXE2: Normalize grade for comparison */
-function gradeToNum(g,system){
+function gradeToNum(g,systemOrCustom){
   if(!g)return-1;
   const raw=g.toString().replace(/\s/g,'');
-  /* Try modern grade systems first */
-  if(system&&GRADE_SYSTEMS[system]){
-    const idx=GRADE_SYSTEMS[system].indexOf(raw.toLowerCase());
+  /* If custom grade list passed as array */
+  if(Array.isArray(systemOrCustom)){
+    const idx=systemOrCustom.indexOf(raw);
     if(idx>=0)return idx;
   }
-  /* Try both french systems */
-  for(const sys of ['french-voie','french-bloc']){
+  /* Try explicit system first */
+  if(typeof systemOrCustom==='string'&&GRADE_SYSTEMS[systemOrCustom]){
+    const idx=GRADE_SYSTEMS[systemOrCustom].indexOf(raw.toLowerCase());
+    if(idx>=0)return idx;
+  }
+  /* Try all known systems */
+  for(const sys of Object.keys(GRADE_SYSTEMS)){
     const idx=GRADE_SYSTEMS[sys].indexOf(raw.toLowerCase());
     if(idx>=0)return idx;
+    /* Also try exact case (for V-scale and Alpine which use specific case) */
+    const idxRaw=GRADE_SYSTEMS[sys].indexOf(raw);
+    if(idxRaw>=0)return idxRaw;
   }
   /* Legacy uppercase GRADES */
   const up=raw.toUpperCase();
@@ -1959,8 +2001,20 @@ function gradeToNum(g,system){
   }
   return-1;
 }
-/* Get grades array for a given system (with fallback) */
-function gradesFor(system){return GRADE_SYSTEMS[system]||GRADE_SYSTEMS['french-voie'];}
+/* Get grades array for a given system.
+   If system is 'custom', return the provided customGrades array. */
+function gradesFor(system,customGrades){
+  if(system==='custom'){
+    if(Array.isArray(customGrades)&&customGrades.length)return customGrades;
+    return ['(personnalise)'];
+  }
+  return GRADE_SYSTEMS[system]||GRADE_SYSTEMS['french-voie'];
+}
+/* Parse custom grades from a string (line/comma separated) */
+function parseCustomGrades(str){
+  if(!str)return[];
+  return str.split(/[\n,]/).map(s=>s.trim()).filter(s=>s.length);
+}
 /* Venue helpers */
 function getVenueById(id){return DB.venues.find(v=>String(v.id)===String(id))||null;}
 
@@ -2946,7 +3000,9 @@ function renderVenues(){
     const parts=[];
     ['bloc','voie','falaise'].forEach(k=>{
       if(d[k]&&d[k].enabled){
-        parts.push('<b>'+k.charAt(0).toUpperCase()+k.slice(1)+'</b> '+(d[k].height||'?')+'m — '+GRADE_SYSTEM_LABELS[d[k].gradeSystem]);
+        let sysLabel=GRADE_SYSTEM_LABELS[d[k].gradeSystem]||d[k].gradeSystem;
+        if(d[k].gradeSystem==='custom'&&Array.isArray(d[k].customGrades))sysLabel+=' ('+d[k].customGrades.length+' grades)';
+        parts.push('<b>'+k.charAt(0).toUpperCase()+k.slice(1)+'</b> '+(d[k].height||'?')+'m — '+sysLabel);
       }
     });
     const typeLabel=v.type==='falaise'?'Falaise':'Salle';
@@ -2973,9 +3029,12 @@ function showVenueEditor(id){
     const enabled=!!(d&&d.enabled);
     document.getElementById('ven-d-'+k).checked=enabled;
     document.getElementById('ven-d-'+k+'-h').value=d?d.height||'':'';
-    document.getElementById('ven-d-'+k+'-sys').value=d?d.gradeSystem:k==='bloc'?'french-bloc':'french-voie';
+    document.getElementById('ven-d-'+k+'-sys').value=d&&d.gradeSystem?d.gradeSystem:(k==='bloc'?'french-bloc':'french-voie');
+    const customField=document.getElementById('ven-d-'+k+'-custom');
+    if(customField)customField.value=d&&Array.isArray(d.customGrades)?d.customGrades.join(', '):'';
     const row=document.querySelector('.discipline-row[data-disc="'+k+'"]');
     if(row)row.classList.toggle('open',enabled);
+    onVenSysChange(k);
   });
   document.getElementById('ven-del-btn').style.display=v?'flex':'none';
   document.getElementById('venue-sheet').classList.add('show');
@@ -2998,21 +3057,37 @@ function onVenDiscToggle(k){
   const row=document.querySelector('.discipline-row[data-disc="'+k+'"]');
   if(row)row.classList.toggle('open',enabled);
 }
+/* Show/hide custom grades input based on selected system */
+function onVenSysChange(k){
+  const sel=document.getElementById('ven-d-'+k+'-sys');
+  const row=document.getElementById('ven-d-'+k+'-custom-row');
+  if(!sel||!row)return;
+  row.style.display=sel.value==='custom'?'block':'none';
+}
 
 function saveVenue(){
   const name=document.getElementById('ven-name').value.trim();
   if(!name){toast('Entrez un nom');return;}
   const disciplines={};
+  let validationError=null;
   ['bloc','voie','falaise'].forEach(k=>{
     const enabled=document.getElementById('ven-d-'+k).checked;
     if(enabled){
       const h=parseFloat(document.getElementById('ven-d-'+k+'-h').value)||0;
       const sys=document.getElementById('ven-d-'+k+'-sys').value;
-      disciplines[k]={enabled:true,height:h,gradeSystem:sys};
+      const d={enabled:true,height:h,gradeSystem:sys};
+      if(sys==='custom'){
+        const customStr=document.getElementById('ven-d-'+k+'-custom').value;
+        const customArr=parseCustomGrades(customStr);
+        if(!customArr.length){validationError=k;return;}
+        d.customGrades=customArr;
+      }
+      disciplines[k]=d;
     }else{
       disciplines[k]={enabled:false,height:0,gradeSystem:k==='bloc'?'french-bloc':'french-voie'};
     }
   });
+  if(validationError){toast('Discipline '+validationError+' : entrez au moins un grade personnalise');return;}
   const anyEnabled=Object.values(disciplines).some(d=>d.enabled);
   if(!anyEnabled){toast('Activez au moins une discipline');return;}
   const venues=DB.venues;
