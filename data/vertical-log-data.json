@@ -19,24 +19,6 @@
       "climbSub": "Falaise"
     },
     {
-      "id": 1775990772858,
-      "date": "2026-04-11",
-      "type": "C",
-      "phase": "P1-S1",
-      "duration": 120,
-      "forme": 4,
-      "rpe": 7,
-      "rpeByEx": {},
-      "exData": {},
-      "foster": 840,
-      "pos": "6C à vue dans le dévers",
-      "neg": "Relâchement sur les pinces",
-      "volume": "5",
-      "diffTry": "6c",
-      "diffDone": "6c",
-      "climbSub": "Voie"
-    },
-    {
       "id": 1776010142042,
       "date": "2026-04-12",
       "type": "C",
@@ -71,12 +53,261 @@
       "diffTry": null,
       "diffDone": null,
       "climbSub": null
+    },
+    {
+      "id": 1776325816185,
+      "date": "2026-04-11",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 120,
+      "forme": 3,
+      "rpe": 5.4,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 648,
+      "pos": "6c a vue dans le devers",
+      "neg": "relachement sur les pinces",
+      "venueId": 1776325585443,
+      "routes": [
+        {
+          "grade": "5c",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6b",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 4
+        },
+        {
+          "grade": "6c",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 6
+        },
+        {
+          "grade": "6b+",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 7
+        },
+        {
+          "grade": "6b+",
+          "sendType": "tete-repos",
+          "attempts": 2,
+          "rests": 2,
+          "percentage": 100,
+          "rpe": 8
+        }
+      ],
+      "totalHeight": 70,
+      "climbSub": "Voie"
+    },
+    {
+      "id": 1776326055783,
+      "date": "2026-04-05",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 180,
+      "forme": 4,
+      "rpe": 4.4,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 792,
+      "pos": "",
+      "neg": "",
+      "venueId": 1776325902588,
+      "routes": [
+        {
+          "grade": "5b",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "5b",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "5c",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 4
+        },
+        {
+          "grade": "6a",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 7
+        },
+        {
+          "grade": "5b",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 5
+        }
+      ],
+      "totalHeight": 75,
+      "climbSub": "Falaise"
+    },
+    {
+      "id": 1776326228747,
+      "date": "2026-04-15",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 150,
+      "forme": 5,
+      "rpe": 3.8,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 570,
+      "pos": "",
+      "neg": "",
+      "venueId": 1776326110076,
+      "routes": [
+        {
+          "grade": "5a",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6a",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 4
+        },
+        {
+          "grade": "6b",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 6
+        },
+        {
+          "grade": "5c",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "6a",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 4
+        }
+      ],
+      "totalHeight": 75,
+      "climbSub": "Voie"
     }
   ],
   "notes": {},
-  "updated": "2026-04-15T07:19:20.836Z",
+  "venues": [
+    {
+      "id": 1776325585443,
+      "name": "Climb Up Chambéry",
+      "type": "salle",
+      "disciplines": {
+        "bloc": {
+          "enabled": false,
+          "height": 0,
+          "gradeSystem": "french-bloc"
+        },
+        "voie": {
+          "enabled": true,
+          "height": 14,
+          "gradeSystem": "french-voie"
+        },
+        "falaise": {
+          "enabled": false,
+          "height": 0,
+          "gradeSystem": "french-voie"
+        }
+      },
+      "createdAt": 1776325585443
+    },
+    {
+      "id": 1776325902588,
+      "name": "Baie de grésine",
+      "type": "falaise",
+      "disciplines": {
+        "bloc": {
+          "enabled": false,
+          "height": 0,
+          "gradeSystem": "french-bloc"
+        },
+        "voie": {
+          "enabled": false,
+          "height": 0,
+          "gradeSystem": "french-voie"
+        },
+        "falaise": {
+          "enabled": true,
+          "height": 15,
+          "gradeSystem": "french-voie"
+        }
+      },
+      "createdAt": 1776325902588
+    },
+    {
+      "id": 1776326110076,
+      "name": "Escalade Mawem",
+      "type": "salle",
+      "disciplines": {
+        "bloc": {
+          "enabled": true,
+          "height": 4.5,
+          "gradeSystem": "french-bloc"
+        },
+        "voie": {
+          "enabled": true,
+          "height": 15,
+          "gradeSystem": "french-voie"
+        },
+        "falaise": {
+          "enabled": false,
+          "height": 0,
+          "gradeSystem": "french-voie"
+        }
+      },
+      "createdAt": 1776326110076
+    }
+  ],
+  "updated": "2026-04-16T07:57:28.541Z",
   "meta": {
-    "sessions": 4,
+    "sessions": 6,
+    "venues": 3,
     "appVersion": "vl3"
   }
 }
