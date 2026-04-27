@@ -1,83 +1,6 @@
 {
   "sessions": [
     {
-      "id": 1776182604759,
-      "date": "2026-04-14",
-      "type": "Cardio",
-      "phase": "P1-S1",
-      "duration": 90,
-      "forme": 2,
-      "rpe": 1,
-      "rpeByEx": {},
-      "exData": {},
-      "foster": 90,
-      "pos": "",
-      "neg": "",
-      "volume": null,
-      "diffTry": null,
-      "diffDone": null,
-      "climbSub": null
-    },
-    {
-      "id": 1776325816185,
-      "date": "2026-04-11",
-      "type": "C",
-      "phase": "P1-S1",
-      "duration": 120,
-      "forme": 3,
-      "rpe": 5.4,
-      "rpeByEx": {},
-      "exData": {},
-      "foster": 648,
-      "pos": "6c a vue dans le devers",
-      "neg": "relachement sur les pinces",
-      "venueId": 1776325585443,
-      "routes": [
-        {
-          "grade": "5c",
-          "sendType": "a-vue",
-          "attempts": 2,
-          "rests": 1,
-          "percentage": 100,
-          "rpe": 2
-        },
-        {
-          "grade": "6b",
-          "sendType": "repetition",
-          "attempts": 2,
-          "rests": 1,
-          "percentage": 100,
-          "rpe": 4
-        },
-        {
-          "grade": "6c",
-          "sendType": "a-vue",
-          "attempts": 2,
-          "rests": 1,
-          "percentage": 100,
-          "rpe": 6
-        },
-        {
-          "grade": "6b+",
-          "sendType": "repetition",
-          "attempts": 2,
-          "rests": 1,
-          "percentage": 100,
-          "rpe": 7
-        },
-        {
-          "grade": "6b+",
-          "sendType": "tete-repos",
-          "attempts": 2,
-          "rests": 2,
-          "percentage": 100,
-          "rpe": 8
-        }
-      ],
-      "totalHeight": 70,
-      "climbSub": "Voie"
-    },
-    {
       "id": 1776326055783,
       "date": "2026-04-05",
       "type": "C",
@@ -137,22 +60,22 @@
       "climbSub": "Falaise"
     },
     {
-      "id": 1776326228747,
-      "date": "2026-04-15",
+      "id": 1776325816185,
+      "date": "2026-04-11",
       "type": "C",
       "phase": "P1-S1",
-      "duration": 150,
-      "forme": 5,
-      "rpe": 3.8,
+      "duration": 120,
+      "forme": 3,
+      "rpe": 5.4,
       "rpeByEx": {},
       "exData": {},
-      "foster": 570,
-      "pos": "",
-      "neg": "",
-      "venueId": 1776326110076,
+      "foster": 648,
+      "pos": "6c a vue dans le devers",
+      "neg": "relachement sur les pinces",
+      "venueId": 1776325585443,
       "routes": [
         {
-          "grade": "5a",
+          "grade": "5c",
           "sendType": "a-vue",
           "attempts": 2,
           "rests": 1,
@@ -160,15 +83,15 @@
           "rpe": 2
         },
         {
-          "grade": "6a",
-          "sendType": "a-vue",
+          "grade": "6b",
+          "sendType": "repetition",
           "attempts": 2,
           "rests": 1,
           "percentage": 100,
           "rpe": 4
         },
         {
-          "grade": "6b",
+          "grade": "6c",
           "sendType": "a-vue",
           "attempts": 2,
           "rests": 1,
@@ -176,23 +99,23 @@
           "rpe": 6
         },
         {
-          "grade": "5c",
-          "sendType": "a-vue",
+          "grade": "6b+",
+          "sendType": "repetition",
           "attempts": 2,
           "rests": 1,
           "percentage": 100,
-          "rpe": 3
+          "rpe": 7
         },
         {
-          "grade": "6a",
-          "sendType": "a-vue",
+          "grade": "6b+",
+          "sendType": "tete-repos",
           "attempts": 2,
-          "rests": 1,
+          "rests": 2,
           "percentage": 100,
-          "rpe": 4
+          "rpe": 8
         }
       ],
-      "totalHeight": 75,
+      "totalHeight": 70,
       "climbSub": "Voie"
     },
     {
@@ -279,6 +202,1194 @@
       "climbSub": "Bloc",
       "diffDone": "",
       "volume": ""
+    },
+    {
+      "id": 1776182604759,
+      "date": "2026-04-14",
+      "type": "Cardio",
+      "phase": "P1-S1",
+      "duration": 90,
+      "forme": 2,
+      "rpe": 1,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 90,
+      "pos": "",
+      "neg": "",
+      "volume": null,
+      "diffTry": null,
+      "diffDone": null,
+      "climbSub": null
+    },
+    {
+      "id": 1776326228747,
+      "date": "2026-04-15",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 150,
+      "forme": 5,
+      "rpe": 3.8,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 570,
+      "pos": "",
+      "neg": "",
+      "venueId": 1776326110076,
+      "routes": [
+        {
+          "grade": "5a",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6a",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 4
+        },
+        {
+          "grade": "6b",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 6
+        },
+        {
+          "grade": "5c",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "6a",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 4
+        }
+      ],
+      "totalHeight": 75,
+      "climbSub": "Voie"
+    },
+    {
+      "id": 1776436330813,
+      "date": "2026-04-17",
+      "type": "A",
+      "phase": "P1-S1",
+      "duration": 90,
+      "forme": 5,
+      "rpe": 4,
+      "rpeByEx": {
+        "Dead Hang Half Crimp": 2,
+        "Pull-up": 4,
+        "Negative Pull-up": 6,
+        "Low Row": 3,
+        "Archer Rows": 3,
+        "Prone Y": 4,
+        "External Rotations": 2,
+        "Press Up": 5,
+        "Hollow Body Hold": 5,
+        "Hanging Knee Raises": 3,
+        "Side Plank": 4
+      },
+      "exData": {
+        "Dead Hang Half Crimp": {
+          "0": {
+            "charge": 56.5,
+            "reps": 7
+          },
+          "1": {
+            "charge": 59.5,
+            "reps": 7
+          },
+          "2": {
+            "charge": 52.5,
+            "reps": 7
+          }
+        },
+        "Pull-up": {
+          "0": {
+            "charge": 65.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 65.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 65.5,
+            "reps": 5
+          },
+          "3": {
+            "charge": 65.5,
+            "reps": 5
+          }
+        },
+        "Negative Pull-up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 5
+          }
+        },
+        "Low Row": {
+          "0": {
+            "charge": 15,
+            "reps": 10
+          },
+          "1": {
+            "charge": 25,
+            "reps": 10
+          },
+          "2": {
+            "charge": 35,
+            "reps": 10
+          }
+        },
+        "Archer Rows": {
+          "0": {
+            "charge": 15,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "1": {
+            "charge": 15,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "2": {
+            "charge": 15,
+            "repsG": 6,
+            "repsD": 6
+          }
+        },
+        "Prone Y": {
+          "0": {
+            "charge": 2,
+            "reps": 10
+          },
+          "1": {
+            "charge": 2,
+            "reps": 12
+          },
+          "2": {
+            "charge": 2,
+            "reps": 12
+          }
+        },
+        "External Rotations": {
+          "0": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "1": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "2": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          }
+        },
+        "Press Up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Hollow Body Hold": {
+          "0": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 30
+          }
+        },
+        "Hanging Knee Raises": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Side Plank": {
+          "0": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          }
+        }
+      },
+      "foster": 360,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
+    },
+    {
+      "id": 1776438894204,
+      "date": "2026-04-17",
+      "type": "C",
+      "phase": "P1-S1",
+      "duration": 40,
+      "forme": 4,
+      "rpe": 2,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 80,
+      "pos": "",
+      "neg": "",
+      "venueId": 1776326449282,
+      "routes": [
+        {
+          "grade": "5",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 1
+        },
+        {
+          "grade": "6",
+          "sendType": "apres-travail",
+          "attempts": 5,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 1
+        },
+        {
+          "grade": "7",
+          "sendType": "apres-travail",
+          "attempts": 5,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6",
+          "sendType": "apres-travail",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "7",
+          "sendType": "echec",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 25,
+          "rpe": 2
+        },
+        {
+          "grade": "6",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6",
+          "sendType": "apres-travail",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        }
+      ],
+      "totalHeight": 32.6,
+      "climbSub": "Bloc"
+    },
+    {
+      "id": 1776707802311,
+      "date": "2026-04-20",
+      "type": "B",
+      "phase": "P1-S2",
+      "duration": 45,
+      "forme": 4,
+      "rpe": 6,
+      "rpeByEx": {
+        "Single Leg RDL": 7,
+        "Hamstring Walks": 5,
+        "Glute Bridge": 5,
+        "Bulgarian Split Squat": 5,
+        "Deep Squat": 4,
+        "High Step": 6,
+        "Copenhagen Plank": 6
+      },
+      "exData": {
+        "Single Leg RDL": {
+          "0": {
+            "charge": 32,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 32,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 32,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Hamstring Walks": {
+          "0": {
+            "charge": 0,
+            "reps": 10
+          },
+          "1": {
+            "charge": 0,
+            "reps": 10
+          },
+          "2": {
+            "charge": 0,
+            "reps": 10
+          }
+        },
+        "Glute Bridge": {
+          "0": {
+            "charge": 0,
+            "reps": 12
+          },
+          "1": {
+            "charge": 0,
+            "reps": 12
+          },
+          "2": {
+            "charge": 0,
+            "reps": 12
+          }
+        },
+        "Bulgarian Split Squat": {
+          "0": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Deep Squat": {
+          "0": {
+            "charge": 0,
+            "reps": 10
+          },
+          "1": {
+            "charge": 0,
+            "reps": 10
+          },
+          "2": {
+            "charge": 0,
+            "reps": 12
+          }
+        },
+        "High Step": {
+          "0": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Copenhagen Plank": {
+          "0": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          },
+          "1": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          },
+          "2": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          }
+        }
+      },
+      "foster": 270,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
+    },
+    {
+      "id": 1776782257414,
+      "date": "2026-04-21",
+      "type": "C",
+      "phase": "P1-S2",
+      "duration": 120,
+      "forme": 4,
+      "rpe": 5,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 600,
+      "pos": "",
+      "neg": "",
+      "venueId": 1776325585443,
+      "routes": [
+        {
+          "grade": "6a",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6b",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "6c",
+          "sendType": "tete-repos",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 6
+        },
+        {
+          "grade": "6c+",
+          "sendType": "tete-repos",
+          "attempts": 2,
+          "rests": 4,
+          "percentage": 100,
+          "rpe": 8
+        },
+        {
+          "grade": "6b",
+          "sendType": "tete-repos",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 6
+        }
+      ],
+      "totalHeight": 70,
+      "climbSub": "Voie",
+      "diffDone": "",
+      "volume": ""
+    },
+    {
+      "id": 1776873391380,
+      "date": "2026-04-22",
+      "type": "A",
+      "phase": "P1-S2",
+      "duration": 90,
+      "forme": 4,
+      "rpe": 5,
+      "rpeByEx": {
+        "Dead Hang Half Crimp": 6,
+        "Pull-up": 7,
+        "Negative Pull-up": 6,
+        "Low Row": 5,
+        "Archer Rows": 5,
+        "Prone Y": 5,
+        "External Rotations": 3,
+        "Press Up": 6,
+        "Hollow Body Hold": 4,
+        "Hanging Knee Raises": 4,
+        "Side Plank": 4
+      },
+      "exData": {
+        "Dead Hang Half Crimp": {
+          "0": {
+            "charge": 59.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 59.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 59.5,
+            "reps": 10
+          }
+        },
+        "Pull-up": {
+          "0": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 69.5,
+            "reps": 5
+          }
+        },
+        "Negative Pull-up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 5
+          }
+        },
+        "Low Row": {
+          "0": {
+            "charge": 35,
+            "reps": 10
+          },
+          "1": {
+            "charge": 45,
+            "reps": 10
+          },
+          "2": {
+            "charge": 45,
+            "reps": 10
+          }
+        },
+        "Archer Rows": {
+          "0": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "1": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "2": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          }
+        },
+        "Prone Y": {
+          "0": {
+            "charge": 2,
+            "reps": 12
+          },
+          "1": {
+            "charge": 2,
+            "reps": 12
+          },
+          "2": {
+            "charge": 2,
+            "reps": 12
+          }
+        },
+        "External Rotations": {
+          "0": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "1": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "2": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          }
+        },
+        "Press Up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Hollow Body Hold": {
+          "0": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 30
+          }
+        },
+        "Hanging Knee Raises": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Side Plank": {
+          "0": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          }
+        }
+      },
+      "foster": 450,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
+    },
+    {
+      "id": 1777302687594,
+      "date": "2026-04-27",
+      "type": "A",
+      "phase": "P1-S3",
+      "duration": 90,
+      "forme": 5,
+      "rpe": 5,
+      "rpeByEx": {
+        "Dead Hang Half Crimp": 5,
+        "Pull-up": 6,
+        "Negative Pull-up": 5,
+        "Low Row": 4,
+        "Archer Rows": 3,
+        "Prone Y": 3,
+        "External Rotations": 3,
+        "Press Up": 5,
+        "Hollow Body Hold": 5,
+        "Hanging Knee Raises": 4,
+        "Side Plank": 4
+      },
+      "exData": {
+        "Dead Hang Half Crimp": {
+          "0": {
+            "charge": 59.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "3": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Pull-up": {
+          "0": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "3": {
+            "charge": 69.5,
+            "reps": 5
+          }
+        },
+        "Negative Pull-up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 5
+          }
+        },
+        "Low Row": {
+          "0": {
+            "charge": 45,
+            "reps": 10
+          },
+          "1": {
+            "charge": 45,
+            "reps": 10
+          },
+          "2": {
+            "charge": 45,
+            "reps": 10
+          }
+        },
+        "Archer Rows": {
+          "0": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "1": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "2": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          }
+        },
+        "Prone Y": {
+          "0": {
+            "charge": 2,
+            "reps": 12
+          },
+          "1": {
+            "charge": 2,
+            "reps": 12
+          },
+          "2": {
+            "charge": 2,
+            "reps": 12
+          }
+        },
+        "External Rotations": {
+          "0": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "1": {
+            "charge": 4,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "2": {
+            "charge": 4,
+            "repsG": 15,
+            "repsD": 15
+          }
+        },
+        "Press Up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Hollow Body Hold": {
+          "0": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 30
+          }
+        },
+        "Hanging Knee Raises": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Side Plank": {
+          "0": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          }
+        }
+      },
+      "foster": 450,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
+    },
+    {
+      "id": 1777309917992,
+      "date": "2026-04-27",
+      "type": "B",
+      "phase": "P1-S3",
+      "duration": 45,
+      "forme": 5,
+      "rpe": 6,
+      "rpeByEx": {
+        "Single Leg RDL": 7,
+        "Hamstring Walks": 5,
+        "Glute Bridge": 5,
+        "Bulgarian Split Squat": 6,
+        "Deep Squat": 4,
+        "High Step": 5,
+        "Copenhagen Plank": 5
+      },
+      "exData": {
+        "Single Leg RDL": {
+          "0": {
+            "charge": 28,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 28,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 28,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Hamstring Walks": {
+          "0": {
+            "charge": 0,
+            "reps": 10
+          },
+          "1": {
+            "charge": 0,
+            "reps": 10
+          },
+          "2": {
+            "charge": 0,
+            "reps": 10
+          }
+        },
+        "Glute Bridge": {
+          "0": {
+            "charge": 0,
+            "reps": 12
+          },
+          "1": {
+            "charge": 0,
+            "reps": 12
+          },
+          "2": {
+            "charge": 0,
+            "reps": 12
+          }
+        },
+        "Bulgarian Split Squat": {
+          "0": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Deep Squat": {
+          "0": {
+            "charge": 0,
+            "reps": 10
+          },
+          "1": {
+            "charge": 0,
+            "reps": 10
+          },
+          "2": {
+            "charge": 0,
+            "reps": 12
+          }
+        },
+        "High Step": {
+          "0": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Copenhagen Plank": {
+          "0": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          },
+          "1": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          },
+          "2": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          }
+        }
+      },
+      "foster": 270,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
+    },
+    {
+      "id": 1777310072758,
+      "date": "2026-04-27",
+      "type": "C",
+      "phase": "P1-S3",
+      "duration": 45,
+      "forme": 4,
+      "rpe": 5,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 225,
+      "pos": "",
+      "neg": "",
+      "venueId": 1776326449282,
+      "routes": [
+        {
+          "grade": "5",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 2
+        },
+        {
+          "grade": "6",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "6",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 5
+        },
+        {
+          "grade": "7",
+          "sendType": "repetition",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 3
+        },
+        {
+          "grade": "6",
+          "sendType": "echec",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 50,
+          "rpe": 6
+        },
+        {
+          "grade": "6",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 5
+        },
+        {
+          "grade": "6",
+          "sendType": "a-vue",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 5
+        },
+        {
+          "grade": "6",
+          "sendType": "echec",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 50,
+          "rpe": 3
+        },
+        {
+          "grade": "6",
+          "sendType": "apres-travail",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 100,
+          "rpe": 6
+        },
+        {
+          "grade": "8",
+          "sendType": "echec",
+          "attempts": 2,
+          "rests": 1,
+          "percentage": 25,
+          "rpe": 4
+        }
+      ],
+      "totalHeight": 37.1,
+      "climbSub": "Bloc"
     }
   ],
   "notes": {},
@@ -386,9 +1497,9 @@
       "createdAt": 1776326449282
     }
   ],
-  "updated": "2026-04-16T08:09:24.480Z",
+  "updated": "2026-04-27T17:14:42.386Z",
   "meta": {
-    "sessions": 5,
+    "sessions": 13,
     "venues": 4,
     "appVersion": "vl3"
   }
