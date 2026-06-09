@@ -2190,7 +2190,7 @@
       "id": 1780906716447,
       "date": "2026-06-08",
       "type": "Cardio",
-      "phase": "P2-S4",
+      "phase": "P2-S5",
       "duration": 25,
       "forme": 5,
       "rpe": 4,
@@ -2208,7 +2208,7 @@
       "id": 1780913010447,
       "date": "2026-06-08",
       "type": "C",
-      "phase": "P2-S4",
+      "phase": "P2-S5",
       "duration": 100,
       "forme": 5,
       "rpe": 4,
@@ -2269,7 +2269,373 @@
         }
       ],
       "totalHeight": 84,
-      "climbSub": "Voie"
+      "climbSub": "Voie",
+      "diffDone": "",
+      "volume": ""
+    },
+    {
+      "id": 1780920810584,
+      "date": "2026-06-08",
+      "type": "Cardio",
+      "phase": "P2-S5",
+      "duration": 30,
+      "forme": 4,
+      "rpe": 3,
+      "rpeByEx": {},
+      "exData": {},
+      "foster": 90,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
+    },
+    {
+      "id": 1781015584202,
+      "date": "2026-06-09",
+      "type": "B",
+      "phase": "P2-S5",
+      "duration": 35,
+      "forme": 5,
+      "rpe": 3,
+      "rpeByEx": {
+        "Single Leg RDL": 3,
+        "Glute Bridge": 4,
+        "Nordic Hamstring Curl": 2,
+        "Deep Squat": 3
+      },
+      "exData": {
+        "Single Leg RDL": {
+          "0": {
+            "charge": 16,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 16,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 16,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Hamstring Walks": {
+          "0": {
+            "charge": 0,
+            "reps": 10
+          },
+          "1": {
+            "charge": 0,
+            "reps": 10
+          },
+          "2": {
+            "charge": 0,
+            "reps": 10
+          }
+        },
+        "Glute Bridge": {
+          "0": {
+            "charge": 0,
+            "reps": 24
+          },
+          "1": {
+            "charge": 0,
+            "reps": 24
+          },
+          "2": {
+            "charge": 0,
+            "reps": 24
+          }
+        },
+        "Nordic Hamstring Curl": {
+          "0": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 8
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 8
+          }
+        },
+        "Bulgarian Split Squat": {
+          "0": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 12,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Deep Squat": {
+          "0": {
+            "charge": 0,
+            "reps": 10
+          },
+          "1": {
+            "charge": 0,
+            "reps": 10
+          },
+          "2": {
+            "charge": 0,
+            "reps": 10
+          }
+        },
+        "High Step": {
+          "0": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "1": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          },
+          "2": {
+            "charge": 0,
+            "repsG": 8,
+            "repsD": 8
+          }
+        },
+        "Copenhagen Plank": {
+          "0": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          },
+          "1": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          },
+          "2": {
+            "charge": 0,
+            "repsG": 20,
+            "repsD": 20
+          }
+        }
+      },
+      "foster": 105,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
+    },
+    {
+      "id": 1781016701569,
+      "date": "2026-06-09",
+      "type": "A",
+      "phase": "P2-S5",
+      "duration": 10,
+      "forme": 5,
+      "rpe": 2,
+      "rpeByEx": {
+        "Finger Glides": 2
+      },
+      "exData": {
+        "Finger Glides": {
+          "0": {
+            "charge": 0,
+            "reps": 10
+          },
+          "1": {
+            "charge": 0,
+            "reps": 10
+          },
+          "2": {
+            "charge": 0,
+            "reps": 10
+          }
+        },
+        "Dead Hang Half Crimp": {
+          "0": {
+            "charge": 59.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Pull-up": {
+          "0": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 69.5,
+            "reps": 5
+          },
+          "3": {
+            "charge": 69.5,
+            "reps": 5
+          }
+        },
+        "Negative Pull-up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 5
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 5
+          }
+        },
+        "Low Row": {
+          "0": {
+            "charge": 45,
+            "reps": 10
+          },
+          "1": {
+            "charge": 45,
+            "reps": 10
+          },
+          "2": {
+            "charge": 45,
+            "reps": 10
+          }
+        },
+        "Archer Rows": {
+          "0": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "1": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          },
+          "2": {
+            "charge": 25,
+            "repsG": 6,
+            "repsD": 6
+          }
+        },
+        "Prone Y": {
+          "0": {
+            "charge": 2,
+            "reps": 12
+          },
+          "1": {
+            "charge": 2,
+            "reps": 12
+          },
+          "2": {
+            "charge": 2,
+            "reps": 12
+          }
+        },
+        "External Rotations": {
+          "0": {
+            "charge": 2,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "1": {
+            "charge": 4,
+            "repsG": 15,
+            "repsD": 15
+          },
+          "2": {
+            "charge": 4,
+            "repsG": 15,
+            "repsD": 15
+          }
+        },
+        "Press Up": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Hollow Body Hold": {
+          "0": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 30
+          }
+        },
+        "Hanging Knee Raises": {
+          "0": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "1": {
+            "charge": 64.5,
+            "reps": 10
+          },
+          "2": {
+            "charge": 64.5,
+            "reps": 10
+          }
+        },
+        "Side Plank": {
+          "0": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "1": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          },
+          "2": {
+            "charge": 64.5,
+            "repsG": 30,
+            "repsD": 30
+          }
+        }
+      },
+      "foster": 20,
+      "pos": "",
+      "neg": "",
+      "venueId": null,
+      "routes": null,
+      "totalHeight": null,
+      "climbSub": null
     }
   ],
   "notes": {},
@@ -2400,9 +2766,9 @@
       "createdAt": 1780850718261
     }
   ],
-  "updated": "2026-06-08T10:24:01.106Z",
+  "updated": "2026-06-09T15:12:18.965Z",
   "meta": {
-    "sessions": 24,
+    "sessions": 27,
     "venues": 5,
     "appVersion": "vl3"
   }
