@@ -2358,7 +2358,14 @@ function renderDash(){
   drawHeatmap(ss);
 
   renderRecent(ss.slice(-6).reverse());
-  drawChart('fosterChart',ss.slice(-14).map(s=>s.date),ss.slice(-14).map(s=>s.foster||0),'#508d7c','rgba(80,141,124,.08)',0,null);
+  /* Foster chart: aggregate by calendar day (sum of all sessions per day) */
+  (()=>{
+    const byDay={};
+    ss.forEach(s=>{if(s.date)byDay[s.date]=(byDay[s.date]||0)+(s.foster||0);});
+    const dates=Object.keys(byDay).sort();
+    const last=dates.slice(-14);
+    drawChart('fosterChart',last,last.map(d=>byDay[d]),'#508d7c','rgba(80,141,124,.08)',0,null);
+  })();
   drawChart('formeChart',ss.slice(-10).map(s=>s.date),ss.slice(-10).map(s=>s.forme),'#7cc6b6','rgba(124,198,182,.08)',1,5);
 
   /* Foster load metrics mini-widget — uses rolling 7 calendar days */
