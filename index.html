@@ -433,11 +433,45 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
   </div>
   <div class="card">
     <div class="card-hdr"><div class="card-lbl">Forme avant seance</div></div>
-    <div class="chart-wrap sm"><canvas id="formeChart"></canvas></div>
+    <div class="chart-wrap"><canvas id="formeChart"></canvas></div>
   </div>
+  <!-- Foster: Charge hebdomadaire -->
   <div class="card">
-    <div class="card-hdr"><div class="card-lbl">Dernieres seances</div><div style="font-size:.7rem;color:var(--text-dim)">Toucher pour details</div></div>
-    <div id="recent-sessions"></div>
+    <div class="card-hdr">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="card-lbl">Charge hebdo</div>
+        <button class="help-btn" onclick="showHelp(event,'charge')">?</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
+    </div>
+    <div class="chart-wrap"><canvas id="chargeChart"></canvas></div>
+    <div class="heatmap-legend" style="margin-top:6px">
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#508d7c"></div>OK</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#e8a838"></div>Fatigue</div>
+      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#c32026"></div>Risque</div>
+    </div>
+  </div>
+  <!-- Foster: Monotonie -->
+  <div class="card">
+    <div class="card-hdr">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="card-lbl">Monotonie</div>
+        <button class="help-btn" onclick="showHelp(event,'monotonie')">?</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
+    </div>
+    <div class="chart-wrap"><canvas id="monotonieChart"></canvas></div>
+  </div>
+  <!-- Foster: Contrainte & Forme -->
+  <div class="card">
+    <div class="card-hdr">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="card-lbl">Forme (Fitness)</div>
+        <button class="help-btn" onclick="showHelp(event,'forme')">?</button>
+      </div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">Charge − Contrainte</div>
+    </div>
+    <div class="chart-wrap"><canvas id="formeChart2"></canvas></div>
   </div>
 </div></section>
 
@@ -592,44 +626,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <section class="page" id="page-analyse"><div class="app">
   <div class="title">Analyse</div><div class="sub">Resume hebdomadaire -- Recommandations</div>
   <div class="card"><div class="card-hdr"><div class="card-lbl">Resume par semaine</div></div><div id="weekly-sum"></div></div>
-  <!-- Foster: Charge hebdomadaire -->
-  <div class="card">
-    <div class="card-hdr">
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="card-lbl">Charge hebdo</div>
-        <button class="help-btn" onclick="showHelp(event,'charge')">?</button>
-      </div>
-      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
-    </div>
-    <div class="chart-wrap"><canvas id="chargeChart"></canvas></div>
-    <div class="heatmap-legend" style="margin-top:6px">
-      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#508d7c"></div>OK</div>
-      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#e8a838"></div>Fatigue</div>
-      <div class="heatmap-legend-item"><div class="hl-dot" style="background:#c32026"></div>Risque</div>
-    </div>
-  </div>
-  <!-- Foster: Monotonie -->
-  <div class="card">
-    <div class="card-hdr">
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="card-lbl">Monotonie</div>
-        <button class="help-btn" onclick="showHelp(event,'monotonie')">?</button>
-      </div>
-      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
-    </div>
-    <div class="chart-wrap"><canvas id="monotonieChart"></canvas></div>
-  </div>
-  <!-- Foster: Contrainte & Forme -->
-  <div class="card">
-    <div class="card-hdr">
-      <div style="display:flex;align-items:center;gap:6px">
-        <div class="card-lbl">Forme (Fitness)</div>
-        <button class="help-btn" onclick="showHelp(event,'forme')">?</button>
-      </div>
-      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">Charge − Contrainte</div>
-    </div>
-    <div class="chart-wrap"><canvas id="formeChart2"></canvas></div>
-  </div>
   <!-- Muscles sollicites -->
   <div class="card">
     <div class="card-hdr">
@@ -1124,7 +1120,7 @@ function goTo(p,btn){
   const oldPage=document.getElementById('page-'+currentPage);
   const newPage=document.getElementById('page-'+p);
   if(currentPage===p){
-    ({home:renderDash,exercises:renderExPicker,venues:renderVenues,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
+    ({home:renderDash,log:autoFillLogPhase,exercises:renderExPicker,venues:renderVenues,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
     return;
   }
   document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
@@ -1142,10 +1138,33 @@ function goTo(p,btn){
   currentPage=p;
   // Show/hide FAB
   document.getElementById('fab-quick').style.display=p==='log'?'flex':'none';
-  ({home:renderDash,exercises:renderExPicker,venues:renderVenues,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
+  ({home:renderDash,log:autoFillLogPhase,exercises:renderExPicker,venues:renderVenues,history:renderHist,analyse:renderAnalyse}[p]||function(){})();
 }
 
 /* Init */
+/* Auto-fill log-phase from the previous session's phase.
+   If the new session date falls on a Monday, use the next phase/week. */
+function autoFillLogPhase(){
+  const dateInput=document.getElementById('log-date');
+  const phaseSel=document.getElementById('log-phase');
+  if(!dateInput||!phaseSel)return;
+  const sessions=DB.sessions;
+  if(!sessions.length)return;
+  /* Most recent session by date */
+  const lastSess=[...sessions].sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+  if(!lastSess||!lastSess.phase)return;
+  let targetPhase=lastSess.phase;
+  /* If new session date is a Monday, bump to next phase/week */
+  const newDate=new Date(dateInput.value+'T00:00:00');
+  if(newDate.getDay()===1){
+    const idx=SEMS.indexOf(lastSess.phase);
+    if(idx>=0&&idx<SEMS.length-1)targetPhase=SEMS[idx+1];
+  }
+  if([...phaseSel.options].some(o=>o.value===targetPhase)&&phaseSel.value!==targetPhase){
+    phaseSel.value=targetPhase;
+    phaseSel.dispatchEvent(new Event('change'));
+  }
+}
 function init(){
   document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
   SEMS.forEach(s=>{
@@ -1164,6 +1183,11 @@ function init(){
       if(setPhaseFromForm()&&['A','B'].includes(cType))buildAccordion(cType);
     });
   }
+  /* Auto-fill phase when date changes */
+  const dateInput=document.getElementById('log-date');
+  if(dateInput)dateInput.addEventListener('change',autoFillLogPhase);
+  /* Initial auto-fill from previous session */
+  autoFillLogPhase();
   document.getElementById('sess-sheet').addEventListener('click',e=>{if(e.target.id==='sess-sheet')closeSheet();});
   document.getElementById('import-sheet').addEventListener('click',e=>{if(e.target.id==='import-sheet')closeImport();});
   const vs=document.getElementById('venue-sheet');
@@ -2357,7 +2381,6 @@ function renderDash(){
   // AXE3: Calendar heatmap
   drawHeatmap(ss);
 
-  renderRecent(ss.slice(-6).reverse());
   /* Foster chart: aggregate by calendar day (sum of all sessions per day) */
   (()=>{
     const byDay={};
@@ -2374,6 +2397,14 @@ function renderDash(){
     renderLoadWidget();
   }else{
     document.getElementById('load-widget').style.display='none';
+  }
+
+  /* 12-week charge / monotonie / forme charts (moved from Analyse) */
+  if(ss.length){
+    const weeks=computeWeeklyMetrics(ss,12);
+    drawChargeChart(weeks);
+    drawMonotonieChart(weeks);
+    drawFormeChart(weeks);
   }
 }
 
@@ -3120,12 +3151,6 @@ function renderAnalyse(){
     }).join('');
   }
 
-  /* Foster load metrics charts */
-  const weeks=computeWeeklyMetrics(ss,12);
-  drawChargeChart(weeks);
-  drawMonotonieChart(weeks);
-  drawFormeChart(weeks);
-
   // Anatomy muscle diagrams
   renderAnatomy(ss);
 
@@ -3457,12 +3482,21 @@ function saveNote(){
 }
 
 /* Chart */
+const DAY_NAMES_FR=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+function _isDateStr(s){return typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s);}
+function _dateToDayLabel(s){
+  const d=new Date(s+'T00:00:00');
+  return DAY_NAMES_FR[d.getDay()]+' '+String(d.getDate()).padStart(2,'0');
+}
 function drawChart(id,labels,data,lc,ac,yMinFixed,yMaxFixed){
   const cv=document.getElementById(id);if(!cv)return;
   const ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1;
   const W=cv.parentElement.getBoundingClientRect().width,H=cv.parentElement.offsetHeight;
   cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);
-  const pad={t:10,r:10,b:26,l:36},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
+  /* If labels are date strings, render vertically with day names and bigger bottom padding */
+  const verticalLabels=labels.length&&_isDateStr(labels[0]);
+  const displayLabels=verticalLabels?labels.map(l=>_dateToDayLabel(l)):labels;
+  const pad={t:10,r:10,b:verticalLabels?72:26,l:36},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
   ctx.clearRect(0,0,W,H);
   const valid=data.filter(v=>v!=null&&!isNaN(v));if(!valid.length)return;
   let mn=yMinFixed!=null?yMinFixed:Math.min(...valid);
@@ -3483,8 +3517,21 @@ function drawChart(id,labels,data,lc,ac,yMinFixed,yMaxFixed){
   if(vp.length>1){ctx.beginPath();ctx.moveTo(vp[0].x,H-pad.b);vp.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(vp.at(-1).x,H-pad.b);ctx.closePath();ctx.fillStyle=ac;ctx.fill();}
   if(vp.length>1){ctx.beginPath();ctx.strokeStyle=lc;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';vp.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();}
   vp.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fillStyle=lc;ctx.fill();ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.stroke();});
-  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
-  pts.forEach((p,i)=>{if(labels[i])ctx.fillText(labels[i].slice(-5),p.x,H-pad.b+13);});
+  ctx.fillStyle='#8a9b93';ctx.font="9px 'Inter',sans-serif";
+  if(verticalLabels){
+    pts.forEach((p,i)=>{
+      if(!displayLabels[i])return;
+      ctx.save();
+      ctx.translate(p.x,H-pad.b+6);
+      ctx.rotate(-Math.PI/2);
+      ctx.textAlign='right';ctx.textBaseline='middle';
+      ctx.fillText(displayLabels[i],0,0);
+      ctx.restore();
+    });
+  }else{
+    ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+    pts.forEach((p,i)=>{if(displayLabels[i])ctx.fillText(displayLabels[i].slice(-5),p.x,H-pad.b+13);});
+  }
 }
 
 /* Utils */
