@@ -427,22 +427,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
       </div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-hdr"><div class="card-lbl">Charge Foster</div><div class="pbadge pb1">Phase 1</div></div>
-    <div class="chart-wrap"><canvas id="fosterChart"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="card-hdr"><div class="card-lbl">Forme avant seance</div></div>
-    <div class="chart-wrap"><canvas id="formeChart"></canvas></div>
-  </div>
-  <!-- Foster: Charge hebdomadaire -->
+  <!-- Charge — 14 jours -->
   <div class="card">
     <div class="card-hdr">
       <div style="display:flex;align-items:center;gap:6px">
-        <div class="card-lbl">Charge hebdo</div>
+        <div class="card-lbl">Charge</div>
         <button class="help-btn" onclick="showHelp(event,'charge')">?</button>
       </div>
-      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">14 derniers jours</div>
     </div>
     <div class="chart-wrap"><canvas id="chargeChart"></canvas></div>
     <div class="heatmap-legend" style="margin-top:6px">
@@ -451,25 +443,25 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
       <div class="heatmap-legend-item"><div class="hl-dot" style="background:#c32026"></div>Risque</div>
     </div>
   </div>
-  <!-- Foster: Monotonie -->
+  <!-- Monotonie — 14 jours -->
   <div class="card">
     <div class="card-hdr">
       <div style="display:flex;align-items:center;gap:6px">
         <div class="card-lbl">Monotonie</div>
         <button class="help-btn" onclick="showHelp(event,'monotonie')">?</button>
       </div>
-      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">12 semaines</div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">14 derniers jours</div>
     </div>
     <div class="chart-wrap"><canvas id="monotonieChart"></canvas></div>
   </div>
-  <!-- Foster: Contrainte & Forme -->
+  <!-- Forme (Fitness) — 14 jours -->
   <div class="card">
     <div class="card-hdr">
       <div style="display:flex;align-items:center;gap:6px">
         <div class="card-lbl">Forme (Fitness)</div>
         <button class="help-btn" onclick="showHelp(event,'forme')">?</button>
       </div>
-      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">Charge − Contrainte</div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">14 derniers jours</div>
     </div>
     <div class="chart-wrap"><canvas id="formeChart2"></canvas></div>
   </div>
@@ -626,6 +618,38 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
 <section class="page" id="page-analyse"><div class="app">
   <div class="title">Analyse</div><div class="sub">Resume hebdomadaire -- Recommandations</div>
   <div class="card"><div class="card-hdr"><div class="card-lbl">Resume par semaine</div></div><div id="weekly-sum"></div></div>
+  <!-- Macro analysis: Charge / Monotonie / Forme over weeks -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-lbl">Analyse macro</div>
+      <select class="fs" id="macro-period" onchange="renderMacroAnalysis()" style="font-size:.72rem;width:auto;padding:6px 10px">
+        <option value="12">12 semaines</option>
+        <option value="26">6 mois</option>
+        <option value="52">1 an</option>
+      </select>
+    </div>
+    <div style="margin-top:10px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <div class="card-lbl">Charge hebdo</div>
+        <button class="help-btn" onclick="showHelp(event,'charge')">?</button>
+      </div>
+      <div class="chart-wrap"><canvas id="macroChargeChart"></canvas></div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <div class="card-lbl">Monotonie</div>
+        <button class="help-btn" onclick="showHelp(event,'monotonie')">?</button>
+      </div>
+      <div class="chart-wrap"><canvas id="macroMonotonieChart"></canvas></div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <div class="card-lbl">Forme (Fitness)</div>
+        <button class="help-btn" onclick="showHelp(event,'forme')">?</button>
+      </div>
+      <div class="chart-wrap"><canvas id="macroFormeChart"></canvas></div>
+    </div>
+  </div>
   <!-- Muscles sollicites -->
   <div class="card">
     <div class="card-hdr">
@@ -1144,6 +1168,19 @@ function goTo(p,btn){
 /* Init */
 /* Auto-fill log-phase from the previous session's phase.
    If the new session date falls on a Monday, use the next phase/week. */
+/* Return Monday-of-the-week key (YYYY-MM-DD) for a given date */
+function _mondayKey(d){
+  const date=new Date(d);date.setHours(0,0,0,0);
+  const dow=date.getDay();
+  const offset=dow===0?6:dow-1;
+  date.setDate(date.getDate()-offset);
+  return _localDateKey(date);
+}
+/* Count number of full weeks between two Mondays (positive if d2 > d1) */
+function _weeksBetween(mondayKey1,mondayKey2){
+  const ms=new Date(mondayKey2+'T00:00:00')-new Date(mondayKey1+'T00:00:00');
+  return Math.round(ms/(7*86400000));
+}
 function autoFillLogPhase(){
   const dateInput=document.getElementById('log-date');
   const phaseSel=document.getElementById('log-phase');
@@ -1152,13 +1189,19 @@ function autoFillLogPhase(){
   if(!sessions.length)return;
   /* Most recent session by date */
   const lastSess=[...sessions].sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
-  if(!lastSess||!lastSess.phase)return;
+  if(!lastSess||!lastSess.phase||!lastSess.date)return;
   let targetPhase=lastSess.phase;
-  /* If new session date is a Monday, bump to next phase/week */
-  const newDate=new Date(dateInput.value+'T00:00:00');
-  if(newDate.getDay()===1){
+  /* Compare ISO weeks (Monday-of-week). If new date is in a later week,
+     bump phase by however many full weeks were crossed. */
+  const lastMonday=_mondayKey(new Date(lastSess.date+'T00:00:00'));
+  const newMonday=_mondayKey(new Date(dateInput.value+'T00:00:00'));
+  const weeksAhead=_weeksBetween(lastMonday,newMonday);
+  if(weeksAhead>0){
     const idx=SEMS.indexOf(lastSess.phase);
-    if(idx>=0&&idx<SEMS.length-1)targetPhase=SEMS[idx+1];
+    if(idx>=0){
+      const newIdx=Math.min(idx+weeksAhead,SEMS.length-1);
+      targetPhase=SEMS[newIdx];
+    }
   }
   if([...phaseSel.options].some(o=>o.value===targetPhase)&&phaseSel.value!==targetPhase){
     phaseSel.value=targetPhase;
@@ -1309,22 +1352,29 @@ function _loadBadge(val,thresholds){
   return{cls:'load-badge-danger',txt:thresholds[3]||'Risque'};
 }
 
-/* Canvas drawing: weekly charge bar chart with threshold zones */
-function drawChargeChart(weeks){
-  const cv=document.getElementById('chargeChart');if(!cv)return;
+/* Charge bar chart with threshold zones — supports both weekly and daily mode.
+   `data`: array of {label, charge}.
+   `opts.thresholds`: [warn, danger] for color zones (default [6000, 10000] for weekly). */
+function drawChargeChart(canvasId,data,opts){
+  opts=opts||{};
+  const cv=document.getElementById(canvasId);if(!cv)return;
+  const isDailyLabels=data.length&&_isDateStr(data[0].label);
   const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
   const W=cv.parentElement.getBoundingClientRect().width,H=cv.parentElement.offsetHeight||160;
   cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,W,H);
-  const pad={t:8,r:10,b:22,l:40},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
-  const dataMax=Math.max(12000,...weeks.map(w=>w.charge));
-  const max=Math.ceil(dataMax/3000)*3000;
+  const pad={t:8,r:10,b:isDailyLabels?56:22,l:40},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
+  const warn=opts.thresholds?opts.thresholds[0]:6000;
+  const danger=opts.thresholds?opts.thresholds[1]:10000;
+  const defaultMax=opts.thresholds?Math.ceil(danger*1.2/100)*100:12000;
+  const dataMax=Math.max(defaultMax,...data.map(w=>w.charge||0));
+  const max=Math.max(dataMax,danger*1.1);
   /* Zone backgrounds */
-  const y6=pad.t+CH*(1-6000/max);
-  const y10=pad.t+CH*(1-10000/max);
-  ctx.fillStyle='rgba(80,141,124,.08)';ctx.fillRect(pad.l,y6,CW,pad.t+CH-y6);
-  if(y10<y6){ctx.fillStyle='rgba(232,168,56,.12)';ctx.fillRect(pad.l,y10,CW,y6-y10);}
-  if(y10>pad.t){ctx.fillStyle='rgba(195,32,38,.1)';ctx.fillRect(pad.l,pad.t,CW,y10-pad.t);}
+  const yW=pad.t+CH*(1-warn/max);
+  const yD=pad.t+CH*(1-danger/max);
+  ctx.fillStyle='rgba(80,141,124,.08)';ctx.fillRect(pad.l,yW,CW,pad.t+CH-yW);
+  if(yD<yW){ctx.fillStyle='rgba(232,168,56,.12)';ctx.fillRect(pad.l,yD,CW,yW-yD);}
+  if(yD>pad.t){ctx.fillStyle='rgba(195,32,38,.1)';ctx.fillRect(pad.l,pad.t,CW,yD-pad.t);}
   /* Y labels */
   ctx.fillStyle='#8a9b93';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';
   for(let i=0;i<=4;i++){
@@ -1334,15 +1384,15 @@ function drawChargeChart(weeks){
     ctx.fillText(Math.round(v),pad.l-4,y+3);
   }
   /* Bars */
-  const barStep=CW/weeks.length;
-  const barW=Math.max(4,barStep-3);
-  weeks.forEach((w,i)=>{
+  const barStep=CW/data.length;
+  const barW=Math.max(2,barStep-3);
+  data.forEach((w,i)=>{
     const x=pad.l+i*barStep+1.5;
     const h=CH*Math.min(w.charge,max)/max;
     const y=pad.t+CH-h;
     let color='#508d7c';
-    if(w.charge>10000)color='#c32026';
-    else if(w.charge>6000)color='#e8a838';
+    if(w.charge>danger)color='#c32026';
+    else if(w.charge>warn)color='#e8a838';
     ctx.fillStyle=color;
     ctx.beginPath();
     if(ctx.roundRect)ctx.roundRect(x,y,barW,h,3);
@@ -1350,18 +1400,32 @@ function drawChargeChart(weeks){
     ctx.fill();
   });
   /* X labels */
-  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
-  weeks.forEach((w,i)=>{if(i%2===0||i===weeks.length-1)ctx.fillText(w.label,pad.l+i*barStep+barW/2+1.5,H-6);});
+  if(isDailyLabels){
+    ctx.fillStyle='#8a9b93';ctx.font="9px 'Inter',sans-serif";
+    data.forEach((w,i)=>{
+      ctx.save();
+      ctx.translate(pad.l+i*barStep+barW/2+1.5,H-pad.b+4);
+      ctx.rotate(-Math.PI/2);
+      ctx.textAlign='right';ctx.textBaseline='middle';
+      ctx.fillText(_dateToDayLabel(w.label),0,0);
+      ctx.restore();
+    });
+  }else{
+    ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+    const showEvery=Math.max(1,Math.floor(data.length/14));
+    data.forEach((w,i)=>{if(i%showEvery===0||i===data.length-1)ctx.fillText(w.label,pad.l+i*barStep+barW/2+1.5,H-6);});
+  }
 }
 
-/* Monotonie line chart with threshold lines */
-function drawMonotonieChart(weeks){
-  const cv=document.getElementById('monotonieChart');if(!cv)return;
+/* Monotonie line chart with threshold lines. Supports daily and weekly modes. */
+function drawMonotonieChart(canvasId,data){
+  const cv=document.getElementById(canvasId);if(!cv)return;
+  const isDailyLabels=data.length&&_isDateStr(data[0].label);
   const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
   const W=cv.parentElement.getBoundingClientRect().width,H=cv.parentElement.offsetHeight||160;
   cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,W,H);
-  const pad={t:8,r:10,b:22,l:30},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
+  const pad={t:8,r:10,b:isDailyLabels?56:22,l:30},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
   const min=0,max=3.5;
   /* Grid */
   ctx.fillStyle='#8a9b93';ctx.font="9px 'DM Mono',monospace";ctx.textAlign='right';
@@ -1379,7 +1443,7 @@ function drawMonotonieChart(weeks){
     ctx.setLineDash([]);
   });
   /* Line + area */
-  const vals=weeks.map(w=>w.monotonie||0);
+  const vals=data.map(w=>w.monotonie||0);
   const pts=vals.map((v,i)=>({x:pad.l+i*(CW/(vals.length-1||1)),y:pad.t+CH*(1-(Math.min(v,max)-min)/(max-min))}));
   if(pts.length>1){
     ctx.beginPath();ctx.moveTo(pts[0].x,H-pad.b);
@@ -1396,19 +1460,33 @@ function drawMonotonieChart(weeks){
     ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
   });
   /* X labels */
-  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
-  weeks.forEach((w,i)=>{if(i%2===0||i===weeks.length-1)ctx.fillText(w.label,pts[i].x,H-6);});
+  if(isDailyLabels){
+    ctx.fillStyle='#8a9b93';ctx.font="9px 'Inter',sans-serif";
+    data.forEach((w,i)=>{
+      ctx.save();
+      ctx.translate(pts[i].x,H-pad.b+4);
+      ctx.rotate(-Math.PI/2);
+      ctx.textAlign='right';ctx.textBaseline='middle';
+      ctx.fillText(_dateToDayLabel(w.label),0,0);
+      ctx.restore();
+    });
+  }else{
+    ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+    const showEvery=Math.max(1,Math.floor(data.length/14));
+    data.forEach((w,i)=>{if(i%showEvery===0||i===data.length-1)ctx.fillText(w.label,pts[i].x,H-6);});
+  }
 }
 
-/* Forme (Fitness) area chart with zero baseline */
-function drawFormeChart(weeks){
-  const cv=document.getElementById('formeChart2');if(!cv)return;
+/* Forme (Fitness) area chart with zero baseline. Supports daily and weekly. */
+function drawFormeChart(canvasId,data){
+  const cv=document.getElementById(canvasId);if(!cv)return;
+  const isDailyLabels=data.length&&_isDateStr(data[0].label);
   const ctx=cv.getContext('2d');const dpr=window.devicePixelRatio||1;
   const W=cv.parentElement.getBoundingClientRect().width,H=cv.parentElement.offsetHeight||160;
   cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,W,H);
-  const pad={t:8,r:10,b:22,l:44},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
-  const vals=weeks.map(w=>w.forme);
+  const pad={t:8,r:10,b:isDailyLabels?56:22,l:44},CW=W-pad.l-pad.r,CH=H-pad.t-pad.b;
+  const vals=data.map(w=>w.forme);
   const maxAbs=Math.max(500,...vals.map(v=>Math.abs(v)));
   const min=-maxAbs,max=maxAbs;
   const y0=pad.t+CH*(1-(0-min)/(max-min));
@@ -1443,8 +1521,21 @@ function drawFormeChart(weeks){
     ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
   });
   /* X labels */
-  ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
-  weeks.forEach((w,i)=>{if(i%2===0||i===weeks.length-1)ctx.fillText(w.label,pts[i].x,H-6);});
+  if(isDailyLabels){
+    ctx.fillStyle='#8a9b93';ctx.font="9px 'Inter',sans-serif";
+    data.forEach((w,i)=>{
+      ctx.save();
+      ctx.translate(pts[i].x,H-pad.b+4);
+      ctx.rotate(-Math.PI/2);
+      ctx.textAlign='right';ctx.textBaseline='middle';
+      ctx.fillText(_dateToDayLabel(w.label),0,0);
+      ctx.restore();
+    });
+  }else{
+    ctx.fillStyle='#8a9b93';ctx.font="8px 'DM Mono',monospace";ctx.textAlign='center';
+    const showEvery=Math.max(1,Math.floor(data.length/14));
+    data.forEach((w,i)=>{if(i%showEvery===0||i===data.length-1)ctx.fillText(w.label,pts[i].x,H-6);});
+  }
 }
 
 /* Dashboard mini-widget: fill last-week values + badges */
@@ -1470,6 +1561,43 @@ function computeRollingMetrics(ss,days){
   const contrainte=charge*monotonie;
   const forme=charge-contrainte;
   return{charge:Math.round(charge),monotonie:+monotonie.toFixed(2),contrainte:Math.round(contrainte),forme:Math.round(forme),dailyLoads:daily};
+}
+
+/* Compute daily metrics for the last N calendar days.
+   For each day, computes:
+   - dayCharge: sum of Foster for that day
+   - monotonie/contrainte/forme: rolling 7-day metric ending on that day
+   Returns array of {date, dayCharge, monotonie, contrainte, forme}. */
+function computeDailyMetrics(ss,days){
+  days=days||14;
+  const today=new Date();today.setHours(0,0,0,0);
+  /* Build a map of all per-day charges (over the full needed window: days + 6 prior for rolling) */
+  const windowDays=days+6;
+  const start=new Date(today);start.setDate(today.getDate()-(windowDays-1));
+  const allDaily=new Array(windowDays).fill(0);
+  ss.forEach(s=>{
+    if(!s.date)return;
+    const d=new Date(s.date+'T00:00:00');d.setHours(0,0,0,0);
+    if(d<start||d>today)return;
+    const idx=Math.floor((d-start)/(1000*60*60*24));
+    if(idx>=0&&idx<windowDays)allDaily[idx]+=_sessionLoad(s);
+  });
+  /* For each of the last `days` days, compute charge/monotonie/forme from the 7 days ending on it */
+  const out=[];
+  for(let i=windowDays-days;i<windowDays;i++){
+    const date=new Date(start);date.setDate(start.getDate()+i);
+    const window7=allDaily.slice(i-6,i+1);
+    const dayCharge=allDaily[i];
+    const sum7=window7.reduce((a,b)=>a+b,0);
+    const mean=sum7/7;
+    let sumSq=0;window7.forEach(v=>{sumSq+=(v-mean)*(v-mean);});
+    const stdDev=Math.sqrt(sumSq/7);
+    const monotonie=stdDev>0?mean/stdDev:(mean>0?2.5:0);
+    const contrainte=sum7*monotonie;
+    const forme=sum7-contrainte;
+    out.push({date:_localDateKey(date),dayCharge:Math.round(dayCharge),charge7:Math.round(sum7),monotonie:+monotonie.toFixed(2),contrainte:Math.round(contrainte),forme:Math.round(forme)});
+  }
+  return out;
 }
 
 /* Render dashboard mini-widget with rolling 7-day metrics (calendar days ending today).
@@ -2381,16 +2509,6 @@ function renderDash(){
   // AXE3: Calendar heatmap
   drawHeatmap(ss);
 
-  /* Foster chart: aggregate by calendar day (sum of all sessions per day) */
-  (()=>{
-    const byDay={};
-    ss.forEach(s=>{if(s.date)byDay[s.date]=(byDay[s.date]||0)+(s.foster||0);});
-    const dates=Object.keys(byDay).sort();
-    const last=dates.slice(-14);
-    drawChart('fosterChart',last,last.map(d=>byDay[d]),'#508d7c','rgba(80,141,124,.08)',0,null);
-  })();
-  drawChart('formeChart',ss.slice(-10).map(s=>s.date),ss.slice(-10).map(s=>s.forme),'#7cc6b6','rgba(124,198,182,.08)',1,5);
-
   /* Foster load metrics mini-widget — uses rolling 7 calendar days */
   if(ss.length){
     document.getElementById('load-widget').style.display='block';
@@ -2399,12 +2517,14 @@ function renderDash(){
     document.getElementById('load-widget').style.display='none';
   }
 
-  /* 12-week charge / monotonie / forme charts (moved from Analyse) */
+  /* Micro analysis: 14-day daily charts (Charge / Monotonie / Forme) */
   if(ss.length){
-    const weeks=computeWeeklyMetrics(ss,12);
-    drawChargeChart(weeks);
-    drawMonotonieChart(weeks);
-    drawFormeChart(weeks);
+    const daily=computeDailyMetrics(ss,14);
+    /* Charge chart uses dayCharge for each day with daily thresholds (~weekly/7) */
+    const chargeData=daily.map(d=>({label:d.date,charge:d.dayCharge}));
+    drawChargeChart('chargeChart',chargeData,{thresholds:[800,1400]});
+    drawMonotonieChart('monotonieChart',daily.map(d=>({label:d.date,monotonie:d.monotonie})));
+    drawFormeChart('formeChart2',daily.map(d=>({label:d.date,forme:d.forme})));
   }
 }
 
@@ -3158,6 +3278,22 @@ function renderAnalyse(){
 
   // AXE3: Dynamic periodization bars
   renderPeriodBars(ss);
+
+  // Macro analysis (Foster charts over configurable period)
+  renderMacroAnalysis();
+}
+
+/* Macro analysis: render Charge / Monotonie / Forme over the period
+   selected in the #macro-period dropdown (12 / 26 / 52 weeks). */
+function renderMacroAnalysis(){
+  const sel=document.getElementById('macro-period');
+  const weeksN=sel?parseInt(sel.value)||12:12;
+  const ss=DB.sessions;
+  if(!ss.length)return;
+  const weeks=computeWeeklyMetrics(ss,weeksN);
+  drawChargeChart('macroChargeChart',weeks);
+  drawMonotonieChart('macroMonotonieChart',weeks);
+  drawFormeChart('macroFormeChart',weeks);
 }
 
 /* AXE2: Injury alerts */
