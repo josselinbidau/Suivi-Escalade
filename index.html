@@ -465,6 +465,59 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
     </div>
     <div class="chart-wrap"><canvas id="formeChart2"></canvas></div>
   </div>
+  <!-- Garmin Sante (14 jours) -->
+  <div class="card" id="garmin-card" style="display:none">
+    <div class="card-hdr">
+      <div class="card-lbl">Sante Garmin</div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace">14 derniers jours</div>
+    </div>
+    <div class="sg sg3" style="margin-bottom:6px">
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Sommeil</span><button class="help-btn" onclick="showHelp(event,'sommeil')">?</button></div>
+        <div class="load-val teal" id="gm-sleep">--</div>
+        <div style="font-size:.6rem;color:var(--text-sub)" id="gm-sleep-trend"></div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">HRV</span><button class="help-btn" onclick="showHelp(event,'hrv')">?</button></div>
+        <div class="load-val teal" id="gm-hrv">--</div>
+        <div style="font-size:.6rem;color:var(--text-sub)" id="gm-hrv-trend"></div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">RHR</span><button class="help-btn" onclick="showHelp(event,'rhr')">?</button></div>
+        <div class="load-val teal" id="gm-rhr">--</div>
+        <div style="font-size:.6rem;color:var(--text-sub)" id="gm-rhr-vs"></div>
+      </div>
+    </div>
+    <div class="sg sg3">
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Stress</span><button class="help-btn" onclick="showHelp(event,'stress')">?</button></div>
+        <div class="load-val" id="gm-stress" style="color:#e8a838">--</div>
+        <div class="load-badge load-badge-ok" id="gm-stress-b">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Readiness</span><button class="help-btn" onclick="showHelp(event,'readiness')">?</button></div>
+        <div class="load-val" id="gm-readiness" style="color:#508d7c">--</div>
+        <div class="load-badge load-badge-ok" id="gm-readiness-b">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Recuperation</span><button class="help-btn" onclick="showHelp(event,'recovery')">?</button></div>
+        <div class="load-val" id="gm-recovery" style="color:#508d7c">--</div>
+        <div class="load-badge load-badge-ok" id="gm-recovery-b">--</div>
+      </div>
+    </div>
+    <div class="load-stat" style="margin-top:7px">
+      <div class="load-hdr"><span class="load-lbl">Sommeil / Charge</span><button class="help-btn" onclick="showHelp(event,'sleepCharge')">?</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="load-val" id="gm-sleep-charge" style="color:#3d8a78">--</div>
+        <div style="font-size:.66rem;color:var(--text-dim)" id="gm-sleep-charge-detail"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Garmin Alertes -->
+  <div class="card" id="garmin-alerts" style="display:none">
+    <div class="card-hdr"><div class="card-lbl">Alertes</div></div>
+    <div id="garmin-alerts-list"></div>
+  </div>
 </div></section>
 
 <!-- SAISIE -->
@@ -649,6 +702,42 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
       </div>
       <div class="chart-wrap"><canvas id="macroFormeChart"></canvas></div>
     </div>
+  </div>
+  <!-- Garmin Sante macro -->
+  <div class="card" id="garmin-macro-card" style="display:none">
+    <div class="card-hdr">
+      <div class="card-lbl">Sante Garmin (macro)</div>
+      <div style="font-size:.6rem;color:var(--text-sub);font-family:'DM Mono',monospace" id="gmac-period-lbl">12 semaines</div>
+    </div>
+    <div class="sg sg3" style="margin-top:6px">
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Sommeil moy.</span><button class="help-btn" onclick="showHelp(event,'sommeil')">?</button></div>
+        <div class="load-val teal" id="gmac-sleep">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">HRV moy.</span><button class="help-btn" onclick="showHelp(event,'hrv')">?</button></div>
+        <div class="load-val teal" id="gmac-hrv">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">RHR moy.</span><button class="help-btn" onclick="showHelp(event,'rhr')">?</button></div>
+        <div class="load-val teal" id="gmac-rhr">--</div>
+      </div>
+    </div>
+    <div class="sg sg3" style="margin-top:6px">
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Stress moy.</span><button class="help-btn" onclick="showHelp(event,'stress')">?</button></div>
+        <div class="load-val" id="gmac-stress" style="color:#e8a838">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Readiness moy.</span><button class="help-btn" onclick="showHelp(event,'readiness')">?</button></div>
+        <div class="load-val" id="gmac-readiness" style="color:#508d7c">--</div>
+      </div>
+      <div class="load-stat">
+        <div class="load-hdr"><span class="load-lbl">Recuperation</span><button class="help-btn" onclick="showHelp(event,'recovery')">?</button></div>
+        <div class="load-val" id="gmac-recovery" style="color:#508d7c">--</div>
+      </div>
+    </div>
+    <div style="font-size:.66rem;color:var(--text-sub);text-align:center;margin-top:8px" id="gmac-coverage"></div>
   </div>
   <!-- Muscles sollicites -->
   <div class="card">
@@ -871,6 +960,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;heigh
           Recevoir
         </button>
       </div>
+
+      <div class="divider"></div>
+      <div class="fl" style="margin:10px 0 6px">Import donnees Garmin</div>
+      <div style="font-size:.7rem;color:var(--text-dim);line-height:1.5;margin-bottom:6px">
+        Importer le fichier <b style="font-family:'DM Mono',monospace">garmin_health_data.json</b> genere par le script Python.
+      </div>
+      <input type="file" id="garmin-file" accept=".json" style="display:none" onchange="onGarminFileSelected(event)">
+      <button class="btn btn-outline btn-sm" style="width:100%;margin-bottom:4px" onclick="document.getElementById('garmin-file').click()">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importer fichier Garmin
+      </button>
+      <div id="garmin-status" style="font-size:.68rem;color:var(--text-sub);min-height:14px;text-align:center;margin-bottom:8px"></div>
 
       <div class="divider"></div>
       <div class="fl" style="margin:10px 0 6px">Export / Import manuel (JSON)</div>
@@ -1131,6 +1232,8 @@ const DB={
   set notes(v){localStorage.setItem('vl3_n',JSON.stringify(v));},
   get venues(){try{return JSON.parse(localStorage.getItem('vl3_v')||'[]');}catch{return[];}},
   set venues(v){localStorage.setItem('vl3_v',JSON.stringify(v));},
+  get garmin(){try{return JSON.parse(localStorage.getItem('vl3_g')||'[]');}catch{return[];}},
+  set garmin(v){localStorage.setItem('vl3_g',JSON.stringify(v));},
 };
 
 /* AXE4: Page order for slide direction */
@@ -1258,7 +1361,14 @@ const HELP_TEXTS={
   charge:'<b>Charge = Duree (min) × RPE (1-10)</b><br>Volume d\'entrainement sur 7 jours.<br><br><b style="color:#508d7c">&lt; 6000 U.A.</b> — OK<br><b style="color:#e8a838">6000 → 10000</b> — Fatigue<br><b style="color:#c32026">&gt; 10000</b> — Risque blessure',
   monotonie:'<b>Monotonie = Charge moyenne / Ecart-type</b><br>Variete de l\'entrainement (sur 7 jours). Plus la valeur est basse, plus l\'entrainement est varie.<br><br><b style="color:#508d7c">&lt; 2</b> — OK<br><b style="color:#e8a838">2 → 2.5</b> — Fatigue<br><b style="color:#c32026">&gt; 2.5</b> — Risque blessure',
   contrainte:'<b>Contrainte = Charge × Monotonie</b><br>Stress cumule de l\'entrainement.<br><br><b style="color:#508d7c">&lt; 6000 U.A.</b> — OK<br><b style="color:#e8a838">6000 → 10000</b> — Surentrainement<br><b style="color:#c32026">&gt; 10000</b> — Risque blessure',
-  forme:'<b>Forme = Charge − Contrainte</b><br>Capacite de performance actuelle.<br><br><b style="color:#508d7c">Positif</b> — En forme<br><b style="color:#c32026">Negatif</b> — Fatigue accumulee'
+  forme:'<b>Forme = Charge − Contrainte</b><br>Capacite de performance actuelle.<br><br><b style="color:#508d7c">Positif</b> — En forme<br><b style="color:#c32026">Negatif</b> — Fatigue accumulee',
+  sommeil:'<b>Sommeil moyen</b> = duree de sommeil moyenne sur la periode (donnees Garmin).<br><br>Cible : <b>7-9 h / nuit</b>.<br>La fleche indique la tendance : moitie recente vs moitie ancienne de la fenetre.',
+  hrv:'<b>HRV = Heart Rate Variability</b> (variabilite cardiaque).<br>Indicateur clef de la recuperation du systeme nerveux autonome.<br><br>Compare a votre <b>baseline</b> (mediane historique).<br><b style="color:#508d7c">Au-dessus</b> = bonne recuperation.<br><b style="color:#c32026">En baisse 3j</b> = signal de fatigue.',
+  rhr:'<b>RHR = Resting Heart Rate</b> (FC au repos).<br>Compare a votre <b>baseline</b> (mediane historique).<br><br><b style="color:#508d7c">Egal ou en-dessous</b> = OK<br><b style="color:#e8a838">+5 bpm</b> = surveillance<br><b style="color:#c32026">+10 bpm</b> = fatigue ou maladie possible',
+  stress:'<b>Stress moyen</b> sur la periode (score Garmin 0-100).<br><br><b style="color:#508d7c">&lt; 30</b> — Faible<br><b style="color:#e8a838">30 → 50</b> — Modere<br><b style="color:#c32026">&gt; 50</b> — Eleve',
+  readiness:'<b>Training Readiness</b> = score Garmin (0-100) qui combine sommeil, HRV, charge recente et stress.<br><br><b style="color:#508d7c">≥ 70</b> — Pret a charger<br><b style="color:#e8a838">40 → 70</b> — Seance moderee<br><b style="color:#c32026">&lt; 40</b> — Repos / recuperation',
+  recovery:'<b>Score recuperation composite</b> (0-100).<br>Combinaison ponderee :<br>• HRV vs baseline : <b>40 %</b><br>• Sommeil : <b>30 %</b><br>• Training Readiness : <b>30 %</b><br><br>Indicateur synthetique pour decider de l\'intensite du jour.',
+  sleepCharge:'<b>Ratio Sommeil / Charge</b><br>Heures de sommeil moyennes / heures de sommeil cible compte tenu de la charge.<br><br>Regle : la charge Foster eleve le besoin de sommeil. Cible = 8h + (Foster/1000) h.<br><br><b style="color:#508d7c">≥ 1.0</b> — Recuperation suffisante<br><b style="color:#c32026">&lt; 0.85</b> — Dette de sommeil'
 };
 
 function showHelp(ev,key){
@@ -1539,6 +1649,244 @@ function drawFormeChart(canvasId,data){
 }
 
 /* Dashboard mini-widget: fill last-week values + badges */
+/* ============================================================
+   GARMIN HEALTH — Import + KPIs
+   Data shape: DB.garmin = [{date, sleep_minutes, sleep_deep_minutes, sleep_light_minutes,
+                            sleep_rem_minutes, hrv, rhr, stress, body_battery_start,
+                            body_battery_end, readiness, readiness_level, vo2max}]
+   ============================================================ */
+
+/* Parse a Garmin export JSON. Tolerant to a few common shapes:
+   - {days:[...]}  - {data:[...]}  - {garmin:[...]}  - bare array  - dict keyed by date */
+function _normalizeGarminEntry(raw){
+  if(!raw||typeof raw!=='object')return null;
+  /* Date may come in various keys */
+  const date=raw.date||raw.calendarDate||raw.day||null;
+  if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;
+  const num=v=>{const n=parseFloat(v);return isFinite(n)?n:null;};
+  const sleepMin=num(raw.sleep_minutes)??(raw.sleep_seconds?Math.round(raw.sleep_seconds/60):null)??num(raw.sleepDuration);
+  /* sleepDuration in some exports is seconds, in some minutes — heuristic: if >1000, it's seconds */
+  const sleepMinNorm=sleepMin!=null?(sleepMin>1000?Math.round(sleepMin/60):sleepMin):null;
+  const deepRaw=num(raw.sleep_deep_minutes)??num(raw.deep_sleep_seconds)??num(raw.deepSleepSeconds);
+  const lightRaw=num(raw.sleep_light_minutes)??num(raw.light_sleep_seconds)??num(raw.lightSleepSeconds);
+  const remRaw=num(raw.sleep_rem_minutes)??num(raw.rem_sleep_seconds)??num(raw.remSleepSeconds);
+  const toMin=v=>v==null?null:(v>1000?Math.round(v/60):v);
+  return{
+    date:date,
+    sleep_minutes:sleepMinNorm,
+    sleep_deep_minutes:toMin(deepRaw),
+    sleep_light_minutes:toMin(lightRaw),
+    sleep_rem_minutes:toMin(remRaw),
+    hrv:num(raw.hrv)??num(raw.HRV)??null,
+    rhr:num(raw.rhr)??num(raw.resting_heart_rate)??num(raw.restingHeartRate)??null,
+    stress:num(raw.stress)??num(raw.stress_avg)??num(raw.averageStressLevel)??null,
+    body_battery_start:num(raw.body_battery_start)??num(raw.bodyBatteryStart)??null,
+    body_battery_end:num(raw.body_battery_end)??num(raw.bodyBatteryEnd)??null,
+    readiness:num(raw.readiness)??num(raw.training_readiness)??num(raw.trainingReadiness)??null,
+    readiness_level:raw.readiness_level||raw.readinessLevel||null,
+    vo2max:num(raw.vo2max)??num(raw.vo2Max)??null
+  };
+}
+function parseGarminPayload(payload){
+  let arr=null;
+  if(Array.isArray(payload))arr=payload;
+  else if(payload&&typeof payload==='object'){
+    arr=payload.days||payload.data||payload.garmin||payload.entries||null;
+    if(!arr){
+      /* Maybe keyed by date */
+      const keys=Object.keys(payload);
+      const looksLikeDateKeys=keys.length>0&&keys.every(k=>/^\d{4}-\d{2}-\d{2}$/.test(k));
+      if(looksLikeDateKeys){
+        arr=keys.map(k=>({...payload[k],date:k}));
+      }
+    }
+  }
+  if(!Array.isArray(arr))return[];
+  return arr.map(_normalizeGarminEntry).filter(x=>x);
+}
+function mergeGarminEntries(newEntries){
+  const existing=DB.garmin;
+  const byDate={};
+  existing.forEach(e=>{byDate[e.date]=e;});
+  let added=0,updated=0;
+  newEntries.forEach(n=>{
+    const old=byDate[n.date];
+    if(!old){byDate[n.date]=n;added++;}
+    else{
+      /* Merge: prefer non-null values from new entry */
+      const merged={...old};
+      Object.keys(n).forEach(k=>{if(n[k]!=null)merged[k]=n[k];});
+      byDate[n.date]=merged;updated++;
+    }
+  });
+  const out=Object.values(byDate).sort((a,b)=>a.date.localeCompare(b.date));
+  DB.garmin=out;
+  return{added,updated,total:out.length};
+}
+function onGarminFileSelected(ev){
+  const file=ev.target.files&&ev.target.files[0];
+  if(!file)return;
+  const statusEl=document.getElementById('garmin-status');
+  statusEl.textContent='Lecture du fichier...';statusEl.style.color='var(--accent)';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const json=JSON.parse(e.target.result);
+      const entries=parseGarminPayload(json);
+      if(!entries.length){
+        statusEl.textContent='Aucune donnee Garmin reconnue dans ce fichier.';
+        statusEl.style.color='var(--red)';
+        toast('Format Garmin non reconnu');return;
+      }
+      const r=mergeGarminEntries(entries);
+      statusEl.textContent=r.added+' nouvelle(s), '+r.updated+' mise(s) a jour. Total: '+r.total+'.';
+      statusEl.style.color='var(--green)';
+      toast(r.added+' jours Garmin importes');
+      /* Refresh dashboard if visible */
+      if(currentPage==='home')renderDash();
+      else if(currentPage==='analyse')renderAnalyse();
+    }catch(err){
+      statusEl.textContent='Erreur de lecture : '+err.message;
+      statusEl.style.color='var(--red)';
+      toast('Erreur import Garmin');
+    }
+    /* Reset input so the same file can be re-selected */
+    ev.target.value='';
+  };
+  reader.onerror=()=>{
+    statusEl.textContent='Erreur de lecture du fichier.';
+    statusEl.style.color='var(--red)';
+  };
+  reader.readAsText(file);
+}
+
+/* Get Garmin entries within [start, end] inclusive (YYYY-MM-DD strings) */
+function _garminInRange(startKey,endKey){
+  return DB.garmin.filter(e=>e.date>=startKey&&e.date<=endKey);
+}
+/* Average over a range, ignoring nulls. Returns null if no valid values. */
+function _garminAvg(entries,field){
+  const vals=entries.map(e=>e[field]).filter(v=>v!=null&&!isNaN(v));
+  if(!vals.length)return null;
+  return vals.reduce((a,b)=>a+b,0)/vals.length;
+}
+/* Compare avg over last half vs first half. Returns delta. */
+function _garminTrend(entries,field){
+  if(entries.length<4)return 0;
+  const mid=Math.floor(entries.length/2);
+  const a=_garminAvg(entries.slice(0,mid),field);
+  const b=_garminAvg(entries.slice(mid),field);
+  if(a==null||b==null)return 0;
+  return b-a;
+}
+
+/* Compute Garmin KPIs over the last N days */
+function computeGarminMetrics(days){
+  days=days||14;
+  const today=new Date();today.setHours(0,0,0,0);
+  const start=new Date(today);start.setDate(today.getDate()-(days-1));
+  const startKey=_localDateKey(start);
+  const endKey=_localDateKey(today);
+  const entries=_garminInRange(startKey,endKey);
+
+  /* Baselines = median over the FULL history (not the window) */
+  const allHrvs=DB.garmin.map(e=>e.hrv).filter(v=>v!=null&&!isNaN(v)).sort((a,b)=>a-b);
+  const allRhrs=DB.garmin.map(e=>e.rhr).filter(v=>v!=null&&!isNaN(v)).sort((a,b)=>a-b);
+  const baselineHrv=allHrvs.length?allHrvs[Math.floor(allHrvs.length/2)]:null;
+  const baselineRhr=allRhrs.length?allRhrs[Math.floor(allRhrs.length/2)]:null;
+
+  const sleepAvg=_garminAvg(entries,'sleep_minutes');
+  const hrvAvg=_garminAvg(entries,'hrv');
+  const rhrAvg=_garminAvg(entries,'rhr');
+  const stressAvg=_garminAvg(entries,'stress');
+  const readinessAvg=_garminAvg(entries,'readiness');
+
+  /* Latest values */
+  const lastEntry=entries[entries.length-1]||null;
+
+  /* Composite recovery score 0-100
+     Weighted: HRV vs baseline 40%, sleep adequacy 30%, readiness 30% */
+  let recoveryScore=null;
+  let recoveryParts=[];
+  if(hrvAvg!=null&&baselineHrv!=null){
+    /* HRV: 100 if at baseline + 10ms, 50 at baseline, 0 at baseline - 10ms */
+    const hrvNorm=Math.max(0,Math.min(100,50+(hrvAvg-baselineHrv)*5));
+    recoveryParts.push({weight:0.4,value:hrvNorm});
+  }
+  if(sleepAvg!=null){
+    /* Sleep: 100 at 8h (480min), 50 at 6h (360min), 0 at 4h (240min) */
+    const sleepNorm=Math.max(0,Math.min(100,(sleepAvg-240)*100/240));
+    recoveryParts.push({weight:0.3,value:sleepNorm});
+  }
+  if(readinessAvg!=null){
+    recoveryParts.push({weight:0.3,value:readinessAvg});
+  }
+  if(recoveryParts.length){
+    const wSum=recoveryParts.reduce((a,b)=>a+b.weight,0);
+    const wAvg=recoveryParts.reduce((a,b)=>a+b.value*b.weight,0)/wSum;
+    recoveryScore=Math.round(wAvg);
+  }
+
+  return{
+    days:days,
+    entries:entries,
+    coverage:entries.length,
+    sleepAvg:sleepAvg!=null?Math.round(sleepAvg):null,
+    sleepTrend:_garminTrend(entries,'sleep_minutes'),
+    hrvAvg:hrvAvg!=null?+hrvAvg.toFixed(1):null,
+    hrvTrend:_garminTrend(entries,'hrv'),
+    rhrAvg:rhrAvg!=null?Math.round(rhrAvg):null,
+    rhrVsBaseline:rhrAvg!=null&&baselineRhr!=null?Math.round(rhrAvg-baselineRhr):null,
+    baselineHrv:baselineHrv!=null?+baselineHrv.toFixed(1):null,
+    baselineRhr:baselineRhr!=null?Math.round(baselineRhr):null,
+    stressAvg:stressAvg!=null?Math.round(stressAvg):null,
+    readinessAvg:readinessAvg!=null?Math.round(readinessAvg):null,
+    lastReadiness:lastEntry?lastEntry.readiness:null,
+    lastReadinessLevel:lastEntry?lastEntry.readiness_level:null,
+    recoveryScore:recoveryScore
+  };
+}
+
+/* Detect warning patterns (returns array of {level, text}) */
+function detectGarminAlerts(){
+  const alerts=[];
+  if(!DB.garmin.length)return alerts;
+  const today=new Date();today.setHours(0,0,0,0);
+  const todayKey=_localDateKey(today);
+  /* Pattern 1: HRV declining 3 days in a row */
+  const last3=DB.garmin.slice(-3).filter(e=>e.hrv!=null);
+  if(last3.length===3&&last3[0].hrv>last3[1].hrv&&last3[1].hrv>last3[2].hrv){
+    const drop=(last3[0].hrv-last3[2].hrv).toFixed(1);
+    alerts.push({level:'warn',text:'HRV en baisse 3 jours consecutifs (-'+drop+' ms). Surveillez votre recuperation.'});
+  }
+  /* Pattern 2: Foster 7j > moyenne 14j + RHR elevee */
+  const garmin14=computeGarminMetrics(14);
+  if(garmin14.rhrVsBaseline!=null&&garmin14.rhrVsBaseline>=5){
+    /* Also check Foster 7j ratio */
+    const foster7=computeRollingMetrics(DB.sessions,7);
+    const foster14Entries=computeDailyMetrics(DB.sessions,14);
+    const totalFoster14=foster14Entries.reduce((a,b)=>a+b.dayCharge,0);
+    if(totalFoster14>0&&foster7.charge>totalFoster14*0.6){
+      alerts.push({level:'danger',text:'Charge elevee + RHR au-dessus de la baseline (+'+garmin14.rhrVsBaseline+' bpm). Repos recommande.'});
+    }
+  }
+  /* Pattern 3: Low readiness */
+  const lastReady=DB.garmin.filter(e=>e.readiness!=null).slice(-1)[0];
+  if(lastReady&&lastReady.readiness<40){
+    alerts.push({level:'warn',text:'Training Readiness faible ('+lastReady.readiness+'/100). Privilegiez une seance legere.'});
+  }
+  /* Pattern 4: Insufficient sleep */
+  const last7=DB.garmin.slice(-7).filter(e=>e.sleep_minutes!=null);
+  if(last7.length>=3){
+    const avg=last7.reduce((a,b)=>a+b.sleep_minutes,0)/last7.length;
+    if(avg<360){
+      const hrs=(avg/60).toFixed(1);
+      alerts.push({level:'warn',text:'Sommeil insuffisant sur 7 jours ('+hrs+' h/nuit en moyenne).'});
+    }
+  }
+  return alerts;
+}
+
 /* Compute Foster metrics over a rolling window of N calendar days ending today.
    Returns {charge, monotonie, contrainte, forme, dailyLoads}. */
 function computeRollingMetrics(ss,days){
@@ -2526,6 +2874,94 @@ function renderDash(){
     drawMonotonieChart('monotonieChart',daily.map(d=>({label:d.date,monotonie:d.monotonie})));
     drawFormeChart('formeChart2',daily.map(d=>({label:d.date,forme:d.forme})));
   }
+
+  /* Garmin Sante (14 jours) */
+  renderGarminMicroCard();
+  renderGarminAlerts();
+}
+
+/* Render Garmin micro KPI card on the dashboard (14-day window) */
+function renderGarminMicroCard(){
+  const card=document.getElementById('garmin-card');
+  if(!card)return;
+  if(!DB.garmin.length){card.style.display='none';return;}
+  card.style.display='block';
+  const m=computeGarminMetrics(14);
+  const setIf=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  const setBadge=(id,b)=>{const el=document.getElementById(id);if(el){el.className='load-badge '+b.cls;el.textContent=b.txt;}};
+  /* Sommeil */
+  if(m.sleepAvg!=null){
+    const h=Math.floor(m.sleepAvg/60),mn=m.sleepAvg%60;
+    setIf('gm-sleep',h+'h'+(mn<10?'0':'')+mn);
+    const arrow=m.sleepTrend>5?'↗ +':(m.sleepTrend<-5?'↘ ':'→ ');
+    setIf('gm-sleep-trend',arrow+Math.round(m.sleepTrend)+' min');
+  }else{setIf('gm-sleep','--');setIf('gm-sleep-trend','');}
+  /* HRV */
+  if(m.hrvAvg!=null){
+    setIf('gm-hrv',m.hrvAvg+' ms');
+    const arrow=m.hrvTrend>1?'↗':(m.hrvTrend<-1?'↘':'→');
+    setIf('gm-hrv-trend',arrow+' base '+(m.baselineHrv||'--')+' ms');
+  }else{setIf('gm-hrv','--');setIf('gm-hrv-trend','');}
+  /* RHR */
+  if(m.rhrAvg!=null){
+    setIf('gm-rhr',m.rhrAvg+' bpm');
+    if(m.rhrVsBaseline!=null){
+      const sign=m.rhrVsBaseline>0?'+':'';
+      setIf('gm-rhr-vs',sign+m.rhrVsBaseline+' vs base');
+    }else setIf('gm-rhr-vs','');
+  }else{setIf('gm-rhr','--');setIf('gm-rhr-vs','');}
+  /* Stress */
+  if(m.stressAvg!=null){
+    setIf('gm-stress',m.stressAvg);
+    const b=m.stressAvg<30?{cls:'load-badge-ok',txt:'Faible'}:m.stressAvg<50?{cls:'load-badge-warn',txt:'Modere'}:{cls:'load-badge-danger',txt:'Eleve'};
+    setBadge('gm-stress-b',b);
+  }else{setIf('gm-stress','--');setBadge('gm-stress-b',{cls:'load-badge-ok',txt:'--'});}
+  /* Readiness */
+  if(m.readinessAvg!=null){
+    setIf('gm-readiness',m.readinessAvg);
+    const b=m.readinessAvg>=70?{cls:'load-badge-ok',txt:'Pret'}:m.readinessAvg>=40?{cls:'load-badge-warn',txt:'Modere'}:{cls:'load-badge-danger',txt:'Repos'};
+    setBadge('gm-readiness-b',b);
+  }else{setIf('gm-readiness','--');setBadge('gm-readiness-b',{cls:'load-badge-ok',txt:'--'});}
+  /* Score recuperation composite */
+  if(m.recoveryScore!=null){
+    setIf('gm-recovery',m.recoveryScore);
+    const b=m.recoveryScore>=70?{cls:'load-badge-ok',txt:'Bonne'}:m.recoveryScore>=40?{cls:'load-badge-warn',txt:'Moyenne'}:{cls:'load-badge-danger',txt:'Faible'};
+    setBadge('gm-recovery-b',b);
+  }else{setIf('gm-recovery','--');setBadge('gm-recovery-b',{cls:'load-badge-ok',txt:'--'});}
+  /* Sommeil / Charge ratio (cross Foster + Garmin) */
+  const sleepChargeEl=document.getElementById('gm-sleep-charge');
+  const sleepChargeDetail=document.getElementById('gm-sleep-charge-detail');
+  if(m.sleepAvg!=null){
+    const foster7=computeRollingMetrics(DB.sessions,7);
+    const sleepH=m.sleepAvg/60;
+    const targetH=8+foster7.charge/1000;
+    const ratio=sleepH/targetH;
+    sleepChargeEl.textContent=ratio.toFixed(2);
+    sleepChargeEl.style.color=ratio>=1?'#3d8a78':ratio>=0.85?'#e8a838':'var(--red)';
+    sleepChargeDetail.textContent=sleepH.toFixed(1)+'h sur '+targetH.toFixed(1)+'h cible';
+  }else{
+    sleepChargeEl.textContent='--';
+    sleepChargeDetail.textContent='';
+  }
+}
+
+/* Render Garmin-derived alerts card */
+function renderGarminAlerts(){
+  const card=document.getElementById('garmin-alerts');
+  if(!card)return;
+  if(!DB.garmin.length){card.style.display='none';return;}
+  const alerts=detectGarminAlerts();
+  if(!alerts.length){card.style.display='none';return;}
+  card.style.display='block';
+  document.getElementById('garmin-alerts-list').innerHTML=alerts.map(a=>{
+    const color=a.level==='danger'?'var(--red)':'#b07e24';
+    const bg=a.level==='danger'?'rgba(195,32,38,.08)':'rgba(232,168,56,.1)';
+    const icon=a.level==='danger'?'⚠':'!';
+    return`<div style="display:flex;align-items:flex-start;gap:9px;padding:8px 10px;background:${bg};border-radius:8px;margin-bottom:6px;font-size:.78rem;line-height:1.4;color:var(--text)">
+      <div style="color:${color};font-weight:700;font-size:.9rem;line-height:1">${icon}</div>
+      <div style="flex:1">${a.text}</div>
+    </div>`;
+  }).join('');
 }
 
 /* AXE4: Animate counter from 0 to target */
@@ -3000,7 +3436,7 @@ async function ghPush(){
   if(!token){toast('Configurez votre token GitHub');return;}
   const statusEl=document.getElementById('sync-status-text');
   statusEl.textContent='Envoi vers GitHub...';statusEl.style.color='var(--accent)';
-  const payload={sessions:DB.sessions,notes:DB.notes,venues:DB.venues,updated:new Date().toISOString(),
+  const payload={sessions:DB.sessions,notes:DB.notes,venues:DB.venues,garmin:DB.garmin,updated:new Date().toISOString(),
     meta:{sessions:DB.sessions.length,venues:DB.venues.length,appVersion:'vl3'}};
   try{
     /* Recuperer le SHA du fichier existant (si il existe) */
@@ -3072,6 +3508,10 @@ async function ghPull(){
       const newVenues=cloudData.venues.filter(v=>!existingVIds.has(String(v.id)));
       DB.venues=[...existingVenues,...newVenues];
     }
+    /* Merge garmin by date (cloud wins on conflict) */
+    if(cloudData.garmin&&Array.isArray(cloudData.garmin)){
+      mergeGarminEntries(cloudData.garmin);
+    }
     localStorage.setItem('vl3_last_sync',new Date().toISOString());
     updateSyncBanner();
     statusEl.textContent=newOnes.length+' nouvelle(s) seance(s). Total: '+DB.sessions.length;statusEl.style.color='var(--green)';
@@ -3104,7 +3544,7 @@ function showManualImport(){
   sec.style.display=sec.style.display==='none'?'block':'none';
 }
 function copyExport(){
-  const json=JSON.stringify({sessions:DB.sessions,notes:DB.notes,venues:DB.venues,exported:new Date().toISOString()},null,0);
+  const json=JSON.stringify({sessions:DB.sessions,notes:DB.notes,venues:DB.venues,garmin:DB.garmin,exported:new Date().toISOString()},null,0);
   try{navigator.clipboard.writeText(json).then(()=>toast('JSON copie !'));}
   catch{toast('Erreur de copie');}
 }
@@ -3123,6 +3563,9 @@ function doImport(){
       const existingV=DB.venues;
       const existingVIds=new Set(existingV.map(v=>String(v.id)));
       DB.venues=[...existingV,...data.venues.filter(v=>!existingVIds.has(String(v.id)))];
+    }
+    if(data.garmin&&Array.isArray(data.garmin)){
+      mergeGarminEntries(data.garmin);
     }
     closeImport();renderDash();renderHist();
     toast(newOnes.length+' seance(s) importee(s)');
@@ -3289,11 +3732,37 @@ function renderMacroAnalysis(){
   const sel=document.getElementById('macro-period');
   const weeksN=sel?parseInt(sel.value)||12:12;
   const ss=DB.sessions;
-  if(!ss.length)return;
-  const weeks=computeWeeklyMetrics(ss,weeksN);
-  drawChargeChart('macroChargeChart',weeks);
-  drawMonotonieChart('macroMonotonieChart',weeks);
-  drawFormeChart('macroFormeChart',weeks);
+  if(ss.length){
+    const weeks=computeWeeklyMetrics(ss,weeksN);
+    drawChargeChart('macroChargeChart',weeks);
+    drawMonotonieChart('macroMonotonieChart',weeks);
+    drawFormeChart('macroFormeChart',weeks);
+  }
+  /* Garmin macro KPIs */
+  renderGarminMacroCard(weeksN);
+}
+
+/* Render Garmin macro KPI card using the same period as Foster macro */
+function renderGarminMacroCard(weeksN){
+  const card=document.getElementById('garmin-macro-card');
+  if(!card)return;
+  if(!DB.garmin.length){card.style.display='none';return;}
+  card.style.display='block';
+  const days=weeksN*7;
+  const m=computeGarminMetrics(days);
+  const periodLbl=weeksN===12?'12 semaines':weeksN===26?'6 mois':'1 an';
+  const setIf=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setIf('gmac-period-lbl',periodLbl);
+  if(m.sleepAvg!=null){
+    const h=Math.floor(m.sleepAvg/60),mn=m.sleepAvg%60;
+    setIf('gmac-sleep',h+'h'+(mn<10?'0':'')+mn);
+  }else setIf('gmac-sleep','--');
+  setIf('gmac-hrv',m.hrvAvg!=null?m.hrvAvg+' ms':'--');
+  setIf('gmac-rhr',m.rhrAvg!=null?m.rhrAvg+' bpm':'--');
+  setIf('gmac-stress',m.stressAvg!=null?m.stressAvg:'--');
+  setIf('gmac-readiness',m.readinessAvg!=null?m.readinessAvg:'--');
+  setIf('gmac-recovery',m.recoveryScore!=null?m.recoveryScore:'--');
+  setIf('gmac-coverage',m.coverage+' jours avec donnees Garmin sur '+days+' jours');
 }
 
 /* AXE2: Injury alerts */
